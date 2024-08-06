@@ -1,0 +1,142 @@
+body {
+  background-color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.survey-container {
+  scroll-behavior: smooth;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #44b787;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+h2 {
+  font-size: 24px;
+  color: #202124;
+  margin-bottom: 15px;
+}
+
+
+.question-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.question-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  font-size: 20px;
+  color: #202124;
+  margin-bottom: 15px;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.option-button {
+  padding: 10px;
+  margin: 8px 0;
+  background-color: #44b787;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.option-button:hover {
+  background-color: #B3CBB9;
+}
+
+.option-button.selected {
+  background-color: #2F9C95;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.previous-button,
+.next-button,
+.submit-button {
+  display: block;
+  padding: 12px;
+  background-color: #44b787;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.previous-button:hover,
+.next-button:hover,
+.submit-button:hover {
+  background-color: #2F9C95;
+  transform: translateY(-2px);
+}
+
+.previous-button:disabled,
+.previous-button:disabled:hover {
+  background-color: #B3CBB9;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
+.slide-enter {
+  opacity: 0;
+  transform: translateY(100%);
+}
+.slide-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.slide-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.slide-exit-active {
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 300ms, transform 300ms;
+}
