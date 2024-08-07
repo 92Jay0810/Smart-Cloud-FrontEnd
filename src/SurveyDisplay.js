@@ -217,37 +217,29 @@ function SurveyDisplay() {
   //將Answers格式轉換，交給後端
   const transformAnswers = (answers) => {
     const result = {};
+    const componentMappings = {
+      "是否需要用到GPU?": "GPU",
+      "資料是否需要快取記憶？": "Cache",
+      "資料是否需要高可用配置?": "HighAvailabilityDatabase",
+      "系統是否需要使用共享儲存裝置？(如NFS)": "SharedStorage",
+      "系統是否有大於1GB的檔案存放(如文件、圖片、影片、音樂)？":
+        "LargeFileStorage",
+      "儲存是否需高可用配置？": "HighAvailabilityStorage",
+      "是否需要硬體安全模組(HSM) ?": "HSM",
+      "是否有高安全需求？": "HighSecurity",
+      "是否有個資需要額外保護？": "PersonalDataProtection",
+      "系統是否公開服務給外部網路(Internet)？": "PublicService",
+      "系統是否本身無公開位址(Public IP)，但需要存取到外部網路(Internet)？":
+        "NAT",
+      "系統是否需要靜態網頁快取(Cache)？": "StaticWebCache",
+    };
 
-    survey.forEach((category, categoryIndex) => {
-      const categoryName = category.category.split(" ")[0]; // 取得英文類別名稱
-      const components = [];
-
-      category.questions.forEach((question, questionIndex) => {
-        const answerKey = `${categoryIndex}-${questionIndex}`;
-        const answer = answers[answerKey];
-
-        if (answer) {
-          const componentName = getComponentName(question.question, answer);
-          if (componentName && !components.includes(componentName)) {
-            components.push(componentName);
-          }
-        }
-      });
-
-      if (components.length > 0) {
-        result[categoryName] = components;
-      }
-    });
-
-    return result;
-  };
-  // 字典轉換
-  const translateAnswer = (answer, question) => {
     const translations = {
       共用VPC: "Shared VPC",
       自建VPC: "Build own VPC",
       雲端DNS服務: "Cloud service",
       自建地端DNS服務: "On-premise service",
+      "On-premise": "On-premise",
       GCP: "GCP",
       "AWS/ Other": "AWS/Other",
       Microservices: "Microservices",
@@ -266,36 +258,28 @@ function SurveyDisplay() {
       "Active/Standby": "Active/Standby",
     };
 
-    return translations[answer] || answer;
-  };
-  //將是否轉換成該元件
-  const getComponentName = (question, answer) => {
-    if (answer !== "是" && answer !== "否") {
-      return translateAnswer(answer, question);
-    }
+    survey.forEach((category, categoryIndex) => {
+      //取得前面英文 Category
+      const categoryName = category.category.split(" ")[0];
+      const components = new Set();
 
-    if (answer === "是") {
-      const componentMappings = {
-        "是否需要用到GPU?": "GPU",
-        "資料是否需要快取記憶？": "Cache",
-        "資料是否需要高可用配置?": "HighAvailabilityDatabase",
-        "系統是否需要使用共享儲存裝置？(如NFS)": "SharedStorage",
-        "系統是否有大於1GB的檔案存放(如文件、圖片、影片、音樂)？":
-          "LargeFileStorage",
-        "儲存是否需高可用配置？": "HighAvailabilityStorage",
-        "是否需要硬體安全模組(HSM) ?": "HSM",
-        "是否有高安全需求？": "HighSecurity",
-        "是否有個資需要額外保護？": "PersonalDataProtection",
-        "系統是否公開服務給外部網路(Internet)？": "PublicService",
-        "系統是否本身無公開位址(Public IP)，但需要存取到外部網路(Internet)？":
-          "NAT",
-        "系統是否需要靜態網頁快取(Cache)？": "StaticWebCache",
-      };
+      category.questions.forEach((question, questionIndex) => {
+        const answer = answers[`${categoryIndex}-${questionIndex}`];
+        if (answer) {
+          if (answer === "是" && componentMappings[question.question]) {
+            components.add(componentMappings[question.question]);
+          } else if (answer !== "否") {
+            components.add(translations[answer] || answer);
+          }
+        }
+      });
 
-      return componentMappings[question] || translateAnswer(answer, question);
-    } else {
-      return;
-    }
+      if (components.size > 0) {
+        result[categoryName] = Array.from(components);
+      }
+    });
+
+    return result;
   };
 
   if (submitted) {
