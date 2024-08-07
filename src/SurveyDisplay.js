@@ -109,17 +109,54 @@ function SurveyDisplay() {
   const [submitted, setSubmitted] = useState(false);
   const [apiResponse, setApiResponse] = useState(null);
   const surveyContainerRef = useRef(null);
+
+  // 從 cookie 讀取答案
+  useEffect(() => {
+    const savedAnswers = getCookie("surveyAnswers");
+    if (savedAnswers) {
+      setAnswers(JSON.parse(savedAnswers));
+    }
+  }, []);
+
+  // 讀取 cookie 的函數
+  const getCookie = (name) => {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === " ") c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  };
+
+  // 設置 cookie 的函數
+  const setCookie = (name, value, days) => {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  };
+
+  //當頁數變更時，往上滑動頁面
   useEffect(() => {
     if (surveyContainerRef.current) {
       surveyContainerRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [currentCategoryIndex]);
 
+  //處理選擇選項
   const handleOptionSelect = (categoryIndex, questionIndex, option) => {
-    setAnswers((prev) => ({
-      ...prev,
+    const newAnswers = {
+      ...answers,
       [`${categoryIndex}-${questionIndex}`]: option,
-    }));
+    };
+    setAnswers(newAnswers);
+    // 將新的答案保存到 cookie 中
+    setCookie("surveyAnswers", JSON.stringify(newAnswers), 7); // 保存 7 天
   };
 
   const handleNext = () => {
@@ -157,9 +194,13 @@ function SurveyDisplay() {
 
         const data = await response.json();
         setApiResponse(data);
+        // 清除 cookie 中的答案
+        setCookie("surveyAnswers", "", -1);
       } catch (error) {
         console.error("Error submitting survey:", error);
         setApiResponse({ error: "提交失敗，請稍後再試。" });
+        // 清除 cookie 中的答案
+        setCookie("surveyAnswers", "", -1);
       }
     } else {
       alert("請回答所有問題後再提交！");
