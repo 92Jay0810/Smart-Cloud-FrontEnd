@@ -206,6 +206,7 @@ function SurveyDisplay() {
         });
 
         const data = await response.json();
+        console.log(data);
         setApiResponse(data);
         // 清除 cookie 中的答案
         //setCookie("surveyAnswers", "", -1);
