@@ -115,6 +115,14 @@ function SurveyDisplay() {
   const surveyContainerRef = useRef(null);
   //禁止CSSTransition使用findDOMNode，改用Ref，還能改進效能，為每個survey內的類別去Ref
   const categoryRefs = useRef(survey.map(() => React.createRef()));
+  //const url = "https://d1fnvwdkrkz29m.cloudfront.net/api/diagram-as-code";
+  const url = "http://localhost:3001";
+
+  const [showDialog, setShowDialog] = useState(false);
+
+  const handleModifyPromptClick = () => {
+    setShowDialog(true);
+  };
 
   // 從 cookie 讀取答案
   useEffect(() => {
@@ -176,7 +184,8 @@ function SurveyDisplay() {
       setCurrentCategoryIndex(currentCategoryIndex - 1);
     }
   };
-
+  //注意url，可能在local測試或是s3測試，s3要放在cloudFront才能執行
+  //最後注意是否有清除cookie
   const handleSubmit = async () => {
     const totalQuestions = survey.reduce(
       (sum, category) => sum + category.questions.length,
@@ -188,26 +197,23 @@ function SurveyDisplay() {
       const formattedAnswers = transformAnswers(answers);
       console.log("轉換後的答案：", formattedAnswers);
       try {
-        const response = await fetch(
-          "https://d1fnvwdkrkz29m.cloudfront.net/api/diagram-as-code",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formattedAnswers),
-          }
-        );
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedAnswers),
+        });
 
         const data = await response.json();
         setApiResponse(data);
         // 清除 cookie 中的答案
-        setCookie("surveyAnswers", "", -1);
+        //setCookie("surveyAnswers", "", -1);
       } catch (error) {
         console.error("Error submitting survey:", error);
         setApiResponse({ error: "提交失敗，請稍後再試。" });
         // 清除 cookie 中的答案
-        setCookie("surveyAnswers", "", -1);
+        //setCookie("surveyAnswers", "", -1);
       }
     } else {
       alert("請回答所有問題後再提交！");
@@ -284,22 +290,80 @@ function SurveyDisplay() {
 
   if (submitted) {
     return (
-      <CSSTransition
-        in={submitted}
-        timeout={300}
-        classNames="fade"
-        unmountOnExit
-      >
-        <div className="survey-container">
-          <h1>感謝您完成調查！</h1>
-          {apiResponse ? (
-            <p>{apiResponse.message || JSON.stringify(apiResponse)}</p>
-          ) : (
-            <p>您的架構圖正在產生</p>
-          )}
-        </div>
-      </CSSTransition>
+      <div className="App">
+        <CSSTransition
+          in={submitted}
+          timeout={300}
+          classNames="fade"
+          unmountOnExit
+        >
+          <div className="survey-result-container">
+            <h1>感謝您完成調查！</h1>
+            {apiResponse ? (
+              apiResponse.errorCode ? (
+                <>
+                  <p className="error-message">
+                    {getErrorMessage(apiResponse.errorCode)}
+                  </p>
+                  <p>errorCode：{apiResponse.errorCode}</p>
+                </>
+              ) : (
+                <>
+                  <h2>恭喜!，您的架構圖如下</h2>
+                  {apiResponse.imageSrc ? (
+                    <>
+                      <div className="button-container">
+                        <button>Save File</button>
+                        <button onClick={handleModifyPromptClick}>
+                          Modity Prompt
+                        </button>
+                      </div>
+
+                      <div className=".survey-result-content">
+                        <div className="survey-image-container">
+                          <img
+                            src={apiResponse.imageSrc}
+                            alt="Survey Result"
+                            className="survey-image"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="error-message">圖片解析失敗</p>
+                  )}
+                </>
+              )
+            ) : (
+              <p>您的架構圖正在產生</p>
+            )}
+          </div>
+        </CSSTransition>
+        {showDialog && (
+          <div className="dialog-container">
+            <h3>Modify Your Prompt</h3>
+            {/* Your dialog content goes here */}
+            <textarea placeholder="Enter your new prompt here..."></textarea>
+            <button onClick={() => setShowDialog(false)}>Close</button>
+          </div>
+        )}
+      </div>
     );
+  }
+
+  function getErrorMessage(errorCode) {
+    switch (errorCode) {
+      case "101":
+        return "用戶登錄錯誤: 請檢查您的用戶名和密碼。";
+      case "201":
+        return "Bad Request，LLM請求格式錯誤";
+      case "202":
+        return "Request Timeout， LLM回應時間過長";
+      case "301":
+        return "編譯錯誤，請再多嘗試，或連繫IT團隊，";
+      default:
+        return "內部伺服器錯誤: 發生未知錯誤。";
+    }
   }
 
   const currentCategory = survey[currentCategoryIndex];
