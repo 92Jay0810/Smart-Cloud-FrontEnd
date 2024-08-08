@@ -1,49 +1,77 @@
-### `npm start`
+# Project Setup and Commands
 
-- to start a project in localhost:3000
+### Starting the Project
 
-### `npm run build`
+- **Command:** `npm start`
+- **Description:** Starts the project on `localhost:3000`.
 
-- to build a static webstite in build folder
+### Building the Project
 
-### `the request format`
+- **Command:** `npm run build`
+- **Description:** Builds the project into a static website, which is outputted to the `build` folder.
 
-- example
+---
 
+# Request and Response Formats
+
+## Request Format
+
+Example request format for networking, computing, database, storage, and security specifications:
+
+```json
 {
-Networking: [
-'Shared VPC',
-'PublicService',
-'On-premise service',
-'NAT',
-'StaticWebCache',
-'On-premise'
-],
-Computing: [ 'Monolith', 'number of cloud services <10', 'Stateful', 'GPU' ],
-Database: [ 'PostgreSQL', 'Cache' ],
-Storage: [ 'LargeFileStorage', 'Active/Active' ],
-Security: [ 'HighSecurity', 'PersonalDataProtection' ]
+  "Networking": [
+    "Shared VPC",
+    "PublicService",
+    "On-premise service",
+    "NAT",
+    "StaticWebCache",
+    "On-premise"
+  ],
+  "Computing": ["Monolith", "number of cloud services <10", "Stateful", "GPU"],
+  "Database": ["PostgreSQL", "Cache"],
+  "Storage": ["LargeFileStorage", "Active/Active"],
+  "Security": ["HighSecurity", "PersonalDataProtection"]
 }
+```
 
-### `the response format`
+## Response Format
 
-errorCodeID errorContent
-101 user login error
-201 Bad Request LLM
-202 LLM Request Timeout
-301 internal compile error
+### Error Codes
 
-- if has error
-  {
-  errorCode:'errorCodeID'
-  }
-- if no error
-  {
-  imgsrc:"data:image/png;base64,base64EncodingString"
-  errorCode:''
-  }
-  example
-  {
-  imageSrc: 'data:image/png;base64,iVBORw0KGgoAmQAAmQAAmQAAnECQEKP3G'...466430 more characters,
-  errorCode: ''
-  }
+| Error Code ID | Error Content          |
+| ------------- | ---------------------- |
+| 101           | user login error       |
+| 201           | Bad Request LLM        |
+| 202           | LLM Request Timeout    |
+| 301           | internal compile error |
+
+### Response Structure
+
+#### Error Response
+
+when error happen the response json need contain `errorCode`：
+
+```json
+{
+  "errorCode": "errorCodeID"
+}
+```
+
+if no error
+
+```json
+{
+  "imgsrc": "data:image/png;base64,base64EncodingString",
+  "errorCode": ""
+}
+```
+
+example
+
+```json
+{
+  "imageSrc": "data:image/png;base64,iVBORw0KGgoAmQAAmQAAmQAAnECQEKP3G...466430 more characters",
+  "errorCode": ""
+}
+```
