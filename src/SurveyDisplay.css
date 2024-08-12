@@ -224,32 +224,152 @@ h3 {
     margin-top: 0;
 }
 
+.save-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.save-dialog-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.save-dialog-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #44b787;
+  font-size: 24px;
+}
+
+.save-dialog-content input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.save-dialog-content input:focus {
+  outline: none;
+  border-color: #44b787;
+}
+
+.save-dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-dialog-buttons button {
+  margin-left: 15px;
+  padding: 10px 20px;
+  background-color: #44b787;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.save-dialog-buttons button:hover {
+  background-color: #2F9C95;
+  transform: translateY(-2px);
+}
+
+.save-dialog-buttons button:active {
+  transform: translateY(0);
+}
+
+.save-dialog-buttons button:last-child {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.save-dialog-buttons button:last-child:hover {
+  background-color: #d0d0d0;
+}
+
 .dialog-container {
   position: fixed;
   top: 10%;
   right: 0;
   width: 30%;
-  background-color: #f8f9fa;
-  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
 }
+
 
 .dialog-container h3 {
   margin-top: 0;
-  font-size: 20px;
-  color: #202124;
+  margin-bottom: 20px;
+  color: #44b787;
+  font-size: 24px;
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-messages {
+  flex: 1;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  min-height: 45vh;
+  max-height: 50vh;
+}
+
+.dialog-message {
+  margin-bottom: 5px;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.dialog-message.user {
+  background-color: #e0ffe0;
+  align-self: flex-end;
+}
+
+.dialog-message.system {
+  background-color: #e0e0ff;
+  align-self: flex-start;
 }
 
 .dialog-container textarea {
   width: 100%;
-  height: 100%;
+  height: 10vh;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #ccc;
   font-size: 16px;
   margin-bottom: 10px;
+  resize: none;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .dialog-container button {
@@ -260,6 +380,7 @@ h3 {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  margin-left: 10px;
 }
 
 .dialog-container button:hover {

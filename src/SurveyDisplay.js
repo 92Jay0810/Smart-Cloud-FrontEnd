@@ -118,11 +118,24 @@ function SurveyDisplay() {
   //const url = "https://d1fnvwdkrkz29m.cloudfront.net/api/diagram-as-code";
   const url = "http://localhost:3001";
 
+  //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [inputText, setInputText] = useState("");
 
+  const handleSend = () => {
+    if (inputText.trim() !== "") {
+      setMessages([...messages, { sender: "User", text: inputText }]);
+      setInputText("");
+    }
+  };
   const handleModifyPromptClick = () => {
     setShowDialog(true);
   };
+
+  //saveDialog
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [fileName, setFileName] = useState("architecture_diagram.png");
 
   // 從 cookie 讀取答案
   useEffect(() => {
@@ -289,6 +302,23 @@ function SurveyDisplay() {
     return result;
   };
 
+  const handleSaveFile = () => {
+    setShowSaveDialog(true);
+  };
+
+  const saveFile = () => {
+    if (apiResponse && apiResponse.imageSrc) {
+      const link = document.createElement("a");
+      link.style.display = "none";
+      link.href = apiResponse.imageSrc;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setShowSaveDialog(false);
+    }
+  };
+
   if (submitted) {
     return (
       <div className="App">
@@ -314,7 +344,7 @@ function SurveyDisplay() {
                   {apiResponse.imageSrc ? (
                     <>
                       <div className="button-container">
-                        <button>Save File</button>
+                        <button onClick={handleSaveFile}>Save File</button>
                         <button onClick={handleModifyPromptClick}>
                           Modity Prompt
                         </button>
@@ -340,12 +370,46 @@ function SurveyDisplay() {
             )}
           </div>
         </CSSTransition>
+        {showSaveDialog && (
+          <div className="save-dialog">
+            <div className="save-dialog-content">
+              <h3>Save File</h3>
+              <input
+                type="text"
+                onChange={(e) => setFileName(e.target.value)}
+                placeholder="Enter file name"
+              />
+              <div className="save-dialog-buttons">
+                <button onClick={saveFile}>Save</button>
+                <button onClick={() => setShowSaveDialog(false)}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
         {showDialog && (
           <div className="dialog-container">
             <h3>Modify Your Prompt</h3>
-            {/* Your dialog content goes here */}
-            <textarea placeholder="Enter your new prompt here..."></textarea>
-            <button onClick={() => setShowDialog(false)}>Close</button>
+            <div className="dialog-content">
+              <div className="dialog-messages">
+                {messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`dialog-message ${msg.sender.toLowerCase()}`}
+                  >
+                    <strong>{msg.sender}:</strong> {msg.text}
+                  </div>
+                ))}
+              </div>
+              <textarea
+                placeholder="Enter your new prompt here..."
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+              ></textarea>
+              <div className="dialog-buttons">
+                <button onClick={handleSend}>Send</button>
+                <button onClick={() => setShowDialog(false)}>Close</button>
+              </div>
+            </div>
           </div>
         )}
       </div>

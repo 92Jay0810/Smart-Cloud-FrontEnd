@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import SurveyDisplay from "./SurveyDisplay";
 import Login from "./Login";
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 

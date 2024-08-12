@@ -23,6 +23,11 @@
   font-size: 24px;
 }
 
+.login-container p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
 .login-container input {
   margin-bottom: 15px;
   padding: 10px;
