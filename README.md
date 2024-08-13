@@ -31,7 +31,8 @@ Example request format for networking, computing, database, storage, and securit
   "Computing": ["Monolith", "number of cloud services <10", "Stateful", "GPU"],
   "Database": ["PostgreSQL", "Cache"],
   "Storage": ["LargeFileStorage", "Active/Active"],
-  "Security": ["HighSecurity", "PersonalDataProtection"]
+  "Security": ["HighSecurity", "PersonalDataProtection"],
+  "timestamp": "20240812104835123"
 }
 ```
 
@@ -39,12 +40,12 @@ Example request format for networking, computing, database, storage, and securit
 
 ### Error Codes
 
-| Error Code ID | Error Content          |
-| ------------- | ---------------------- |
-| 101           | user login error       |
-| 201           | Bad Request LLM        |
-| 202           | LLM Request Timeout    |
-| 301           | internal compile error |
+| Error Content          |
+| ---------------------- |
+| user login error       |
+| Bad Request LLM        |
+| LLM Request Timeout    |
+| internal compile error |
 
 ### Response Structure
 
@@ -54,7 +55,7 @@ when error happen the response json need contain `errorCode`：
 
 ```json
 {
-  "errorCode": "errorCodeID"
+  "errorMessage": "Error Content "
 }
 ```
 
@@ -62,8 +63,8 @@ if no error
 
 ```json
 {
-  "imgsrc": "data:image/png;base64,base64EncodingString",
-  "errorCode": ""
+  "s3_object_name": "xxx.png",
+  "errorMessage": ""
 }
 ```
 
@@ -71,7 +72,7 @@ example
 
 ```json
 {
-  "imageSrc": "data:image/png;base64,iVBORw0KGgoAmQAAmQAAmQAAnECQEKP3G...466430 more characters",
-  "errorCode": ""
+  "s3_object_name": "cloud.png",
+  "errorMessage": ""
 }
 ```

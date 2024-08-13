@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./SurveyDisplay.css";
-
+import userImg from "./assets/user.jpg";
+import systemImg from "./assets/system.jpeg";
 const survey = [
   {
     category: "Networking 網路",
@@ -115,18 +116,41 @@ function SurveyDisplay() {
   const surveyContainerRef = useRef(null);
   //禁止CSSTransition使用findDOMNode，改用Ref，還能改進效能，為每個survey內的類別去Ref
   const categoryRefs = useRef(survey.map(() => React.createRef()));
-  //const url = "https://d1fnvwdkrkz29m.cloudfront.net/api/diagram-as-code";
+  const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
+  //const url = baseurl+"/api/diagram-as-code";
   const url = "http://localhost:3001";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (inputText.trim() !== "") {
-      setMessages([...messages, { sender: "User", text: inputText }]);
+      const newMessages = [...messages, { sender: "User", text: inputText }];
+      setMessages(newMessages);
       setInputText("");
+      setLoading(true);
+      try {
+        const response = await fetch(url + "/api", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: inputText }),
+        });
+        const data = await response.json();
+        setMessages([...newMessages, { sender: "System", text: data.reply }]);
+      } catch (error) {
+        setMessages([
+          ...newMessages,
+          { sender: "System", text: "Error: Failed to fetch response." },
+        ]);
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
   const handleModifyPromptClick = () => {
@@ -207,7 +231,19 @@ function SurveyDisplay() {
     if (Object.keys(answers).length === totalQuestions) {
       setSubmitted(true);
       console.log("提交的答案：", answers);
-      const formattedAnswers = transformAnswers(answers);
+      const now = new Date();
+      const timestamp =
+        now.getFullYear().toString() + // 年份
+        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+        now.getDate().toString().padStart(2, "0") + // 日期
+        now.getHours().toString().padStart(2, "0") + // 小时
+        now.getMinutes().toString().padStart(2, "0") + // 分钟
+        now.getSeconds().toString().padStart(2, "0") + // 秒
+        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+      const formattedAnswers = {
+        ...transformAnswers(answers),
+        timestamp: timestamp, // 加入自定义格式的时间戳
+      };
       console.log("轉換後的答案：", formattedAnswers);
       try {
         const response = await fetch(url, {
@@ -331,17 +367,14 @@ function SurveyDisplay() {
           <div className="survey-result-container">
             <h1>感謝您完成調查！</h1>
             {apiResponse ? (
-              apiResponse.errorCode ? (
+              apiResponse.errorMessage ? (
                 <>
-                  <p className="error-message">
-                    {getErrorMessage(apiResponse.errorCode)}
-                  </p>
-                  <p>errorCode：{apiResponse.errorCode}</p>
+                  <p className="error-message">{apiResponse.errorMessage}</p>
                 </>
               ) : (
                 <>
                   <h2>恭喜!，您的架構圖如下</h2>
-                  {apiResponse.imageSrc ? (
+                  {apiResponse.s3_object_name ? (
                     <>
                       <div className="button-container">
                         <button onClick={handleSaveFile}>Save File</button>
@@ -353,7 +386,11 @@ function SurveyDisplay() {
                       <div className=".survey-result-content">
                         <div className="survey-image-container">
                           <img
-                            src={apiResponse.imageSrc}
+                            src={
+                              baseurl +
+                              "/diagram-as-code-output/" +
+                              apiResponse.s3_object_name
+                            }
                             alt="Survey Result"
                             className="survey-image"
                           />
@@ -396,9 +433,29 @@ function SurveyDisplay() {
                     key={index}
                     className={`dialog-message ${msg.sender.toLowerCase()}`}
                   >
+                    <img
+                      src={msg.sender === "User" ? userImg : systemImg}
+                      alt={`${msg.sender}Img`}
+                      className="avatar"
+                    />
                     <strong>{msg.sender}:</strong> {msg.text}
                   </div>
                 ))}
+                {loading && (
+                  <div className="thinking-dialog">
+                    <div className="message-content">
+                      <img src={systemImg} alt={systemImg} className="avatar" />
+                      <strong>System:</strong>{" "}
+                      <div className="thinking-container">
+                        <div className="thinking-dots">
+                          <div className="thinking-dot"></div>
+                          <div className="thinking-dot"></div>
+                          <div className="thinking-dot"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               <textarea
                 placeholder="Enter your new prompt here..."
@@ -414,21 +471,6 @@ function SurveyDisplay() {
         )}
       </div>
     );
-  }
-
-  function getErrorMessage(errorCode) {
-    switch (errorCode) {
-      case "101":
-        return "用戶登錄錯誤: 請檢查您的用戶名和密碼。";
-      case "201":
-        return "Bad Request，LLM請求格式錯誤";
-      case "202":
-        return "Request Timeout， LLM回應時間過長";
-      case "301":
-        return "編譯錯誤，請再多嘗試，或連繫IT團隊，";
-      default:
-        return "內部伺服器錯誤: 發生未知錯誤。";
-    }
   }
 
   const currentCategory = survey[currentCategoryIndex];
