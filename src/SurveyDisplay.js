@@ -117,45 +117,14 @@ function SurveyDisplay() {
   //禁止CSSTransition使用findDOMNode，改用Ref，還能改進效能，為每個survey內的類別去Ref
   const categoryRefs = useRef(survey.map(() => React.createRef()));
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
-  //const url = baseurl+"/api/diagram-as-code";
+  //const url = baseurl + "/api/diagram-as-code";
   const url = "http://localhost:3001";
-
+  const [imageUrl, setImageUrl] = useState("");
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const handleSend = async () => {
-    if (inputText.trim() !== "") {
-      const newMessages = [...messages, { sender: "User", text: inputText }];
-      setMessages(newMessages);
-      setInputText("");
-      setLoading(true);
-      try {
-        const response = await fetch(url + "/api", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ prompt: inputText }),
-        });
-        const data = await response.json();
-        setMessages([...newMessages, { sender: "System", text: data.reply }]);
-      } catch (error) {
-        setMessages([
-          ...newMessages,
-          { sender: "System", text: "Error: Failed to fetch response." },
-        ]);
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-  const handleModifyPromptClick = () => {
-    setShowDialog(true);
-  };
 
   //saveDialog
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -257,6 +226,11 @@ function SurveyDisplay() {
         const data = await response.json();
         console.log(data);
         setApiResponse(data);
+        if (data.s3_object_name) {
+          setImageUrl(
+            baseurl + "/diagram-as-code-output/" + data.s3_object_name
+          );
+        }
         // 清除 cookie 中的答案
         //setCookie("surveyAnswers", "", -1);
       } catch (error) {
@@ -354,7 +328,59 @@ function SurveyDisplay() {
       setShowSaveDialog(false);
     }
   };
+  // HandleConversationSand
+  const handleSend = async () => {
+    if (inputText.trim() !== "") {
+      const newMessages = [...messages, { sender: "User", text: inputText }];
+      setMessages(newMessages);
+      setInputText("");
+      setLoading(true);
+      try {
+        const response = await fetch(url + "/api", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: inputText }),
+        });
+        const data = await response.json();
+        console.log(data);
+        if (data.errorMessage) {
+          setMessages([
+            ...newMessages,
+            { sender: "System", text: "Error occur " + data.errorMessage },
+          ]);
+        } else {
+          if (data.s3_object_name) {
+            setImageUrl(
+              baseurl + "/diagram-as-code-output/" + data.s3_object_name
+            );
+            setMessages([
+              ...newMessages,
+              { sender: "System", text: data.AIMessage },
+            ]);
+          } else {
+            setMessages([
+              ...newMessages,
+              { sender: "System", text: "no image fetch" + data.AIMessage },
+            ]);
+          }
+        }
+      } catch (error) {
+        setMessages([
+          ...newMessages,
+          { sender: "System", text: "Error: Failed to fetch response." },
+        ]);
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
+  const handleModifyPromptClick = () => {
+    setShowDialog(true);
+  };
   if (submitted) {
     return (
       <div className="App">
@@ -386,11 +412,7 @@ function SurveyDisplay() {
                       <div className=".survey-result-content">
                         <div className="survey-image-container">
                           <img
-                            src={
-                              baseurl +
-                              "/diagram-as-code-output/" +
-                              apiResponse.s3_object_name
-                            }
+                            src={imageUrl}
                             alt="Survey Result"
                             className="survey-image"
                           />

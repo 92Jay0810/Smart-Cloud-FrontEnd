@@ -1,18 +1,18 @@
 # Project Setup and Commands
 
-### Starting the Project
+## Starting the Project
 
 - **Command:** `npm start`
 - **Description:** Starts the project on `localhost:3000`.
 
-### Building the Project
+## Building the Project to Static File
 
 - **Command:** `npm run build`
 - **Description:** Builds the project into a static website, which is outputted to the `build` folder.
 
 ---
 
-# Request and Response Formats
+# Service Servey Request and Response Formats
 
 ## Request Format
 
@@ -38,7 +38,7 @@ Example request format for networking, computing, database, storage, and securit
 
 ## Response Format
 
-### Error Codes
+### Error Content
 
 | Error Content          |
 | ---------------------- |
@@ -59,6 +59,8 @@ when error happen the response json need contain `errorCode`：
 }
 ```
 
+#### Normal Response
+
 if no error
 
 ```json
@@ -75,4 +77,26 @@ example
   "s3_object_name": "cloud.png",
   "errorMessage": ""
 }
+```
+
+# Conversation Request and Response Formats
+
+## Request Format
+
+```json
+    {
+      "prompt": "user input message",
+    };
+
+```
+
+## Response Format
+
+```json
+    {
+      "s3_object_name": "xxx.png",
+      "errorMessage": "errorMessage",
+      "AIMessage": "AIMessage for user",
+    };
+
 ```

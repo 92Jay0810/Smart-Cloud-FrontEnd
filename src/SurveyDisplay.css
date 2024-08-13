@@ -176,7 +176,7 @@ h3 {
 .survey-image {
   max-width:75%;
   height: 70%;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #44b787;
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;
@@ -306,7 +306,7 @@ h3 {
   position: fixed;
   top: 5%;
   right: 0;
-  width: 30%;
+  width: 29%;
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 12px;
