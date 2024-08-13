@@ -20,19 +20,26 @@ Example request format for networking, computing, database, storage, and securit
 
 ```json
 {
-  "Networking": [
-    "Shared VPC",
-    "PublicService",
-    "On-premise service",
-    "NAT",
-    "StaticWebCache",
-    "On-premise"
-  ],
-  "Computing": ["Monolith", "number of cloud services <10", "Stateful", "GPU"],
-  "Database": ["PostgreSQL", "Cache"],
-  "Storage": ["LargeFileStorage", "Active/Active"],
-  "Security": ["HighSecurity", "PersonalDataProtection"],
-  "timestamp": "20240812104835123"
+  "body": {
+    "Networking": [
+      "Shared VPC",
+      "PublicService",
+      "On-premise service",
+      "NAT",
+      "StaticWebCache",
+      "On-premise"
+    ],
+    "Computing": [
+      "Monolith",
+      "number of cloud services <10",
+      "Stateful",
+      "GPU"
+    ],
+    "Database": ["PostgreSQL", "Cache"],
+    "Storage": ["LargeFileStorage", "Active/Active"],
+    "Security": ["HighSecurity", "PersonalDataProtection"],
+    "timestamp": "20240812104835123"
+  }
 }
 ```
 
@@ -65,8 +72,10 @@ if no error
 
 ```json
 {
-  "s3_object_name": "xxx.png",
-  "errorMessage": ""
+  "body": {
+    "s3_object_name": "xxx.png",
+    "errorMessage": ""
+  }
 }
 ```
 
@@ -74,8 +83,11 @@ example
 
 ```json
 {
-  "s3_object_name": "cloud.png",
-  "errorMessage": ""
+  "body": {
+    "s3_object_name": "aws_frontend_test.png",
+    "errorMessage": "",
+    "AIMessage": "成功修改您的要求"
+  }
 }
 ```
 
@@ -84,19 +96,21 @@ example
 ## Request Format
 
 ```json
-    {
-      "prompt": "user input message",
-    };
-
+{
+  "body": {
+    "prompt": "user input message"
+  }
+}
 ```
 
 ## Response Format
 
 ```json
-    {
-      "s3_object_name": "xxx.png",
-      "errorMessage": "errorMessage",
-      "AIMessage": "AIMessage for user",
-    };
-
+{
+  "body": {
+    "s3_object_name": "xxx.png",
+    "errorMessage": "errorMessage",
+    "AIMessage": "AIMessage for user"
+  }
+}
 ```

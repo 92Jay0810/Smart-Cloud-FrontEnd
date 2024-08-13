@@ -223,7 +223,8 @@ function SurveyDisplay() {
           body: JSON.stringify(formattedAnswers),
         });
 
-        const data = await response.json();
+        const responseData = await response.json();
+        const data = responseData.body;
         console.log(data);
         setApiResponse(data);
         if (data.s3_object_name) {
@@ -316,16 +317,25 @@ function SurveyDisplay() {
     setShowSaveDialog(true);
   };
 
-  const saveFile = () => {
-    if (apiResponse && apiResponse.imageSrc) {
-      const link = document.createElement("a");
-      link.style.display = "none";
-      link.href = apiResponse.imageSrc;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setShowSaveDialog(false);
+  const saveFile = async () => {
+    if (apiResponse && imageUrl) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const temp_url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = temp_url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(temp_url);
+        setShowSaveDialog(false);
+      } catch (error) {
+        console.error("Error downloading the file:", error);
+        setShowSaveDialog(false);
+      }
     }
   };
   // HandleConversationSand
@@ -343,7 +353,8 @@ function SurveyDisplay() {
           },
           body: JSON.stringify({ prompt: inputText }),
         });
-        const data = await response.json();
+        const responseData = await response.json();
+        const data = responseData.body;
         console.log(data);
         if (data.errorMessage) {
           setMessages([
