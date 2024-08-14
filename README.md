@@ -100,7 +100,9 @@ when error happen the response json need contain `errorCode`：
 
 ```json
 {
-  "errorMessage": "Error Content "
+  "body": {
+    "errorMessage": "Error Content "
+  }
 }
 ```
 
