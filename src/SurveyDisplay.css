@@ -176,7 +176,7 @@ h3 {
 .survey-image {
   max-width:75%;
   height: 70%;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #44b787;
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;
@@ -224,32 +224,167 @@ h3 {
     margin-top: 0;
 }
 
+.save-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.save-dialog-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.save-dialog-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #44b787;
+  font-size: 24px;
+}
+
+.save-dialog-content input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.save-dialog-content input:focus {
+  outline: none;
+  border-color: #44b787;
+}
+
+.save-dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-dialog-buttons button {
+  margin-left: 15px;
+  padding: 10px 20px;
+  background-color: #44b787;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.save-dialog-buttons button:hover {
+  background-color: #2F9C95;
+  transform: translateY(-2px);
+}
+
+.save-dialog-buttons button:active {
+  transform: translateY(0);
+}
+
+.save-dialog-buttons button:last-child {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.save-dialog-buttons button:last-child:hover {
+  background-color: #d0d0d0;
+}
+
 .dialog-container {
   position: fixed;
-  top: 10%;
+  top: 5%;
   right: 0;
-  width: 30%;
-  background-color: #f8f9fa;
-  border: 1px solid #e0e0e0;
+  width: 29%;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
 }
+
 
 .dialog-container h3 {
   margin-top: 0;
-  font-size: 20px;
-  color: #202124;
+  margin-bottom: 20px;
+  color: #44b787;
+  font-size: 24px;
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-messages {
+  flex: 1;
+  margin-bottom: 10px;
+  padding: 10px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  min-height: 52vh;
+  max-height: 57vh;
+}
+
+
+.dialog-message {
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.dialog-message.user {
+  background-color: #e0ffe0;
+  margin-left: auto;
+  margin-right: 0;
+  margin-top: 4%;
+  margin-bottom: 4%;
+  font-size: 16px;
+}
+
+.dialog-message.system {
+  background-color: #e0e0ff;
+  margin-left: 0;
+  margin-right: auto;
+  margin-top: 4%;
+  margin-bottom: 4%;
+  font-size: 16px;
 }
 
 .dialog-container textarea {
-  width: 100%;
-  height: 100%;
-  padding: 10px;
+  width: 95%;
+  height: 12vh;
+  padding: 12px;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #ccc;
   font-size: 16px;
+  line-height: 1.4;
   margin-bottom: 10px;
+  resize: none;
+  transition: all 0.3s ease;
+}
+.dialog-container textarea:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 8px rgba(68, 183, 135, 0.4);
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .dialog-container button {
@@ -260,8 +395,53 @@ h3 {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  margin-left: 10px;
 }
 
 .dialog-container button:hover {
   background-color: #2F9C95;
+}
+
+.thinking-dialog {
+  background-color: #e0e0ff;
+  margin-left: 0;
+  margin-right: auto;
+  margin-top: 4%;
+  margin-bottom: 4%;
+  font-size: 16px;
+}
+.thinking-container {
+  display: flex;
+}
+
+.message-content {
+  display: flex;
+}
+.thinking-dots {
+  display: flex;
+}
+
+.thinking-dot {
+  display: flex;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #44b787;
+  margin: 0 2px;
+  animation: thinking 1.4s infinite ease-in-out both;
+}
+
+.thinking-dot:nth-child(1) { animation-delay: -0.32s; }
+.thinking-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes thinking {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: middle;
 }

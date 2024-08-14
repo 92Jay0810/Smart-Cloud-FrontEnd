@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import SurveyDisplay from "./SurveyDisplay";
 import Login from "./Login";
-
+import AWSLogin from "./AWSLogin";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -16,11 +16,18 @@ function App() {
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
-
+  //{isLoggedIn ? <SurveyDisplay /> : <AWSLogin />}
   return (
     <div className="app">
       <Sidebar />
-      {isLoggedIn ? <SurveyDisplay /> : <Login onLogin={handleLogin} />}
+      {isLoggedIn ? (
+        <SurveyDisplay />
+      ) : (
+        <>
+          <AWSLogin onLogin={handleLogin} />
+          <Login onLogin={handleLogin} />
+        </>
+      )}
     </div>
   );
 }

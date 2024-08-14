@@ -1,69 +1,121 @@
 # Project Setup and Commands
 
-### Starting the Project
+## Starting the Project
 
 - **Command:** `npm start`
 - **Description:** Starts the project on `localhost:3000`.
 
-### Building the Project
+## Building the Project to Static File
 
 - **Command:** `npm run build`
 - **Description:** Builds the project into a static website, which is outputted to the `build` folder.
 
 ---
 
-# Request and Response Formats
+# Service Servey Request and Response Formats
 
 ## Request Format
+
+| categoryid-questionid | optionid                  |
+| --------------------- | ------------------------- |
+| 0-0                   | SharedVpc                 |
+| 0-0                   | SelfBuildVpc              |
+| 0-1                   | OpenServiceYes            |
+| 0-1                   | OpenServiceNo             |
+| 0-2                   | CloudDns                  |
+| 0-2                   | SelfBuildDns              |
+| 0-2                   | DnsNo                     |
+| 0-3                   | ExternalServiceYes        |
+| 0-3                   | ExternalServiceNo         |
+| 0-4                   | WebCacheYes               |
+| 0-4                   | WebCacheNo                |
+| 0-5                   | ConnectionOnpremise       |
+| 0-5                   | ConnectionSamePlatform    |
+| 0-5                   | ConnectionCrossPlatform   |
+| 1-0                   | ArchitectureMicroservices |
+| 1-0                   | ArchitectureNtier         |
+| 1-0                   | ArchitectureEbaf          |
+| 1-0                   | ArchitectureMonolith      |
+| 1-1                   | ServiceLess10             |
+| 1-1                   | ServiceOver10             |
+| 1-2                   | Stateful                  |
+| 1-2                   | Statless                  |
+| 1-3                   | GpuYes                    |
+| 1-3                   | GpuNo                     |
+| 2-0                   | DatabasePostgreSql        |
+| 2-0                   | DatabaseMysql             |
+| 2-0                   | DatabaseMssql             |
+| 2-0                   | DatabaseNoSql             |
+| 2-1                   | DataCacheYes              |
+| 2-1                   | DataCacheNo               |
+| 2-2                   | HighAvailabilityYes       |
+| 2-2                   | HighAvailabilityNo        |
+| 3-0                   | ShareStroageYes           |
+| 3-0                   | ShareStroageNo            |
+| 3-1                   | DocumentOver1GbYes        |
+| 3-1                   | DocumentOver2GbNo         |
+| 3-2                   | StorageActive             |
+| 3-2                   | StroageStandby            |
+| 4-0                   | HsmYes                    |
+| 4-0                   | HsmNo                     |
+| 4-1                   | HighSecuityYes            |
+| 4-1                   | HighSecuityNo             |
+| 4-2                   | PersonalInformationYes    |
+| 4-2                   | PersonalInformationNo     |
 
 Example request format for networking, computing, database, storage, and security specifications:
 
 ```json
 {
-  "Networking": [
-    "Shared VPC",
-    "PublicService",
-    "On-premise service",
-    "NAT",
-    "StaticWebCache",
-    "On-premise"
-  ],
-  "Computing": ["Monolith", "number of cloud services <10", "Stateful", "GPU"],
-  "Database": ["PostgreSQL", "Cache"],
-  "Storage": ["LargeFileStorage", "Active/Active"],
-  "Security": ["HighSecurity", "PersonalDataProtection"]
+  "body": {
+    "0-0": "SharedVpc",
+    "0-1": "OpenServiceNo",
+    "0-2": "SelfBuildDns",
+    "0-3": "ExternalServiceNo",
+    "0-4": "WebCacheYes",
+    "0-5": "ConnectionSamePlatform",
+    "1-0": "ArchitectureEbaf",
+    "1-1": "ServiceOver10",
+    "1-2": "Stateful",
+    "1-3": "GpuYes",
+    "2-0": "DatabaseMssql",
+    "2-1": "DataCacheNo",
+    "2-2": "HighAvailabilityYes",
+    "3-0": "ShareStroageNo",
+    "3-1": "DocumentOver2GbNo",
+    "3-2": "StroageStandby",
+    "4-0": "HsmYes",
+    "4-1": "HighSecuityYes",
+    "4-2": "PersonalInformationNo",
+    "timestamp": "20240814152928090"
+  }
 }
 ```
 
 ## Response Format
 
-### Error Codes
-
-| Error Code ID | Error Content          |
-| ------------- | ---------------------- |
-| 101           | user login error       |
-| 201           | Bad Request LLM        |
-| 202           | LLM Request Timeout    |
-| 301           | internal compile error |
-
-### Response Structure
-
-#### Error Response
+### Error Response
 
 when error happen the response json need contain `errorCode`：
 
 ```json
 {
-  "errorCode": "errorCodeID"
+  "body": {
+    "errorMessage": "Error Content "
+  }
 }
 ```
+
+### Normal Response
 
 if no error
 
 ```json
 {
-  "imgsrc": "data:image/png;base64,base64EncodingString",
-  "errorCode": ""
+  "body": {
+    "s3_object_name": "xxx.png",
+    "errorMessage": ""
+  }
 }
 ```
 
@@ -71,7 +123,34 @@ example
 
 ```json
 {
-  "imageSrc": "data:image/png;base64,iVBORw0KGgoAmQAAmQAAmQAAnECQEKP3G...466430 more characters",
-  "errorCode": ""
+  "body": {
+    "s3_object_name": "aws_frontend_test.png",
+    "errorMessage": "",
+    "AIMessage": "成功修改您的要求"
+  }
+}
+```
+
+# Conversation Request and Response Formats
+
+## Request Format
+
+```json
+{
+  "body": {
+    "prompt": "user input message"
+  }
+}
+```
+
+## Response Format
+
+```json
+{
+  "body": {
+    "s3_object_name": "xxx.png",
+    "errorMessage": "errorMessage",
+    "AIMessage": "AIMessage for user"
+  }
 }
 ```

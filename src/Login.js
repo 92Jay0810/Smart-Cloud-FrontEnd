@@ -20,7 +20,8 @@ function Login({ onLogin }) {
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit}>
-        <h2>登入</h2>
+        <h2>測試通道</h2>
+        <h3>供快速測試使用</h3>
         <input
           type="text"
           placeholder="使用者名稱"
