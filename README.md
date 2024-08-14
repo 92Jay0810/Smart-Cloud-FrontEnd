@@ -67,6 +67,10 @@ Example request format for networking, computing, database, storage, and securit
 
 ```json
 {
+  "headers": {
+    "Content-Type": "application/json",
+    "authorizationToken": "accessToken"
+  },
   "body": {
     "0-0": "SharedVpc",
     "0-1": "OpenServiceNo",
@@ -100,10 +104,6 @@ when error happen the response json need contain `errorCode`：
 
 ```json
 {
-  "headers": {
-    "Content-Type": "application/json",
-    "authorizationToken": "accessToken"
-  },
   "body": {
     "errorMessage": "Error Content "
   }
@@ -143,6 +143,9 @@ example
 
 ```json
 {
+  "headers": {
+    "Content-Type": "application/json"
+  },
   "body": {
     "prompt": "user input message"
   }
