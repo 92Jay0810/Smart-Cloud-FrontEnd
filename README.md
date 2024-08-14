@@ -64,12 +64,13 @@
 | 4-2                   | PersonalInformationNo     |
 
 Example request format for networking, computing, database, storage, and security specifications:
+**_"authorizationToken": "accessToken" in header maybe cause error in testing_**
 
 ```json
 {
   "headers": {
-    "Content-Type": "application/json",
-    "authorizationToken": "accessToken"
+    "authorizationToken": "accessToken",
+    "Content-Type": "application/json"
   },
   "body": {
     "0-0": "SharedVpc",
@@ -96,6 +97,8 @@ Example request format for networking, computing, database, storage, and securit
 }
 ```
 
+- authorizationToken for Api Gateway Authorizer sourceToken
+
 ## Response Format
 
 ### Error Response
@@ -109,8 +112,6 @@ when error happen the response json need contain `errorCode`：
   }
 }
 ```
-
-- authorizationToken for Api Gateway Authorizer sourceToken
 
 ### Normal Response
 
@@ -140,6 +141,8 @@ example
 # Conversation Request and Response Formats
 
 ## Request Format
+
+**we can add seesion id in future**
 
 ```json
 {

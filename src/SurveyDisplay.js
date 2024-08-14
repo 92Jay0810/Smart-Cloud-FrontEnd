@@ -211,7 +211,7 @@ function SurveyDisplay() {
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
       const formattedAnswers = {
         ...transformAnswers(answers),
-        timestamp: timestamp, // 加入自定义格式的时间戳
+        timestamp: timestamp, // 自定義的timestamp
       };
       console.log("轉換後的答案：", formattedAnswers);
       //用Cognito登陸成功，會回傳access Token，儲放在localStorage
@@ -222,8 +222,8 @@ function SurveyDisplay() {
           response = await fetch(url, {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
               authorizationToken: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(formattedAnswers),
           });
@@ -237,8 +237,9 @@ function SurveyDisplay() {
           });
         }
         const responseData = await response.json();
+        console.log("responseData :", responseData);
         const data = responseData.body;
-        console.log(data);
+        console.log("responseData 的body：", data);
         setApiResponse(data);
         if (data?.s3_object_name) {
           setImageUrl(
