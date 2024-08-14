@@ -225,7 +225,7 @@ function SurveyDisplay() {
               "Content-Type": "application/json",
               Authorization: `Bearer ${accessToken}`,
             },
-            body: JSON.stringify(answers),
+            body: JSON.stringify(formattedAnswers),
           });
         } else {
           response = await fetch(url, {
@@ -233,7 +233,7 @@ function SurveyDisplay() {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(answers),
+            body: JSON.stringify(formattedAnswers),
           });
         }
         const responseData = await response.json();
