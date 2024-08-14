@@ -223,7 +223,7 @@ function SurveyDisplay() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
+              authorizationToken: `Bearer ${accessToken}`,
             },
             body: JSON.stringify(formattedAnswers),
           });

@@ -100,11 +100,17 @@ when error happen the response json need contain `errorCode`：
 
 ```json
 {
+  "headers": {
+    "Content-Type": "application/json",
+    "authorizationToken": "accessToken"
+  },
   "body": {
     "errorMessage": "Error Content "
   }
 }
 ```
+
+- authorizationToken for Api Gateway Authorizer sourceToken
 
 ### Normal Response
 
