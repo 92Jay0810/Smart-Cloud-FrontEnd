@@ -240,7 +240,7 @@ function SurveyDisplay() {
         const data = responseData.body;
         console.log(data);
         setApiResponse(data);
-        if (data.s3_object_name) {
+        if (data?.s3_object_name) {
           setImageUrl(
             baseurl + "/diagram-as-code-output/" + data.s3_object_name
           );
