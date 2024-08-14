@@ -14,24 +14,30 @@ const poolData = {
 const userPool = new CognitoUserPool(poolData);
 
 const AWSLogin = ({ onLogin }) => {
-  const [username, setUsername] = useState("");
+  const [isEmailLogin, setIsEmailLogin] = useState(false); // 是否使用emails
+  const [identifier, setIdentifier] = useState(""); // 儲存usrname or email
   const [password, setPassword] = useState("");
 
   const signIn = (event) => {
     event.preventDefault();
     const authenticationDetails = new AuthenticationDetails({
-      Username: username,
+      Username: identifier,
       Password: password,
     });
 
     const cognitoUser = new CognitoUser({
-      Username: username,
+      Username: identifier,
       Pool: userPool,
     });
 
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
         console.log("Successfully logged in");
+        // 获取 Access Token
+        const accessToken = result.getAccessToken().getJwtToken();
+        console.log("accessToken：" + accessToken);
+        // 将 Access Token 存储在 localStorage 中
+        localStorage.setItem("accessToken", accessToken);
         // 在這裡處理成功登錄後的邏輯，例如重定向到主頁
         onLogin();
       },
@@ -51,13 +57,30 @@ const AWSLogin = ({ onLogin }) => {
   return (
     <div className="login-container">
       <form onSubmit={signIn}>
-        <h2>AWS Cogonito登陸介面</h2>
-        <h3>請先在Cogonito user pool建立使用者</h3>
+        <h1>AWS Cogonito Login</h1>
+        <p>please create user in Cogonito user pool before login</p>
+        <h3>choose a Login identifier</h3>
+        <div className="button-group">
+          <button
+            type="button"
+            className={!isEmailLogin ? "active" : ""}
+            onClick={() => setIsEmailLogin(false)}
+          >
+            Username
+          </button>
+          <button
+            type="button"
+            className={isEmailLogin ? "active" : ""}
+            onClick={() => setIsEmailLogin(true)}
+          >
+            Email
+          </button>
+        </div>
         <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
+          type={isEmailLogin ? "email" : "text"}
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
+          placeholder={isEmailLogin ? "Email" : "Username"}
           required
         />
         <input

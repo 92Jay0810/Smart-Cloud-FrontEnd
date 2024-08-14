@@ -128,7 +128,7 @@ function SurveyDisplay() {
 
   //saveDialog
   const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [fileName, setFileName] = useState("architecture_diagram.png");
+  const [fileName, setFileName] = useState("");
 
   // 從 cookie 讀取答案
   useEffect(() => {
@@ -162,10 +162,10 @@ function SurveyDisplay() {
   };
 
   //處理選擇選項
-  const handleOptionSelect = (categoryIndex, questionIndex, option) => {
+  const handleOptionSelect = (categoryIndex, questionIndex, optionIndex) => {
     const newAnswers = {
       ...answers,
-      [`${categoryIndex}-${questionIndex}`]: option,
+      [`${categoryIndex}-${questionIndex}`]: optionIndex,
     };
     setAnswers(newAnswers);
     // 將新的答案保存到 cookie 中
@@ -214,15 +214,28 @@ function SurveyDisplay() {
         timestamp: timestamp, // 加入自定义格式的时间戳
       };
       console.log("轉換後的答案：", formattedAnswers);
+      //用Cognito登陸成功，會回傳access Token，儲放在localStorage
+      const accessToken = localStorage.getItem("accessToken");
       try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formattedAnswers),
-        });
-
+        let response = "";
+        if (accessToken) {
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify(answers),
+          });
+        } else {
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(answers),
+          });
+        }
         const responseData = await response.json();
         const data = responseData.body;
         console.log(data);
@@ -248,68 +261,49 @@ function SurveyDisplay() {
   //將Answers格式轉換，交給後端
   const transformAnswers = (answers) => {
     const result = {};
-    const componentMappings = {
-      "是否需要用到GPU?": "GPU",
-      "資料是否需要快取記憶？": "Cache",
-      "資料是否需要高可用配置?": "HighAvailabilityDatabase",
-      "系統是否需要使用共享儲存裝置？(如NFS)": "SharedStorage",
-      "系統是否有大於1GB的檔案存放(如文件、圖片、影片、音樂)？":
-        "LargeFileStorage",
-      "儲存是否需高可用配置？": "HighAvailabilityStorage",
-      "是否需要硬體安全模組(HSM) ?": "HSM",
-      "是否有高安全需求？": "HighSecurity",
-      "是否有個資需要額外保護？": "PersonalDataProtection",
-      "系統是否公開服務給外部網路(Internet)？": "PublicService",
-      "系統是否本身無公開位址(Public IP)，但需要存取到外部網路(Internet)？":
-        "NAT",
-      "系統是否需要靜態網頁快取(Cache)？": "StaticWebCache",
+    const mappings = {
+      "0-0": ["SharedVpc", "SelfBuildVpc"],
+      "0-1": ["OpenServiceYes", "OpenServiceNo"],
+      "0-2": ["CloudDns", "SelfBuildDns", "DnsNo"],
+      "0-3": ["ExternalServiceYes", "ExternalServiceNo"],
+      "0-4": ["WebCacheYes", "WebCacheNo"],
+      "0-5": [
+        "ConnectionOnpremise",
+        "ConnectionSamePlatform",
+        "ConnectionCrossPlatform",
+      ],
+      "1-0": [
+        "ArchitectureMicroservices",
+        "ArchitectureNtier",
+        "ArchitectureEbaf",
+        "ArchitectureMonolith",
+      ],
+      "1-1": ["ServiceLess10", "ServiceOver10"],
+      "1-2": ["Stateful", "Statless"],
+      "1-3": ["GpuYes", "GpuNo"],
+      "2-0": [
+        "DatabasePostgreSql",
+        "DatabaseMysql",
+        "DatabaseMssql",
+        "DatabaseNoSql",
+      ],
+      "2-1": ["DataCacheYes", "DataCacheNo"],
+      "2-2": ["HighAvailabilityYes", "HighAvailabilityNo"],
+      "3-0": ["ShareStroageYes", "ShareStroageNo"],
+      "3-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
+      "3-2": ["StorageActive", "StroageStandby"],
+      "4-0": ["HsmYes", "HsmNo"],
+      "4-1": ["HighSecuityYes", "HighSecuityNo"],
+      "4-2": ["PersonalInformationYes", "PersonalInformationNo"],
     };
+    Object.keys(answers).forEach((key) => {
+      const optionID = answers[key];
+      const mappedOptions = mappings[key];
 
-    const translations = {
-      共用VPC: "Shared VPC",
-      自建VPC: "Build own VPC",
-      雲端DNS服務: "Cloud service",
-      自建地端DNS服務: "On-premise service",
-      "On-premise": "On-premise",
-      GCP: "GCP",
-      "AWS/ Other": "AWS/Other",
-      Microservices: "Microservices",
-      "N-tier": "N-tier",
-      eBAF: "eBAF",
-      Monolith: "Monolith",
-      "服務數量 < 10": "number of cloud services <10",
-      "服務數量 > 10": "number of cloud services >10",
-      Stateful: "Stateful",
-      Stateless: "Stateless",
-      PostgreSQL: "PostgreSQL",
-      MySQL: "MySQL",
-      "MS SQL": "MS SQL",
-      NoSQL: "NoSQL",
-      "Active/Active": "Active/Active",
-      "Active/Standby": "Active/Standby",
-    };
-
-    survey.forEach((category, categoryIndex) => {
-      //取得前面英文 Category
-      const categoryName = category.category.split(" ")[0];
-      const components = new Set();
-
-      category.questions.forEach((question, questionIndex) => {
-        const answer = answers[`${categoryIndex}-${questionIndex}`];
-        if (answer) {
-          if (answer === "是" && componentMappings[question.question]) {
-            components.add(componentMappings[question.question]);
-          } else if (answer !== "否") {
-            components.add(translations[answer] || answer);
-          }
-        }
-      });
-
-      if (components.size > 0) {
-        result[categoryName] = Array.from(components);
+      if (mappedOptions && mappedOptions[optionID] !== undefined) {
+        result[key] = mappedOptions[optionID];
       }
     });
-
     return result;
   };
 
@@ -535,7 +529,7 @@ function SurveyDisplay() {
                       key={optionIndex}
                       className={`option-button ${
                         answers[`${currentCategoryIndex}-${questionIndex}`] ===
-                        option
+                        optionIndex
                           ? "selected"
                           : ""
                       }`}
@@ -543,7 +537,7 @@ function SurveyDisplay() {
                         handleOptionSelect(
                           currentCategoryIndex,
                           questionIndex,
-                          option
+                          optionIndex
                         )
                       }
                     >

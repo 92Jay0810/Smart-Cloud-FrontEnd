@@ -4,40 +4,50 @@
   align-items: center;
   width: 100%;
   height: 60vh;
+  background: #f4f7f6; 
 }
 
 .login-container form {
   display: flex;
   flex-direction: column;
-  width: 40%;
+  width: 30%;
   padding: 30px;
-  background:#B3CBB9;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  background: #ffffff; 
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  backdrop-filter: blur(8px);
 }
 
 .login-container h2 {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 24px;
+  font-size: 28px; 
+  color: #333; 
 }
 
 .login-container p {
-  color: #666;
+  color: #777;
   margin-bottom: 20px;
+  text-align: center; 
 }
 
 .login-container input {
   margin-bottom: 15px;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   font-size: 16px;
+  transition: border-color 0.3s ease;
 }
 
 .login-container input::placeholder {
-  color: #bbb;
+  color: #aaa; 
+}
+
+.login-container input:focus {
+  border-color: #44b787; 
+  outline: none;
 }
 
 .login-container button {
@@ -45,12 +55,38 @@
   background-color: #44b787;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.1s ease, transform 0.1s ease;
 }
 
 .login-container button:hover {
   background-color: #2F9C95;
+  transform: scale(1.02); 
+}
+
+.login-container .button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.login-container .button-group button {
+  width: 48%;
+  font-size: 16px;
+  padding: 10px;
+  background-color: #e0e0e0; 
+  border: 1px solid #ccc;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.login-container .button-group button.active {
+  background-color: #44b787;
+  color: white;
+}
+
+.login-container .button-group button:hover {
+  background-color: #ccc;
 }
