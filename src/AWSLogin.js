@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import "./Login.css";
 import {
   CognitoUserPool,
@@ -17,6 +18,30 @@ const AWSLogin = ({ onLogin }) => {
   const [isEmailLogin, setIsEmailLogin] = useState(false); // 是否使用emails
   const [identifier, setIdentifier] = useState(""); // 儲存usrname or email
   const [password, setPassword] = useState("");
+
+  // 检查是否存在有效的 access token 並且去做自動登陸
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000; //換算成秒
+
+        if (decodedToken.exp > currentTime) {
+          // Token有效，可以自動登陸
+          onLogin();
+        } else {
+          // Token過期，直接移除。
+          localStorage.removeItem("accessToken");
+          alert("Session expired, please log in again.");
+        }
+      } catch (error) {
+        console.error("Failed to decode token", error);
+        localStorage.removeItem("accessToken");
+      }
+    }
+  }, [onLogin]);
 
   const signIn = (event) => {
     event.preventDefault();
