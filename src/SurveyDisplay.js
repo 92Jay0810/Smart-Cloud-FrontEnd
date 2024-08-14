@@ -117,8 +117,8 @@ function SurveyDisplay() {
   //禁止CSSTransition使用findDOMNode，改用Ref，還能改進效能，為每個survey內的類別去Ref
   const categoryRefs = useRef(survey.map(() => React.createRef()));
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
-  //const url = baseurl + "/api/diagram-as-code";
-  const url = "http://localhost:3001";
+  const url = baseurl + "/api/diagram-as-code";
+  //const url = "http://localhost:3001";
   const [imageUrl, setImageUrl] = useState("");
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -233,12 +233,12 @@ function SurveyDisplay() {
           );
         }
         // 清除 cookie 中的答案
-        //setCookie("surveyAnswers", "", -1);
+        setCookie("surveyAnswers", "", -1);
       } catch (error) {
         console.error("Error submitting survey:", error);
         setApiResponse({ error: "提交失敗，請稍後再試。" });
         // 清除 cookie 中的答案
-        //setCookie("surveyAnswers", "", -1);
+        setCookie("surveyAnswers", "", -1);
       }
     } else {
       alert("請回答所有問題後再提交！");
