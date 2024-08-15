@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import { jwtDecode } from "jwt-decode";
 import "./SurveyDisplay.css";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
-import { v4 as uuidv4 } from "uuid";
 const survey = [
   {
     category: "Networking 網路",
@@ -110,12 +108,7 @@ const survey = [
   },
 ];
 
-function SurveyDisplay() {
-  const accessToken = localStorage.getItem("accessToken");
-  const decodedToken = jwtDecode(accessToken);
-  const username = decodedToken.username || decodedToken.email || "User";
-  const user_id = decodedToken.sub;
-  const idToken = localStorage.getItem("idToken");
+function SurveyDisplay({ idToken, user_id, username, session_id }) {
   const [answers, setAnswers] = useState({});
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   //禁止CSSTransition使用findDOMNode，改用Ref，還能改進效能，為每個survey內的類別去Ref
@@ -131,7 +124,6 @@ function SurveyDisplay() {
   const [imageUrl, setImageUrl] = useState("");
 
   //ConversationDialog
-  const [session_id, setsession_id] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
@@ -220,15 +212,12 @@ function SurveyDisplay() {
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      const sessionid = uuidv4();
-      setsession_id(session_id);
-      console.log("Generated UUID (session):", sessionid);
       // 使用 jwt-decode 解碼
       const formattedAnswers = {
         body: {
           query: transformAnswers(answers),
           timestamp: timestamp,
-          session_id: sessionid,
+          session_id: session_id,
           user_id: user_id,
         },
       };

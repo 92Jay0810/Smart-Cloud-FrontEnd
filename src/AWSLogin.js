@@ -35,9 +35,12 @@ const AWSLogin = ({ onLogin }) => {
         console.log("Successfully logged in");
         // 获取 Access Token
         const accessToken = result.getAccessToken().getJwtToken();
-        console.log("accessToken：" + accessToken);
+        console.log("accessToken：", accessToken);
+        const IdToken = result.getIdToken().getJwtToken();
+        console.log("IdToken：", IdToken);
         // 将 Access Token 存储在 localStorage 中
         localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("IdToken", IdToken);
         // 在這裡處理成功登錄後的邏輯，例如重定向到主頁
         onLogin();
       },
