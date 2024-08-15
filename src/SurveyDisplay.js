@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { jwtDecode } from "jwt-decode";
 import "./SurveyDisplay.css";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
@@ -109,17 +110,23 @@ const survey = [
 ];
 
 function SurveyDisplay() {
+  const accessToken = localStorage.getItem("accessToken");
+  const decodedToken = jwtDecode(accessToken);
+  const username = decodedToken.username || decodedToken.email || "User";
   const [answers, setAnswers] = useState({});
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
-  const [apiResponse, setApiResponse] = useState(null);
-  const surveyContainerRef = useRef(null);
   //禁止CSSTransition使用findDOMNode，改用Ref，還能改進效能，為每個survey內的類別去Ref
   const categoryRefs = useRef(survey.map(() => React.createRef()));
+  const surveyContainerRef = useRef(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  const [apiResponse, setApiResponse] = useState(null);
+  //fetch url and show image
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
-  const url = baseurl + "/api/diagram-as-code";
-  //const url = "http://localhost:3001";
+  //const url = baseurl + "/api/diagram-as-code";
+  const url = "http://localhost:3001";
   const [imageUrl, setImageUrl] = useState("");
+
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -238,9 +245,15 @@ function SurveyDisplay() {
         }
         const responseData = await response.json();
         console.log("responseData :", responseData);
-        const data = responseData.body;
+        let data = responseData.body;
         console.log("responseData 的body：", data);
         setApiResponse(data);
+        if (typeof data === "undefined") {
+          data = {
+            errorMessage: "data is undefined",
+          };
+          setApiResponse(data);
+        }
         if (data?.s3_object_name) {
           setImageUrl(
             baseurl + "/diagram-as-code-output/" + data.s3_object_name
@@ -336,7 +349,7 @@ function SurveyDisplay() {
   // HandleConversationSand
   const handleSend = async () => {
     if (inputText.trim() !== "") {
-      const newMessages = [...messages, { sender: "User", text: inputText }];
+      const newMessages = [...messages, { sender: username, text: inputText }];
       setMessages(newMessages);
       setInputText("");
       setLoading(true);
@@ -351,26 +364,32 @@ function SurveyDisplay() {
         const responseData = await response.json();
         const data = responseData.body;
         console.log(data);
-        if (data.errorMessage) {
+        if (typeof data === "undefined") {
+          setMessages([
+            ...newMessages,
+            { sender: "System", text: "Data is undefined" },
+          ]);
+        } else if (data.errorMessage) {
           setMessages([
             ...newMessages,
             { sender: "System", text: "Error occur " + data.errorMessage },
           ]);
+        } else if (data?.s3_object_name && data?.AIMessage) {
+          setImageUrl(
+            baseurl + "/diagram-as-code-output/" + data.s3_object_name
+          );
+          setMessages([
+            ...newMessages,
+            { sender: "System", text: data.AIMessage },
+          ]);
         } else {
-          if (data.s3_object_name) {
-            setImageUrl(
-              baseurl + "/diagram-as-code-output/" + data.s3_object_name
-            );
-            setMessages([
-              ...newMessages,
-              { sender: "System", text: data.AIMessage },
-            ]);
-          } else {
-            setMessages([
-              ...newMessages,
-              { sender: "System", text: "no image fetch" + data.AIMessage },
-            ]);
-          }
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: "bad response format with internal server ",
+            },
+          ]);
         }
       } catch (error) {
         setMessages([
@@ -397,7 +416,7 @@ function SurveyDisplay() {
           unmountOnExit
         >
           <div className="survey-result-container">
-            <h1>感謝您完成調查！</h1>
+            <h1>感謝{username}完成調查！</h1>
             {apiResponse ? (
               apiResponse.errorMessage ? (
                 <>
@@ -405,7 +424,7 @@ function SurveyDisplay() {
                 </>
               ) : (
                 <>
-                  <h2>恭喜!，您的架構圖如下</h2>
+                  <h2>恭喜!，{username}的架構圖如下</h2>
                   {apiResponse.s3_object_name ? (
                     <>
                       <div className="button-container">
@@ -426,12 +445,21 @@ function SurveyDisplay() {
                       </div>
                     </>
                   ) : (
-                    <p className="error-message">圖片解析失敗</p>
+                    <p className="error-message">
+                      沒有架構圖回傳，圖片解析失敗
+                    </p>
                   )}
                 </>
               )
             ) : (
-              <p>您的架構圖正在產生</p>
+              <>
+                <p>{username}的架構圖正在產生</p>
+                <div className="loading-dots">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </div>
+              </>
             )}
           </div>
         </CSSTransition>
@@ -459,11 +487,13 @@ function SurveyDisplay() {
                 {messages.map((msg, index) => (
                   <div
                     key={index}
-                    className={`dialog-message ${msg.sender.toLowerCase()}`}
+                    className={`dialog-message ${
+                      msg.sender === "System" ? "system" : "user"
+                    }`}
                   >
                     <img
-                      src={msg.sender === "User" ? userImg : systemImg}
-                      alt={`${msg.sender}Img`}
+                      src={msg.sender === "System" ? systemImg : userImg}
+                      alt={`${msg.sender === "System" ? "System" : "User"}Img`}
                       className="avatar"
                     />
                     <strong>{msg.sender}:</strong> {msg.text}
@@ -505,6 +535,7 @@ function SurveyDisplay() {
   return (
     <div className="survey-container" ref={surveyContainerRef}>
       <h1>雲端架構圖服務調查</h1>
+      <p>歡迎，{username}！</p>
       <TransitionGroup>
         <CSSTransition
           key={currentCategoryIndex}
