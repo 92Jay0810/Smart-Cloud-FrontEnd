@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import "./SurveyDisplay.css";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
+import { v4 as uuidv4 } from "uuid";
 const survey = [
   {
     category: "Networking 網路",
@@ -113,6 +114,8 @@ function SurveyDisplay() {
   const accessToken = localStorage.getItem("accessToken");
   const decodedToken = jwtDecode(accessToken);
   const username = decodedToken.username || decodedToken.email || "User";
+  const user_id = decodedToken.sub;
+  const idToken = localStorage.getItem("idToken");
   const [answers, setAnswers] = useState({});
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   //禁止CSSTransition使用findDOMNode，改用Ref，還能改進效能，為每個survey內的類別去Ref
@@ -123,11 +126,12 @@ function SurveyDisplay() {
   const [apiResponse, setApiResponse] = useState(null);
   //fetch url and show image
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
-  //const url = baseurl + "/api/diagram-as-code";
-  const url = "http://localhost:3001";
+  const url = baseurl + "/api/diagram-as-code";
+  //const url = "http://localhost:3001";
   const [imageUrl, setImageUrl] = useState("");
 
   //ConversationDialog
+  const [session_id, setsession_id] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
@@ -216,33 +220,30 @@ function SurveyDisplay() {
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+      const sessionid = uuidv4();
+      setsession_id(session_id);
+      console.log("Generated UUID (session):", sessionid);
+      // 使用 jwt-decode 解碼
       const formattedAnswers = {
-        ...transformAnswers(answers),
-        timestamp: timestamp, // 自定義的timestamp
+        body: {
+          query: transformAnswers(answers),
+          timestamp: timestamp,
+          session_id: sessionid,
+          user_id: user_id,
+        },
       };
-      console.log("轉換後的答案：", formattedAnswers);
-      //用Cognito登陸成功，會回傳access Token，儲放在localStorage
-      const accessToken = localStorage.getItem("accessToken");
+      console.log(formattedAnswers);
+
       try {
         let response = "";
-        if (accessToken) {
-          response = await fetch(url, {
-            method: "POST",
-            headers: {
-              authorizationToken: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formattedAnswers),
-          });
-        } else {
-          response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formattedAnswers),
-          });
-        }
+        response = await fetch(url, {
+          method: "POST",
+          headers: {
+            authorizationToken: `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedAnswers),
+        });
         const responseData = await response.json();
         console.log("responseData :", responseData);
         let data = responseData.body;
@@ -353,13 +354,28 @@ function SurveyDisplay() {
       setMessages(newMessages);
       setInputText("");
       setLoading(true);
+      const now = new Date();
+      const timestamp =
+        now.getFullYear().toString() + // 年份
+        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+        now.getDate().toString().padStart(2, "0") + // 日期
+        now.getHours().toString().padStart(2, "0") + // 小时
+        now.getMinutes().toString().padStart(2, "0") + // 分钟
+        now.getSeconds().toString().padStart(2, "0") + // 秒
+        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
       try {
         const response = await fetch(url + "/api", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            authorizationToken: `Bearer ${idToken}`,
           },
-          body: JSON.stringify({ prompt: inputText }),
+          body: JSON.stringify({
+            prompt: inputText,
+            timestamp: timestamp,
+            session_id: session_id,
+            user_id: user_id,
+          }),
         });
         const responseData = await response.json();
         const data = responseData.body;

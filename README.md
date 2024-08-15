@@ -64,35 +64,38 @@
 | 4-2                   | PersonalInformationNo     |
 
 Example request format for networking, computing, database, storage, and security specifications:
-**_"authorizationToken": "accessToken" in header maybe cause error in testing_**
 
 ```json
 {
   "headers": {
-    "authorizationToken": "accessToken",
+    "authorizationToken": "idToken",
     "Content-Type": "application/json"
   },
   "body": {
-    "0-0": "SharedVpc",
-    "0-1": "OpenServiceNo",
-    "0-2": "SelfBuildDns",
-    "0-3": "ExternalServiceNo",
-    "0-4": "WebCacheYes",
-    "0-5": "ConnectionSamePlatform",
-    "1-0": "ArchitectureEbaf",
-    "1-1": "ServiceOver10",
-    "1-2": "Stateful",
-    "1-3": "GpuYes",
-    "2-0": "DatabaseMssql",
-    "2-1": "DataCacheNo",
-    "2-2": "HighAvailabilityYes",
-    "3-0": "ShareStroageNo",
-    "3-1": "DocumentOver2GbNo",
-    "3-2": "StroageStandby",
-    "4-0": "HsmYes",
-    "4-1": "HighSecuityYes",
-    "4-2": "PersonalInformationNo",
-    "timestamp": "20240814152928090"
+    "query": {
+      "0-0": "SelfBuildVpc",
+      "0-1": "OpenServiceYes",
+      "0-2": "CloudDns",
+      "0-3": "ExternalServiceYes",
+      "0-4": "WebCacheYes",
+      "0-5": "ConnectionOnpremise",
+      "1-0": "ArchitectureNtier",
+      "1-1": "ServiceLess10",
+      "1-2": "Stateful",
+      "1-3": "GpuYes",
+      "2-0": "DatabasePostgreSql",
+      "2-1": "DataCacheYes",
+      "2-2": "HighAvailabilityYes",
+      "3-0": "ShareStroageYes",
+      "3-1": "DocumentOver2GbNo",
+      "3-2": "StroageStandby",
+      "4-0": "HsmYes",
+      "4-1": "HighSecuityYes",
+      "4-2": "PersonalInformationNo"
+    },
+    "session_id": "1234567",
+    "timestamp": "20240815155244",
+    "user_id": "09003903222"
   }
 }
 ```
@@ -126,18 +129,6 @@ if no error
 }
 ```
 
-example
-
-```json
-{
-  "body": {
-    "s3_object_name": "aws_frontend_test.png",
-    "errorMessage": "",
-    "AIMessage": "成功修改您的要求"
-  }
-}
-```
-
 # Conversation Request and Response Formats
 
 ## Request Format
@@ -150,7 +141,10 @@ example
     "Content-Type": "application/json"
   },
   "body": {
-    "prompt": "user input message"
+    "prompt": "user input message",
+    "session_id": "1234567",
+    "timestamp": "20240815155244",
+    "user_id": "09003903222"
   }
 }
 ```

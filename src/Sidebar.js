@@ -1,7 +1,6 @@
 import React from "react";
 import "./Sidebar.css";
 import logo from "./assets/cathay.png";
-
 const Sidebar = () => {
   return (
     <div className="sidebar">
