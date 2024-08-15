@@ -10,9 +10,6 @@ function App() {
   const [user_id, setuser_id] = useState("");
   const [idToken, setidToken] = useState("");
   const [session_id, setsession_id] = useState("");
-  const tempsessionid = uuidv4();
-  setsession_id(tempsessionid);
-  console.log("Generated UUID (session):", tempsessionid);
   //檢查token，時效內就自動登陸，token過期就remove token
   useEffect(() => {
     const token = localStorage.getItem("IdToken");
@@ -55,6 +52,9 @@ function App() {
     const decodedToken = jwtDecode(accessToken);
     setusername(decodedToken.username || decodedToken.email || "User");
     setuser_id(decodedToken.sub);
+    const tempsessionid = uuidv4();
+    setsession_id(tempsessionid);
+    console.log("Generated UUID (session):", tempsessionid);
     setIsLoggedIn(true);
   }, []);
   return (
