@@ -22,17 +22,19 @@ const AWSLogin = ({ onLogin }) => {
   // 检查是否存在有效的 access token 並且去做自動登陸
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
+    console.log("Checking token:", token);
 
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000; //換算成秒
-
         if (decodedToken.exp > currentTime) {
           // Token有效，可以自動登陸
+          console.log("Token is valid, attempting auto-login");
           onLogin();
         } else {
           // Token過期，直接移除。
+          console.log("Token has expired");
           localStorage.removeItem("accessToken");
           alert("Session expired, please log in again.");
         }
@@ -40,6 +42,8 @@ const AWSLogin = ({ onLogin }) => {
         console.error("Failed to decode token", error);
         localStorage.removeItem("accessToken");
       }
+    } else {
+      console.log("No token found in localStorage");
     }
   }, [onLogin]);
 

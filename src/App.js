@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "./Sidebar";
 import SurveyDisplay from "./SurveyDisplay";
-import Login from "./Login";
 import AWSLogin from "./AWSLogin";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,10 +12,12 @@ function App() {
     setIsLoggedIn(loggedIn);
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
+    console.log("handleLogin called");
     setIsLoggedIn(true);
-  };
-  //{isLoggedIn ? <SurveyDisplay /> : <AWSLogin />}
+    // 增加一個cookie 來表示登陸
+    document.cookie = "loggedIn=true; max-age=3600; path=/";
+  }, []);
   return (
     <div className="app">
       <Sidebar />
@@ -25,7 +26,6 @@ function App() {
       ) : (
         <>
           <AWSLogin onLogin={handleLogin} />
-          <Login onLogin={handleLogin} />
         </>
       )}
     </div>
