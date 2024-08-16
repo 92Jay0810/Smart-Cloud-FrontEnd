@@ -3,13 +3,13 @@ import Sidebar from "./Sidebar";
 import SurveyDisplay from "./SurveyDisplay";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";
-import { v4 as uuidv4 } from "uuid";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setusername] = useState("");
   const [user_id, setuser_id] = useState("");
   const [idToken, setidToken] = useState("");
-  const [session_id, setsession_id] = useState("");
+  //重製用
+  const [resetTrigger, setResetTrigger] = useState(0);
   //檢查token，時效內就自動登陸，token過期就remove token
   useEffect(() => {
     const token = localStorage.getItem("IdToken");
@@ -20,6 +20,11 @@ function App() {
         if (decodedToken.exp > currentTime) {
           // Token有效，可以自動登陸
           console.log("Token is valid, attempting auto-login");
+          setidToken(token);
+          const accessToken = localStorage.getItem("accessToken");
+          const decodedToken = jwtDecode(accessToken);
+          setusername(decodedToken.username || decodedToken.email || "User");
+          setuser_id(decodedToken.sub);
           setIsLoggedIn(true);
         } else {
           // Token過期，直接移除Token。
@@ -52,20 +57,20 @@ function App() {
     const decodedToken = jwtDecode(accessToken);
     setusername(decodedToken.username || decodedToken.email || "User");
     setuser_id(decodedToken.sub);
-    const tempsessionid = uuidv4();
-    setsession_id(tempsessionid);
-    console.log("Generated UUID (session):", tempsessionid);
     setIsLoggedIn(true);
+  }, []);
+  const handleReset = useCallback(() => {
+    setResetTrigger((prev) => prev + 1);
   }, []);
   return (
     <div className="app">
-      <Sidebar />
+      <Sidebar onReset={handleReset} />
       {isLoggedIn ? (
         <SurveyDisplay
           idToken={idToken}
           user_id={user_id}
           username={username}
-          session_id={session_id}
+          resetTrigger={resetTrigger}
         />
       ) : (
         <>

@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./SurveyDisplay.css";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
+import { v4 as uuidv4 } from "uuid";
 const survey = [
   {
     category: "Networking 網路",
@@ -108,39 +109,7 @@ const survey = [
   },
 ];
 
-function SurveyDisplay({ idToken, user_id, username, session_id }) {
-  const [answers, setAnswers] = useState({});
-  const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
-  //禁止CSSTransition使用findDOMNode，改用Ref，還能改進效能，為每個survey內的類別去Ref
-  const categoryRefs = useRef(survey.map(() => React.createRef()));
-  const surveyContainerRef = useRef(null);
-  const [submitted, setSubmitted] = useState(false);
-
-  const [apiResponse, setApiResponse] = useState(null);
-  //fetch url and show image
-  const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
-  const url = baseurl + "/api/diagram-as-code";
-  //const url = "http://localhost:3001";
-  const [imageUrl, setImageUrl] = useState("");
-
-  //ConversationDialog
-  const [showDialog, setShowDialog] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  //saveDialog
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [fileName, setFileName] = useState("");
-
-  // 從 cookie 讀取答案
-  useEffect(() => {
-    const savedAnswers = getCookie("surveyAnswers");
-    if (savedAnswers) {
-      setAnswers(JSON.parse(savedAnswers));
-    }
-  }, []);
-
+function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   // 讀取 cookie 的函數
   const getCookie = (name) => {
     const nameEQ = name + "=";
@@ -163,6 +132,118 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
     }
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
   };
+  // 重置函數
+  const resetSurvey = useCallback(() => {
+    setSubmitted(false);
+    setApiResponseReceived(false);
+    seterrorMessage("");
+    setImageUrl("");
+    setMessages([]);
+    const newSessionId = uuidv4();
+    console.log("New Session ID generated:", newSessionId);
+    setSession_id(newSessionId);
+    // 清除相關的 cookie
+    setCookie("session_id", newSessionId);
+    setCookie("submitted", "", -1);
+    setCookie("apiResponseReceived", "", -1);
+    setCookie("errorMessage", "", -1);
+    setCookie("imageUrl", "", -1);
+    setCookie("messages", "", -1);
+    setCookie("surveyAnswers", "", -1);
+    // 重置其他相關狀態
+    setAnswers({});
+    setCurrentCategoryIndex(0);
+    setShowDialog(false);
+    setInputText("");
+    setLoading(false);
+    setShowDialog(false);
+    setFileName("");
+  }, []);
+
+  // 監聽 resetTrigger 的變化
+  useEffect(() => {
+    if (resetTrigger > 0) {
+      resetSurvey();
+    }
+  }, [resetTrigger, resetSurvey]);
+
+  //service
+  const [answers, setAnswers] = useState(() => {
+    const savedAnswers = getCookie("surveyAnswers");
+
+    return savedAnswers ? JSON.parse(savedAnswers) : {};
+  }, []);
+
+  const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
+  const categoryRefs = useRef(survey.map(() => React.createRef()));
+  const surveyContainerRef = useRef(null);
+
+  // need store in cookie and read
+
+  const [session_id, setSession_id] = useState(() => {
+    const saved = getCookie("session_id");
+    if (saved) {
+      return saved;
+    } else {
+      const newSessionId = uuidv4();
+      setCookie("session_id", newSessionId);
+      return newSessionId;
+    }
+  });
+  const [submitted, setSubmitted] = useState(() => {
+    const saved = getCookie("submitted");
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [apiResponseReceived, setApiResponseReceived] = useState(() => {
+    const saved = getCookie("apiResponseReceived");
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [errorMessage, seterrorMessage] = useState(() => {
+    const saved = getCookie("errorMessage");
+    return saved ? saved : "";
+  });
+  const [imageUrl, setImageUrl] = useState(() => {
+    return getCookie("imageUrl") || "";
+  });
+  const [messages, setMessages] = useState(() => {
+    const saved = getCookie("messages");
+    return saved ? JSON.parse(saved) : [];
+  });
+  // 更新 cookie 的函數
+  const updateCookies = () => {
+    setCookie("submitted", submitted);
+    setCookie("apiResponseReceived", apiResponseReceived);
+    setCookie("errorMessage", errorMessage);
+    setCookie("imageUrl", imageUrl);
+    setCookie("messages", messages);
+    setCookie("session_id", session_id);
+  };
+
+  // 在狀態更新時更新 cookie
+  useEffect(() => {
+    updateCookies();
+  }, [
+    submitted,
+    apiResponseReceived,
+    errorMessage,
+    imageUrl,
+    messages,
+    session_id,
+  ]);
+
+  //fetch url and show image
+  const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
+  const url = baseurl + "/api/diagram-as-code";
+  //const url = "http://localhost:3001";
+
+  //ConversationDialog
+  const [showDialog, setShowDialog] = useState(false);
+  const [inputText, setInputText] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  //saveDialog
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [fileName, setFileName] = useState("");
 
   //處理選擇選項
   const handleOptionSelect = (categoryIndex, questionIndex, optionIndex) => {
@@ -193,6 +274,7 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
       setCurrentCategoryIndex(currentCategoryIndex - 1);
     }
   };
+
   //注意url，可能在local測試或是s3測試，s3要放在cloudFront才能執行
   //最後注意是否有清除cookie
   const handleSubmit = async () => {
@@ -212,7 +294,6 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      // 使用 jwt-decode 解碼
       const formattedAnswers = {
         body: {
           query: transformAnswers(answers),
@@ -221,8 +302,7 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
           user_id: user_id,
         },
       };
-      console.log(formattedAnswers);
-
+      console.log("傳送格式:\n", formattedAnswers);
       try {
         let response = "";
         response = await fetch(url, {
@@ -237,12 +317,10 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
         console.log("responseData :", responseData);
         let data = responseData.body;
         console.log("responseData 的body：", data);
-        setApiResponse(data);
+        setApiResponseReceived(true);
         if (typeof data === "undefined") {
-          data = {
-            errorMessage: "data is undefined",
-          };
-          setApiResponse(data);
+          seterrorMessage("data is not find any body");
+          setApiResponseReceived(true);
         }
         if (data?.s3_object_name) {
           setImageUrl(
@@ -253,7 +331,8 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
         setCookie("surveyAnswers", "", -1);
       } catch (error) {
         console.error("Error submitting survey:", error);
-        setApiResponse({ error: "提交失敗，請稍後再試。" });
+        setApiResponseReceived(true);
+        seterrorMessage("提交失敗，請稍後再試。");
         // 清除 cookie 中的答案
         setCookie("surveyAnswers", "", -1);
       }
@@ -316,7 +395,7 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
   };
 
   const saveFile = async () => {
-    if (apiResponse && imageUrl) {
+    if (apiResponseReceived && imageUrl) {
       try {
         const response = await fetch(imageUrl);
         const blob = await response.blob();
@@ -352,8 +431,17 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+      console.log(
+        "傳送格式:\n",
+        JSON.stringify({
+          prompt: inputText,
+          session_id: session_id,
+          timestamp: timestamp,
+          user_id: user_id,
+        })
+      );
       try {
-        const response = await fetch(url + "/api", {
+        const response = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -361,14 +449,15 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
           },
           body: JSON.stringify({
             prompt: inputText,
-            timestamp: timestamp,
             session_id: session_id,
+            timestamp: timestamp,
             user_id: user_id,
           }),
         });
         const responseData = await response.json();
+        console.log("responseData :", responseData);
         const data = responseData.body;
-        console.log(data);
+        console.log("responseData 的body：", data);
         if (typeof data === "undefined") {
           setMessages([
             ...newMessages,
@@ -422,15 +511,15 @@ function SurveyDisplay({ idToken, user_id, username, session_id }) {
         >
           <div className="survey-result-container">
             <h1>感謝{username}完成調查！</h1>
-            {apiResponse ? (
-              apiResponse.errorMessage ? (
+            {apiResponseReceived ? (
+              errorMessage ? (
                 <>
-                  <p className="error-message">{apiResponse.errorMessage}</p>
+                  <p className="error-message">{errorMessage}</p>
                 </>
               ) : (
                 <>
                   <h2>恭喜!，{username}的架構圖如下</h2>
-                  {apiResponse.s3_object_name ? (
+                  {imageUrl ? (
                     <>
                       <div className="button-container">
                         <button onClick={handleSaveFile}>Save File</button>

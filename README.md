@@ -93,9 +93,9 @@ Example request format for networking, computing, database, storage, and securit
       "4-1": "HighSecuityYes",
       "4-2": "PersonalInformationNo"
     },
-    "session_id": "1234567",
-    "timestamp": "20240815155244",
-    "user_id": "09003903222"
+    "session_id": "93ab9d74-de47-466d-aa95-bdef291bfed7",
+    "timestamp": "20240816091444209",
+    "user_id": "a9fac56c-a0b1-70f2-8745-2271e009c474"
   }
 }
 ```

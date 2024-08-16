@@ -1,7 +1,11 @@
 import React from "react";
 import "./Sidebar.css";
 import logo from "./assets/cathay.png";
-const Sidebar = () => {
+const Sidebar = ({ onReset }) => {
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    onReset();
+  };
   return (
     <div className="sidebar">
       <div className="logo">
@@ -12,7 +16,9 @@ const Sidebar = () => {
       <nav>
         <ul>
           <li>
-            <a href="#home">Home</a>
+            <a href="#home" onClick={handleHomeClick}>
+              Home
+            </a>
           </li>
           <li>
             <a href="#survey">Survey</a>
