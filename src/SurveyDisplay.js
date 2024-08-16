@@ -206,8 +206,13 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
     return getCookie("imageUrl") || "";
   });
   const [messages, setMessages] = useState(() => {
-    const saved = getCookie("messages");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = getCookie("messages");
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error("Error parsing messages from cookie:", error);
+      return [];
+    }
   });
   // 更新 cookie 的函數
   const updateCookies = () => {
@@ -215,7 +220,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
     setCookie("apiResponseReceived", apiResponseReceived);
     setCookie("errorMessage", errorMessage);
     setCookie("imageUrl", imageUrl);
-    setCookie("messages", messages);
+    setCookie("messages", JSON.stringify(messages));
     setCookie("session_id", session_id);
   };
 
@@ -431,15 +436,15 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      console.log(
-        "傳送格式:\n",
-        JSON.stringify({
+      const consersationRequest = {
+        body: {
           prompt: inputText,
           session_id: session_id,
           timestamp: timestamp,
           user_id: user_id,
-        })
-      );
+        },
+      };
+      console.log("傳送格式:\n", consersationRequest);
       try {
         const response = await fetch(url, {
           method: "POST",
@@ -447,12 +452,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
             "Content-Type": "application/json",
             authorizationToken: `Bearer ${idToken}`,
           },
-          body: JSON.stringify({
-            prompt: inputText,
-            session_id: session_id,
-            timestamp: timestamp,
-            user_id: user_id,
-          }),
+          body: JSON.stringify(consersationRequest),
         });
         const responseData = await response.json();
         console.log("responseData :", responseData);
@@ -524,7 +524,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                       <div className="button-container">
                         <button onClick={handleSaveFile}>Save File</button>
                         <button onClick={handleModifyPromptClick}>
-                          Modity Prompt
+                          Modify Prompt
                         </button>
                       </div>
 
