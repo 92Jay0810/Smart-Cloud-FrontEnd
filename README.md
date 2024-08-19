@@ -72,30 +72,32 @@ Example request format for networking, computing, database, storage, and securit
     "Content-Type": "application/json"
   },
   "body": {
-    "query": {
-      "0-0": "SelfBuildVpc",
-      "0-1": "OpenServiceYes",
-      "0-2": "CloudDns",
-      "0-3": "ExternalServiceYes",
-      "0-4": "WebCacheYes",
-      "0-5": "ConnectionOnpremise",
-      "1-0": "ArchitectureNtier",
-      "1-1": "ServiceLess10",
-      "1-2": "Stateful",
-      "1-3": "GpuYes",
-      "2-0": "DatabasePostgreSql",
-      "2-1": "DataCacheYes",
-      "2-2": "HighAvailabilityYes",
-      "3-0": "ShareStroageYes",
-      "3-1": "DocumentOver2GbNo",
-      "3-2": "StroageStandby",
-      "4-0": "HsmYes",
-      "4-1": "HighSecuityYes",
-      "4-2": "PersonalInformationNo"
-    },
-    "session_id": "93ab9d74-de47-466d-aa95-bdef291bfed7",
-    "timestamp": "20240816091444209",
-    "user_id": "a9fac56c-a0b1-70f2-8745-2271e009c474"
+    "body": {
+      "query": {
+        "0-0": "SelfBuildVpc",
+        "0-1": "OpenServiceYes",
+        "0-2": "CloudDns",
+        "0-3": "ExternalServiceYes",
+        "0-4": "WebCacheYes",
+        "0-5": "ConnectionOnpremise",
+        "1-0": "ArchitectureNtier",
+        "1-1": "ServiceLess10",
+        "1-2": "Stateful",
+        "1-3": "GpuYes",
+        "2-0": "DatabasePostgreSql",
+        "2-1": "DataCacheYes",
+        "2-2": "HighAvailabilityYes",
+        "3-0": "ShareStroageYes",
+        "3-1": "DocumentOver2GbNo",
+        "3-2": "StroageStandby",
+        "4-0": "HsmYes",
+        "4-1": "HighSecuityYes",
+        "4-2": "PersonalInformationNo"
+      },
+      "session_id": "93ab9d74-de47-466d-aa95-bdef291bfed7",
+      "timestamp": "20240816091444209",
+      "user_id": "a9fac56c-a0b1-70f2-8745-2271e009c474"
+    }
   }
 }
 ```
@@ -141,10 +143,12 @@ if no error
     "Content-Type": "application/json"
   },
   "body": {
-    "prompt": "user input message",
-    "session_id": "1234567",
-    "timestamp": "20240815155244",
-    "user_id": "09003903222"
+    "body": {
+      "prompt": "user input message",
+      "session_id": "1234567",
+      "timestamp": "20240815155244",
+      "user_id": "09003903222"
+    }
   }
 }
 ```

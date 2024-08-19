@@ -320,7 +320,11 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         });
         const responseData = await response.json();
         console.log("responseData :", responseData);
-        let data = responseData.body;
+        //確保body裡面是json讀取，後端可能誤傳string
+        let data =
+          typeof responseData.body === "string"
+            ? JSON.parse(responseData.body)
+            : responseData.body;
         console.log("responseData 的body：", data);
         setApiResponseReceived(true);
         if (typeof data === "undefined") {
@@ -328,9 +332,12 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
           setApiResponseReceived(true);
         }
         if (data?.s3_object_name) {
+          console.log("s3_object_name found:", data.s3_object_name);
           setImageUrl(
             baseurl + "/diagram-as-code-output/" + data.s3_object_name
           );
+        } else {
+          console.log("s3_object_name not found");
         }
         // 清除 cookie 中的答案
         setCookie("surveyAnswers", "", -1);
@@ -456,25 +463,40 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         });
         const responseData = await response.json();
         console.log("responseData :", responseData);
-        const data = responseData.body;
+        //確保body裡面是json讀取，後端可能誤傳string
+        let data =
+          typeof responseData.body === "string"
+            ? JSON.parse(responseData.body)
+            : responseData.body;
         console.log("responseData 的body：", data);
         if (typeof data === "undefined") {
           setMessages([
             ...newMessages,
-            { sender: "System", text: "Data is undefined" },
+            { sender: "System", text: "Response Data is undefined" },
           ]);
         } else if (data.errorMessage) {
           setMessages([
             ...newMessages,
             { sender: "System", text: "Error occur " + data.errorMessage },
           ]);
-        } else if (data?.s3_object_name && data?.AIMessage) {
+        } else if (data?.AIMessage) {
+          if (data?.s3_object_name) {
+            setImageUrl(
+              baseurl + "/diagram-as-code-output/" + data.s3_object_name
+            );
+          }
+          setMessages([
+            ...newMessages,
+            { sender: "System", text: data.AIMessage },
+          ]);
+        } //如果只有圖片
+        else if (data?.s3_object_name) {
           setImageUrl(
             baseurl + "/diagram-as-code-output/" + data.s3_object_name
           );
           setMessages([
             ...newMessages,
-            { sender: "System", text: data.AIMessage },
+            { sender: "System", text: "AI no response but return image" },
           ]);
         } else {
           setMessages([
