@@ -472,7 +472,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         if (typeof data === "undefined") {
           setMessages([
             ...newMessages,
-            { sender: "System", text: "Response Data is undefined" },
+            { sender: "System", text: "the format of response is incorrect" },
           ]);
         } else if (data.errorMessage) {
           setMessages([
