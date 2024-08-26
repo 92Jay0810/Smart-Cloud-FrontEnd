@@ -3,6 +3,7 @@ import Sidebar from "./Sidebar";
 import SurveyDisplay from "./SurveyDisplay";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";
+import "./Logout.css";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setusername] = useState("");
@@ -59,6 +60,15 @@ function App() {
     setuser_id(decodedToken.sub);
     setIsLoggedIn(true);
   }, []);
+  const handleLogout = useCallback(() => {
+    console.log("handleLogout called");
+    localStorage.removeItem("IdToken");
+    localStorage.removeItem("accessToken");
+    setIsLoggedIn(false);
+    setusername("");
+    setuser_id("");
+    setidToken("");
+  }, []);
   const handleReset = useCallback(() => {
     setResetTrigger((prev) => prev + 1);
   }, []);
@@ -66,12 +76,17 @@ function App() {
     <div className="app">
       <Sidebar onReset={handleReset} />
       {isLoggedIn ? (
-        <SurveyDisplay
-          idToken={idToken}
-          user_id={user_id}
-          username={username}
-          resetTrigger={resetTrigger}
-        />
+        <>
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+          <SurveyDisplay
+            idToken={idToken}
+            user_id={user_id}
+            username={username}
+            resetTrigger={resetTrigger}
+          />
+        </>
       ) : (
         <>
           <AWSLogin onLogin={handleLogin} />
