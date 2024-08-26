@@ -245,6 +245,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   const [showDialog, setShowDialog] = useState(false);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
   //saveDialog
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -281,7 +282,6 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   };
 
   //注意url，可能在local測試或是s3測試，s3要放在cloudFront才能執行
-  //最後注意是否有清除cookie
   const handleSubmit = async () => {
     const totalQuestions = survey.reduce(
       (sum, category) => sum + category.questions.length,
@@ -336,6 +336,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
           setImageUrl(
             baseurl + "/diagram-as-code-output/" + data.s3_object_name
           );
+          setShowDialog(true);
         } else {
           console.log("s3_object_name not found");
         }
@@ -415,7 +416,10 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         const link = document.createElement("a");
         link.style.display = "none";
         link.href = temp_url;
-        link.download = fileName;
+        const fileNameWithExtension = fileName.endsWith(".png")
+          ? fileName
+          : `${fileName}.png`;
+        link.download = fileNameWithExtension;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -427,6 +431,12 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
       }
     }
   };
+
+  // 當message改變滑動到指定參考位置
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   // HandleConversationSand
   const handleSend = async () => {
     if (inputText.trim() !== "") {
@@ -630,6 +640,8 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                     </div>
                   </div>
                 )}
+                {/* 滑動參考位置當新增message，觸發effect */}
+                <div ref={messagesEndRef} />
               </div>
               <textarea
                 placeholder="Enter your new prompt here..."
