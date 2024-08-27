@@ -607,6 +607,9 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         )}
         {showDialog && (
           <div className="dialog-container">
+            <div className="dialog-close">
+              <button onClick={() => setShowDialog(false)}>Close</button>
+            </div>
             <h3>Modify Your Prompt</h3>
             <div className="dialog-content">
               <div className="dialog-messages">
@@ -617,19 +620,26 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                       msg.sender === "System" ? "system" : "user"
                     }`}
                   >
-                    <img
-                      src={msg.sender === "System" ? systemImg : userImg}
-                      alt={`${msg.sender === "System" ? "System" : "User"}Img`}
-                      className="avatar"
-                    />
-                    <strong>{msg.sender}:</strong> {msg.text}
+                    <div className="avatar-container">
+                      <img
+                        src={msg.sender === "System" ? systemImg : userImg}
+                        alt={`${
+                          msg.sender === "System" ? "System" : "User"
+                        }Img`}
+                        className="avatar"
+                      />
+                    </div>
+                    <div className="message-content">
+                      <strong>{msg.sender}:</strong>
+                      <span>{msg.text}</span>
+                    </div>
                   </div>
                 ))}
                 {loading && (
                   <div className="thinking-dialog">
                     <div className="message-content">
                       <img src={systemImg} alt={systemImg} className="avatar" />
-                      <strong>System:</strong>{" "}
+                      <strong>System:</strong>
                       <div className="thinking-container">
                         <div className="thinking-dots">
                           <div className="thinking-dot"></div>
@@ -643,14 +653,20 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                 {/* 滑動參考位置當新增message，觸發effect */}
                 <div ref={messagesEndRef} />
               </div>
-              <textarea
-                placeholder="Enter your new prompt here..."
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-              ></textarea>
-              <div className="dialog-buttons">
-                <button onClick={handleSend}>Send</button>
-                <button onClick={() => setShowDialog(false)}>Close</button>
+              <div className="chat-input">
+                <textarea
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Enter your new prompt here..."
+                />
+                <button onClick={handleSend}>
+                  <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path
+                      fill="currentColor"
+                      d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                    ></path>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>

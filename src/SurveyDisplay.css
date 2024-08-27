@@ -370,11 +370,11 @@ h3 {
   margin-bottom: 10px;
   padding: 10px;
   overflow-y: auto;
-  scrollbar-color: #98A886 #f1f1f1;
+  scrollbar-color: #BEC5AD;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
-  min-height: 52vh;
-  max-height: 57vh;
+  min-height: 50vh;
+  max-height: 55vh;
 }
 /* scrollbar style */
 .dialog-messages::-webkit-scrollbar {
@@ -384,87 +384,149 @@ h3 {
 /* scrollbar-track style */
 .dialog-messages::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 /* scrollbar-thumb*/
 .dialog-messages::-webkit-scrollbar-thumb {
-  background-color: #98A886;
+  background-color: #BEC5AD ;
   border-radius: 8px;
 }
 
 /* scrollbar-hover */
 .dialog-messages::-webkit-scrollbar-thumb:hover {
-  background-color: #98A886;
+  background-color: #BEC5AD ;
 }
 
 
 .dialog-message {
-  max-width: 100%;
-  word-wrap: break-word;
-}
-
-.dialog-message.user {
-  background-color: #e0ffe0;
-  margin-left: auto;
-  margin-right: 0;
+  display: flex;
+  align-items: flex-start;
   margin-top: 4%;
   margin-bottom: 4%;
   font-size: 16px;
+  max-width: 80%;
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+  box-sizing: border-box;
+  background-color: #daf5e3;
+  text-align: right;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
 }
 
 .dialog-message.system {
-  background-color: #e0e0ff;
+  background-color: #e6e8fa;
   margin-left: 0;
   margin-right: auto;
-  margin-top: 4%;
-  margin-bottom: 4%;
-  font-size: 16px;
+  text-align: left;
+  justify-content: flex-start;
+  flex-direction: row;
 }
 
-.dialog-container textarea {
-  width: 95%;
-  height: 12vh;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-  line-height: 1.4;
-  margin-bottom: 10px;
-  resize: none;
-  transition: all 0.3s ease;
-}
-.dialog-container textarea:focus {
-  transform: scale(1.02);
-  box-shadow: 0 0 8px rgba(68, 183, 135, 0.4);
-}
-
-.dialog-buttons {
+.dialog-message .avatar-container {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
 }
 
-.dialog-container button {
-  padding: 10px 20px;
+.dialog-message .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.dialog-message .message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* 调整文本对齐方式 */
+  margin-left: 10px;
+  width: 100%; /* 确保内容区占满可用宽度 */
+  text-align: right; /* 使文本右对齐 */
+}
+
+.dialog-message .message-content strong {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 4px; /* 给发送者和消息内容之间留出空间 */
+}
+
+.dialog-message .message-content span {
+  color: #555;
+  max-width: 100%;
+  word-wrap: break-word;
+  text-align: right;
+}
+
+.dialog-message.system .message-content {
+  align-items: flex-start; /* 系统消息左对齐 */
+}
+
+
+.chat-input {
+  display: flex;
+  padding: 20px;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+  align-items: center;
+}
+
+.chat-input textarea {
+  flex: 1;
+  border: 1px solid #e0e0e0;
+  border-radius: 24px;
+  padding: 15px 20px;
   font-size: 16px;
+  resize: none;
+  outline: none;
+  min-height: 10vh;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chat-input textarea:focus {
+  border-color: #44b787;
+  box-shadow: 0 4px 10px rgba(76,175,80,0.1);
+}
+
+.chat-input button {
   background-color: #44b787;
-  color: white;
   border: none;
-  border-radius: 8px;
+  color: white;
+  width: 5vh;
+  height: 5vh;
+  border-radius: 50%;
   cursor: pointer;
   margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.dialog-container button:hover {
+.chat-input button:hover {
   background-color: #2F9C95;
+  transform: scale(1.05);
+}
+
+.chat-input button svg {
+  width: 80%;
+  height: 80%;
 }
 
 .thinking-dialog {
-  background-color: #e0e0ff;
+  display: flex;
+  align-items: center;
   margin-left: 0;
   margin-right: auto;
   margin-top: 4%;
   margin-bottom: 4%;
+  background-color: #f0f0f7;
+  padding: 10px;
+  border-radius: 10px;
   font-size: 16px;
 }
 .thinking-container {
@@ -495,10 +557,29 @@ h3 {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
-.avatar {
-  width: 30px;
-  height: 30px;
+.thinking-dialog .avatar {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   margin-right: 10px;
   vertical-align: middle;
+}
+
+.dialog-close {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.dialog-close button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #44b787;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dialog-close button:hover {
+  background-color: #2F9C95;
 }
