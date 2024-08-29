@@ -411,19 +411,26 @@ h3 {
   border-radius: 10px;
   word-wrap: break-word;
   box-sizing: border-box;
-  background-color: #D0CFEC;
-  text-align: right;
+  text-align: left;
   justify-content: flex-end;
   flex-direction: row-reverse;
 }
 
 .dialog-message.system {
-  background-color: #C8C8C8;
+  background-color: #DAE1DE;
   margin-left: 0;
-  margin-right: auto;
+  margin-right: 0;
   text-align: left;
   justify-content: flex-start;
   flex-direction: row;
+}
+
+.dialog-message.user {
+  background-color: #F6EBDF;
+  margin-left: 40px;
+  margin-right: 0;
+  text-align: left;
+  justify-content: flex-start;
 }
 
 .dialog-message .avatar-container {
@@ -440,11 +447,30 @@ h3 {
 }
 
 .dialog-message .message-content {
+  display: block;
+  margin-top: 10px; 
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 90%; /* 確保內容區占滿可用寬度 */
+  white-space: normal; /* 允許長文字換行 */
+}
+
+.dialog-message.system .message-content {
+  display: block; /* 改成 block，確保文本自然流動 */
+  text-align: left; /* 確保文字靠左 */
+  width: 100%; /* 確保內容區占滿可用空間 */
+  white-space: normal; /* 正常換行 */
+  word-wrap: break-word; /* 長單詞換行 */
+}
+
+
+.dialog-message.user .message-content {
   display: flex;
   flex-direction: column;
   margin-left: 10px;
   margin-right: 10px;
   width: 100%; /* 确保内容区占满可用宽度 */
+  white-space: pre-wrap;
 }
 
 .dialog-message .message-content strong {
@@ -453,16 +479,10 @@ h3 {
   margin-bottom: 4px; /* 给发送者和消息内容之间留出空间 */
 }
 
-.dialog-message .message-content span {
-  color: #555;
-  max-width: 100%;
-  word-wrap: break-word;
-  text-align: right;
-}
-
 .dialog-message.system .message-content {
-  align-items: flex-start; /* 系统消息左对齐 */
+  align-items: flex-start; /* 確保內容區域左對齊 */
   text-align: left;
+
 }
 .dialog-message.user .message-content {
   align-items: flex-end; /* 用户消息右对齐 */

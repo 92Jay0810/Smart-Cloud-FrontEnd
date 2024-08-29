@@ -7,8 +7,8 @@
     cursor: pointer;
     font-size: 18px;
     position: absolute;
-    top: 10%;
-    left: 60%;
+    top: 9%;
+    left: 44%;
     transform: translateX(-50%); 
     z-index: 1000;
     transition: background-color 0.3s ease; 

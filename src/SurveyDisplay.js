@@ -4,6 +4,7 @@ import "./SurveyDisplay.css";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
 import { v4 as uuidv4 } from "uuid";
+import loadingImg from "./assets/loading1.gif";
 const survey = [
   {
     category: "Networking 網路",
@@ -239,7 +240,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   //fetch url and show image
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
   const url = baseurl + "/api/diagram-as-code";
-  //const url = "http://localhost:3001";
+  // const url = "http://localhost:3001";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -596,11 +597,10 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
             ) : (
               <>
                 <p>{username}的架構圖正在產生</p>
-                <div className="loading-dots">
-                  <span>.</span>
-                  <span>.</span>
-                  <span>.</span>
+                <div className="loading-container">
+                  <img src={loadingImg} alt="Loading..." className="loading-gif" />
                 </div>
+
               </>
             )}
           </div>
@@ -647,7 +647,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                     </div>
                     <div className="message-content">
                       <strong>{msg.sender}:</strong>
-                      <span>{msg.text}</span>
+                      <p>{msg.text}</p>
                     </div>
                   </div>
                 ))}
@@ -662,6 +662,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                     </div>
                     <div className="message-content">
                       <strong>System:</strong>
+                      <p></p>
                       <div className="thinking-container">
                         <div className="thinking-dots">
                           <div className="thinking-dot"></div>
