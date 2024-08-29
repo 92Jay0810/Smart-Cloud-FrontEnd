@@ -238,8 +238,8 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
 
   //fetch url and show image
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
-  const url = baseurl + "/api/diagram-as-code";
-  //const url = "http://localhost:3001";
+  //const url = baseurl + "/api/diagram-as-code";
+  const url = "http://localhost:3001";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -636,9 +636,15 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                   </div>
                 ))}
                 {loading && (
-                  <div className="thinking-dialog">
+                  <div className="dialog-message system">
+                    <div className="avatar-container">
+                      <img
+                        src={systemImg}
+                        alt={`SystemImg`}
+                        className="avatar"
+                      />
+                    </div>
                     <div className="message-content">
-                      <img src={systemImg} alt={systemImg} className="avatar" />
                       <strong>System:</strong>
                       <div className="thinking-container">
                         <div className="thinking-dots">

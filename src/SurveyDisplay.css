@@ -517,25 +517,7 @@ h3 {
   height: 80%;
 }
 
-.thinking-dialog {
-  display: flex;
-  align-items: center;
-  margin-left: 0;
-  margin-right: auto;
-  margin-top: 4%;
-  margin-bottom: 4%;
-  background-color: #f0f0f7;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 16px;
-}
-.thinking-container {
-  display: flex;
-}
 
-.message-content {
-  display: flex;
-}
 .thinking-dots {
   display: flex;
 }
