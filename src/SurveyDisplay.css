@@ -226,8 +226,9 @@ h3 {
   display: flex;
   flex-direction: row;
   gap: 10px;
-  margin-bottom: 20px;
-  width: 30%;
+  margin-top: 20px;
+  margin-bottom: 10%;
+  width: 60%;
 }
 
 .button-container button {
@@ -278,7 +279,7 @@ h3 {
   background-color: white;
   padding: 30px;
   border-radius: 12px;
-  width: 400px;
+  width: 30%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
@@ -290,7 +291,7 @@ h3 {
 }
 
 .save-dialog-content input {
-  width: 100%;
+  width: 95%;
   padding: 12px;
   margin-bottom: 20px;
   border: 1px solid #e0e0e0;
@@ -405,19 +406,19 @@ h3 {
   margin-top: 4%;
   margin-bottom: 4%;
   font-size: 16px;
-  max-width: 80%;
+  max-width: 90%;
   padding: 10px;
   border-radius: 10px;
   word-wrap: break-word;
   box-sizing: border-box;
-  background-color: #daf5e3;
+  background-color: #D0CFEC;
   text-align: right;
   justify-content: flex-end;
   flex-direction: row-reverse;
 }
 
 .dialog-message.system {
-  background-color: #e6e8fa;
+  background-color: #C8C8C8;
   margin-left: 0;
   margin-right: auto;
   text-align: left;
@@ -441,10 +442,9 @@ h3 {
 .dialog-message .message-content {
   display: flex;
   flex-direction: column;
-  align-items: flex-end; /* 调整文本对齐方式 */
   margin-left: 10px;
+  margin-right: 10px;
   width: 100%; /* 确保内容区占满可用宽度 */
-  text-align: right; /* 使文本右对齐 */
 }
 
 .dialog-message .message-content strong {
@@ -462,6 +462,11 @@ h3 {
 
 .dialog-message.system .message-content {
   align-items: flex-start; /* 系统消息左对齐 */
+  text-align: left;
+}
+.dialog-message.user .message-content {
+  align-items: flex-end; /* 用户消息右对齐 */
+  text-align: right;
 }
 
 

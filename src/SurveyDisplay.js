@@ -251,6 +251,16 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [fileName, setFileName] = useState("");
 
+  // Zoom in/out
+  const [scale, setScale] = useState(1); // 初始縮放比例
+  const handleZoomIn = () => {
+    setScale((prevScale) => Math.min(prevScale + 0.1, 1.5)); // 最大缩放2倍
+  };
+
+  const handleZoomOut = () => {
+    setScale((prevScale) => Math.max(prevScale - 0.1, 0.5)); // 最小缩放0.5倍
+  };
+
   //處理選擇選項
   const handleOptionSelect = (categoryIndex, questionIndex, optionIndex) => {
     const newAnswers = {
@@ -330,6 +340,9 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         if (typeof data === "undefined") {
           seterrorMessage("data is not find any body");
           setApiResponseReceived(true);
+        }
+        if (data?.errorMessage) {
+          seterrorMessage(data.errorMessage);
         }
         if (data?.s3_object_name) {
           console.log("s3_object_name found:", data.s3_object_name);
@@ -558,6 +571,8 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                         <button onClick={handleModifyPromptClick}>
                           Modify Prompt
                         </button>
+                        <button onClick={handleZoomOut}>Zoom out -</button>
+                        <button onClick={handleZoomIn}>Zoom in +</button>
                       </div>
 
                       <div className=".survey-result-content">
@@ -566,6 +581,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                             src={imageUrl}
                             alt="Survey Result"
                             className="survey-image"
+                            style={{ transform: `scale(${scale})` }} // 使用 scale 属性控制缩放
                           />
                         </div>
                       </div>

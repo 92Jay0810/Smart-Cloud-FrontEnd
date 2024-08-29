@@ -34,6 +34,7 @@ function App() {
           localStorage.removeItem("accessToken");
           alert("Session expired, please log in again.");
           setIsLoggedIn(false);
+          handleReset();
         }
       } catch (error) {
         console.error("Failed to decode token", error);
@@ -41,12 +42,14 @@ function App() {
         localStorage.removeItem("IdToken");
         localStorage.removeItem("accessToken");
         setIsLoggedIn(false);
+        handleReset();
       }
     } else {
       console.log("No valid token or cookie found");
       localStorage.removeItem("IdToken");
       localStorage.removeItem("accessToken");
       setIsLoggedIn(false);
+      handleReset();
     }
   }, []);
 
@@ -68,6 +71,7 @@ function App() {
     setusername("");
     setuser_id("");
     setidToken("");
+    handleReset();
   }, []);
   const handleReset = useCallback(() => {
     setResetTrigger((prev) => prev + 1);
