@@ -27,6 +27,9 @@ const Sidebar = ({ onReset }) => {
             <a href="#about">F&Q</a>
           </li>
           <li>
+            <a href="#session">Session</a>
+          </li>
+          <li>
             <a href="#contact">Contact</a>
           </li>
         </ul>
