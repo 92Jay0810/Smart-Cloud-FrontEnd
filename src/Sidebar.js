@@ -24,7 +24,7 @@ const Sidebar = ({ onReset }) => {
             <a href="#survey">Survey</a>
           </li>
           <li>
-            <a href="#about">About</a>
+            <a href="#about">F&Q</a>
           </li>
           <li>
             <a href="#contact">Contact</a>
