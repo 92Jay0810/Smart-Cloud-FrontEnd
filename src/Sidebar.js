@@ -24,7 +24,9 @@ const Sidebar = ({ onReset }) => {
             <a href="#survey">Survey</a>
           </li>
           <li>
-            <a href="#about">F&Q</a>
+            <a href="https://d1fnvwdkrkz29m.cloudfront.net/F&Q/celeste.html">
+              F&Q
+            </a>
           </li>
           <li>
             <a href="#session">Session</a>
