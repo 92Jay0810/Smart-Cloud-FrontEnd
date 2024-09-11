@@ -32,7 +32,9 @@ const Sidebar = ({ onReset }) => {
             <a href="#session">Session</a>
           </li>
           <li>
-            <a href="#contact">Contact</a>
+            <a href="https://d1fnvwdkrkz29m.cloudfront.net/Contact/contact.html">
+              Contact
+            </a>
           </li>
         </ul>
       </nav>

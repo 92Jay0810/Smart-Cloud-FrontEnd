@@ -146,6 +146,7 @@ if no error
     "body": {
       "prompt": "user input message",
       "session_id": "1234567",
+      "autoRevise": "true",
       "timestamp": "20240815155244",
       "user_id": "09003903222"
     }

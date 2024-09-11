@@ -240,13 +240,18 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   //fetch url and show image
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
   const url = baseurl + "/api/diagram-as-code";
-  // const url = "http://localhost:3001";
+  //const url = "http://localhost:3001";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
+  const [autoRevise, setAutoRevise] = useState(false);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  // 切換 autoRevise 狀態的函數
+  const toggleAutoRevise = () => {
+    setAutoRevise((prevState) => !prevState);
+  };
 
   //saveDialog
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -470,6 +475,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
       const consersationRequest = {
         body: {
           prompt: inputText,
+          autoRevise: autoRevise,
           session_id: session_id,
           timestamp: timestamp,
           user_id: user_id,
@@ -598,9 +604,12 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
               <>
                 <p>{username}的架構圖正在產生</p>
                 <div className="loading-container">
-                  <img src={loadingImg} alt="Loading..." className="loading-gif" />
+                  <img
+                    src={loadingImg}
+                    alt="Loading..."
+                    className="loading-gif"
+                  />
                 </div>
-
               </>
             )}
           </div>
@@ -623,6 +632,19 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         )}
         {showDialog && (
           <div className="dialog-container">
+            <div className="toggle-container">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={autoRevise}
+                  onChange={toggleAutoRevise}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+              <p className="toggle-label">
+                Auto Revise is {autoRevise ? "Enabled" : "Disabled"}
+              </p>
+            </div>
             <div className="dialog-close">
               <button onClick={() => setShowDialog(false)}>Close</button>
             </div>
@@ -673,7 +695,6 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                     </div>
                   </div>
                 )}
-                {/* 滑動參考位置當新增message，觸發effect */}
                 <div ref={messagesEndRef} />
               </div>
               <div className="chat-input">

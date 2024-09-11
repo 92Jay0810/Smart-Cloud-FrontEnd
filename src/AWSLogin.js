@@ -60,9 +60,9 @@ const AWSLogin = ({ onLogin }) => {
   return (
     <div className="login-container">
       <form onSubmit={signIn}>
-        <h1>AWS Cogonito Login</h1>
-        <p>please create user in Cogonito user pool before login</p>
-        <h3>choose a Login identifier</h3>
+        <h1>AWS Cognito Login</h1>
+        <p>Please create user in Cogonito user pool before login</p>
+        <h3>Choose a Login identifier</h3>
         <div className="button-group">
           <button
             type="button"
