@@ -96,7 +96,8 @@ Example request format for networking, computing, database, storage, and securit
       },
       "session_id": "93ab9d74-de47-466d-aa95-bdef291bfed7",
       "timestamp": "20240816091444209",
-      "user_id": "a9fac56c-a0b1-70f2-8745-2271e009c474"
+      "user_id": "a9fac56c-a0b1-70f2-8745-2271e009c474",
+      "verify": "true"
     }
   }
 }
@@ -146,7 +147,7 @@ if no error
     "body": {
       "prompt": "user input message",
       "session_id": "1234567",
-      "autoRevise": "true",
+      "verify": "true",
       "timestamp": "20240815155244",
       "user_id": "09003903222"
     }

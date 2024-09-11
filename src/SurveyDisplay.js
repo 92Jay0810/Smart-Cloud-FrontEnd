@@ -475,7 +475,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
       const consersationRequest = {
         body: {
           prompt: inputText,
-          autoRevise: autoRevise,
+          verify: autoRevise,
           session_id: session_id,
           timestamp: timestamp,
           user_id: user_id,
