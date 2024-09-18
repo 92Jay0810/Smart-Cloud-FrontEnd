@@ -1,0 +1,44 @@
+.app {
+  display: flex;
+}
+
+.sidebar {
+  height: 100vh;
+  width: 15%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.mainContent {
+  width: 100%;
+  margin-left: 15%;
+  flex: 1;
+  padding: 20px;
+  background-color: #f4f4f4;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+  
+  .logoutButton {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #086e39;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .logoutButton:hover {
+    background-color: #0056b3;
+  }
+  

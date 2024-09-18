@@ -3,6 +3,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./SurveyDisplay.css";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
+import close from "./assets/grey close.png";
 import { v4 as uuidv4 } from "uuid";
 import loadingImg from "./assets/loading1.gif";
 const survey = [
@@ -239,8 +240,8 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
 
   //fetch url and show image
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
-  const url = baseurl + "/api/diagram-as-code";
-  //const url = "http://localhost:3001";
+  // const url = baseurl + "/api/diagram-as-code";
+  const url = "http://localhost:3001";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -343,6 +344,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
             : responseData.body;
         console.log("responseData 的body：", data);
         setApiResponseReceived(true);
+        
         if (typeof data === "undefined") {
           seterrorMessage("data is not find any body");
           setApiResponseReceived(true);
@@ -552,6 +554,28 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   const handleModifyPromptClick = () => {
     setShowDialog(true);
   };
+  
+  // 動態調整 textarea 高度的函數
+const handleInput = (e) => {
+  const textarea = e.target;
+  textarea.style.height = 'auto'; // 先重設高度
+  textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`; // 根據內容調整高度，最多4行（大約100px）
+};
+
+// Enter 送出訊息，Shift + Enter 換行
+const handleKeyPress = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault(); // 禁止預設的換行
+    handleSend(); // 執行送出訊息的函數
+    setInputText('');
+    // 重置 textarea 高度為一行
+    const textarea = document.querySelector('.chat-input textarea');
+    if (textarea) {
+      textarea.style.height = '1.5em'; // 一行的高度
+    }
+  }
+};
+  
   if (submitted) {
     return (
       <div className="App">
@@ -562,7 +586,6 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
           unmountOnExit
         >
           <div className="survey-result-container">
-            <h1>感謝{username}完成調查！</h1>
             {apiResponseReceived ? (
               errorMessage ? (
                 <>
@@ -570,7 +593,8 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                 </>
               ) : (
                 <>
-                  <h2>恭喜!，{username}的架構圖如下</h2>
+                  <h1>Nice, {username}! Here is your architecture:</h1>
+                  <h2>This architecture diagram is generated based on the technical requirements you provided.</h2>
                   {imageUrl ? (
                     <>
                       <div className="button-container">
@@ -602,7 +626,13 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
               )
             ) : (
               <>
-                <p>{username}的架構圖正在產生</p>
+                <h1>
+                  Thank you, {username}!
+                </h1>
+                <h2>
+                  We are designing your architecture now, please wait a moment.
+                </h2>
+
                 <div className="loading-container">
                   <img
                     src={loadingImg}
@@ -632,23 +662,15 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         )}
         {showDialog && (
           <div className="dialog-container">
-            <div className="toggle-container">
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={autoRevise}
-                  onChange={toggleAutoRevise}
-                />
-                <span className="toggle-slider"></span>
-              </label>
-              <p className="toggle-label">
-                Auto Revise is {autoRevise ? "Enabled" : "Disabled"}
-              </p>
-            </div>
+            <h3>Smart Archie</h3>
             <div className="dialog-close">
-              <button onClick={() => setShowDialog(false)}>Close</button>
+                <button 
+                  onClick={() => setShowDialog(false)} 
+                  style={{ padding: 0, border: 'none', background: 'none' }}>
+                  <img src={close} style={{ width: '24px', height: '24px' }} alt="Close" />
+                </button>
             </div>
-            <h3>Modify Your Prompt</h3>
+
             <div className="dialog-content">
               <div className="dialog-messages">
                 {messages.map((msg, index) => (
@@ -683,7 +705,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                       />
                     </div>
                     <div className="message-content">
-                      <strong>System:</strong>
+                      {/* <strong>System:</strong> */}
                       <p></p>
                       <div className="thinking-container">
                         <div className="thinking-dots">
@@ -697,23 +719,41 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="chat-input">
-                <textarea
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  placeholder="Enter your new prompt here..."
+              <div className="toggle-container">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={autoRevise}
+                  onChange={toggleAutoRevise}
                 />
-                <button onClick={handleSend}>
-                  <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path
-                      fill="currentColor"
-                      d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                    ></path>
-                  </svg>
-                </button>
+                <span className="toggle-slider"></span>
+              </label>
+              <p className="toggle-label">
+                Auto Revise is {autoRevise ? "Enabled" : "Disabled"}
+              </p>
+            </div>
+            <div className="chat-input">
+              <textarea
+                value={inputText}
+                onChange={(e) => {
+                  setInputText(e.target.value);
+                  handleInput(e); // 動態調整高度
+                }}
+                onKeyDown={handleKeyPress} // 監聽按鍵事件
+                placeholder="Enter your new prompt here..."
+                rows="1"
+              />
+              <button onClick={handleSend}>
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                  <path
+                    fill="currentColor"
+                    d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                  ></path>
+                </svg>
+              </button>
+            </div>
               </div>
             </div>
-          </div>
         )}
       </div>
     );
@@ -722,8 +762,9 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   const currentCategory = survey[currentCategoryIndex];
   return (
     <div className="survey-container" ref={surveyContainerRef}>
-      <h1>雲端架構圖服務調查</h1>
-      <p>歡迎，{username}！</p>
+      <h1>Hi {username}! Welcome to Smart Archie!</h1>
+      <h2>Please provide the technical requirements blew,
+        and we'll design a custom cloud architecture diagram just for you.</h2>
       <TransitionGroup>
         <CSSTransition
           key={currentCategoryIndex}
@@ -735,9 +776,9 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
             ref={categoryRefs.current[currentCategoryIndex]}
             className="category-container"
           >
-            <h2>
+            <h1>
               {currentCategoryIndex + 1}.{currentCategory.category}
-            </h2>
+            </h1>
             {currentCategory.questions.map((question, questionIndex) => (
               <div key={questionIndex} className="question-container">
                 <h3>

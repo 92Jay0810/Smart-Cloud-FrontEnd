@@ -15,12 +15,12 @@
 
 .logo {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 10%;
 }
 
 .logo img {
-  width: 100%; /* 根据需要调整大小 */
-  height: auto;
+  align-items: center;
+  width: 90%; /* 根据需要调整大小 */
 }
 
 nav ul {
@@ -34,7 +34,8 @@ nav ul li {
 }
 
 nav ul li a {
-  font-size: 4vh;
+  font-size: 2.5vh;
+  font-family: Arial, Helvetica, sans-serif;
   display: block;
   padding: 15px 20px;
   color: #1E352F;
@@ -60,4 +61,22 @@ nav ul li a:hover {
 .logo,
 nav ul li a {
   animation: fadeIn 0.5s ease;
+}
+
+.logout-button {
+  background-color: #44b787;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  display: inline-block; /* 讓按鈕保持在 li 項目中 */
+  margin-top: 50px; /* 增加按鈕與其他列表項目的間距 */
+  margin-left: 15%;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #2F9C95;
 }

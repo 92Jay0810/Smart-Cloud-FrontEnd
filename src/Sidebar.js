@@ -1,7 +1,7 @@
 import React from "react";
 import "./Sidebar.css";
 import logo from "./assets/cathay.png";
-const Sidebar = ({ onReset }) => {
+const Sidebar = ({ onReset, handleLogout, isLoggedIn }) => {
   const handleHomeClick = (e) => {
     e.preventDefault();
     onReset();
@@ -29,14 +29,16 @@ const Sidebar = ({ onReset }) => {
             </a>
           </li>
           <li>
-            <a href="#session">Session</a>
-          </li>
-          <li>
             <a href="https://d1fnvwdkrkz29m.cloudfront.net/Contact/contact.html">
               Contact
             </a>
           </li>
         </ul>
+        {isLoggedIn && (
+            <button onClick={handleLogout} className="logout-button">
+                Logout
+              </button>
+          )}
       </nav>
     </div>
   );
