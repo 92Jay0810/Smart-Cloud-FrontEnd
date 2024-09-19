@@ -365,7 +365,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
           setShowDialog(true);
           setMessages([
             ...messages,
-            { sender: "System", text: "Hi"+ username + "I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time." },
+            { sender: "System", text: "Hi "+ username + ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time." },
           ]);
         } else {
           console.log("s3_object_name not found");
