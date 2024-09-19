@@ -9,7 +9,7 @@ const Sidebar = ({ onReset, handleLogout, isLoggedIn }) => {
   return (
     <div className="sidebar">
       <div className="logo">
-        <a href="/">
+        <a href="/service-survey-test/build/index.html">
           <img src={logo} alt="cathay" />
         </a>
       </div>

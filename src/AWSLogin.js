@@ -61,7 +61,7 @@ const AWSLogin = ({ onLogin }) => {
     <div className="login-container">
       <form onSubmit={signIn}>
         <h1>AWS Cognito Login</h1>
-        <p>Please create user in Cogonito user pool before login</p>
+        <p>Please create user in Cognito user pool before login</p>
         <h3>Choose a Login identifier</h3>
         <div className="button-group">
           <button

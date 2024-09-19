@@ -92,23 +92,23 @@ const survey = [
       },
     ],
   },
-  {
-    category: "Security 安全",
-    questions: [
-      {
-        question: "是否需要硬體安全模組(HSM) ?",
-        options: ["是", "否"],
-      },
-      {
-        question: "是否有高安全需求？",
-        options: ["是", "否"],
-      },
-      {
-        question: "是否有個資需要額外保護？",
-        options: ["是", "否"],
-      },
-    ],
-  },
+  // {
+  //   category: "Security 安全",
+  //   questions: [
+  //     {
+  //       question: "是否需要硬體安全模組(HSM) ?",
+  //       options: ["是", "否"],
+  //     },
+  //     {
+  //       question: "是否有高安全需求？",
+  //       options: ["是", "否"],
+  //     },
+  //     {
+  //       question: "是否有個資需要額外保護？",
+  //       options: ["是", "否"],
+  //     },
+  //   ],
+  // },
 ];
 
 function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
@@ -240,8 +240,8 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
 
   //fetch url and show image
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
-  // const url = baseurl + "/api/diagram-as-code";
-  const url = "http://localhost:3001";
+  const url = baseurl + "/api/diagram-as-code";
+  // const url = "http://localhost:3001/api";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -338,6 +338,11 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         const responseData = await response.json();
         console.log("responseData :", responseData);
         //確保body裡面是json讀取，後端可能誤傳string
+        if (response.status === 504) {
+          seterrorMessage("The request to the API Gateway timed out. Please try again later.");
+          setApiResponseReceived(true);
+          return; // 退出函式，避免進一步處理
+        }
         let data =
           typeof responseData.body === "string"
             ? JSON.parse(responseData.body)
@@ -346,7 +351,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         setApiResponseReceived(true);
         
         if (typeof data === "undefined") {
-          seterrorMessage("data is not find any body");
+          seterrorMessage("The response format is incorrect.");
           setApiResponseReceived(true);
         }
         if (data?.errorMessage) {
@@ -358,6 +363,10 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
             baseurl + "/diagram-as-code-output/" + data.s3_object_name
           );
           setShowDialog(true);
+          setMessages([
+            ...messages,
+            { sender: "System", text: "Hi"+ username + "I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time." },
+          ]);
         } else {
           console.log("s3_object_name not found");
         }
@@ -396,7 +405,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         "ArchitectureMonolith",
       ],
       "1-1": ["ServiceLess10", "ServiceOver10"],
-      "1-2": ["Stateful", "Statless"],
+      "1-2": ["Stateful", "Stateless"],
       "1-3": ["GpuYes", "GpuNo"],
       "2-0": [
         "DatabasePostgreSql",
@@ -406,11 +415,11 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
       ],
       "2-1": ["DataCacheYes", "DataCacheNo"],
       "2-2": ["HighAvailabilityYes", "HighAvailabilityNo"],
-      "3-0": ["ShareStroageYes", "ShareStroageNo"],
+      "3-0": ["ShareStorageYes", "ShareStorageNo"],
       "3-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
-      "3-2": ["StorageActive", "StroageStandby"],
+      "3-2": ["StorageActive", "StorageStandby"],
       "4-0": ["HsmYes", "HsmNo"],
-      "4-1": ["HighSecuityYes", "HighSecuityNo"],
+      "4-1": ["HighSecurityYes", "HighSecurityNo"],
       "4-2": ["PersonalInformationYes", "PersonalInformationNo"],
     };
     Object.keys(answers).forEach((key) => {
@@ -496,6 +505,13 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         const responseData = await response.json();
         console.log("responseData :", responseData);
         //確保body裡面是json讀取，後端可能誤傳string
+        if (response.status === 504) {
+          setMessages([
+            ...newMessages,
+            { sender: "System", text: "The request to the API Gateway timed out. Please try again later." },
+          ]);
+          return; // 退出函式，避免進一步處理
+        }
         let data =
           typeof responseData.body === "string"
             ? JSON.parse(responseData.body)
@@ -662,14 +678,16 @@ const handleKeyPress = (e) => {
         )}
         {showDialog && (
           <div className="dialog-container">
-            <h3>Smart Archie</h3>
-            <div className="dialog-close">
-                <button 
-                  onClick={() => setShowDialog(false)} 
-                  style={{ padding: 0, border: 'none', background: 'none' }}>
-                  <img src={close} style={{ width: '24px', height: '24px' }} alt="Close" />
-                </button>
+            <div className="dialog-topic">
+              <div className="topic">
+                <span>Smart Archie</span>
+              </div>
+              <button className="dialog-close"
+                onClick={() => setShowDialog(false)} >
+                <img src={close} style={{ width: '24px', height: '24px' }} alt="Close" />
+              </button>
             </div>
+
 
             <div className="dialog-content">
               <div className="dialog-messages">
@@ -690,8 +708,7 @@ const handleKeyPress = (e) => {
                       />
                     </div>
                     <div className="message-content">
-                      <strong>{msg.sender}:</strong>
-                      <p>{msg.text}</p>
+                      <span className="message-content-text">{msg.text}</span>
                     </div>
                   </div>
                 ))}
@@ -705,7 +722,6 @@ const handleKeyPress = (e) => {
                       />
                     </div>
                     <div className="message-content">
-                      {/* <strong>System:</strong> */}
                       <p></p>
                       <div className="thinking-container">
                         <div className="thinking-dots">
@@ -719,7 +735,8 @@ const handleKeyPress = (e) => {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="toggle-container">
+
+              {/* <div className="toggle-container">
               <label className="toggle-switch">
                 <input
                   type="checkbox"
@@ -731,7 +748,7 @@ const handleKeyPress = (e) => {
               <p className="toggle-label">
                 Auto Revise is {autoRevise ? "Enabled" : "Disabled"}
               </p>
-            </div>
+            </div> */}
             <div className="chat-input">
               <textarea
                 value={inputText}
@@ -752,6 +769,7 @@ const handleKeyPress = (e) => {
                 </svg>
               </button>
             </div>
+            <p className="warning">AI may make errors. Please try multiple times and review the results carefully.</p>
               </div>
             </div>
         )}
