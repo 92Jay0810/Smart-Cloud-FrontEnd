@@ -24,9 +24,7 @@ const Sidebar = ({ onReset, handleLogout, isLoggedIn }) => {
             <a href="#survey">Survey</a>
           </li>
           <li>
-            <a href="https://d1fnvwdkrkz29m.cloudfront.net/F&Q/celeste.html">
-              F&Q
-            </a>
+            <a href="https://d1fnvwdkrkz29m.cloudfront.net/FAQ/FAQ.html">FAQ</a>
           </li>
           <li>
             <a href="https://d1fnvwdkrkz29m.cloudfront.net/Contact/contact.html">
@@ -35,10 +33,10 @@ const Sidebar = ({ onReset, handleLogout, isLoggedIn }) => {
           </li>
         </ul>
         {isLoggedIn && (
-            <button onClick={handleLogout} className="logout-button">
-                Logout
-              </button>
-          )}
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        )}
       </nav>
     </div>
   );
