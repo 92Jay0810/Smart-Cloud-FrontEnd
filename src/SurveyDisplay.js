@@ -71,7 +71,7 @@ const survey = [
       },
       {
         question: "資料是否需要高可用配置?",
-        options: ["是", "否"],
+        options: ["Active/Active", "Active/Standby", "否"],
       },
     ],
   },
@@ -88,7 +88,7 @@ const survey = [
       },
       {
         question: "儲存是否需高可用配置？ ",
-        options: ["Active/Active", "Active/Standby"],
+        options: ["Active/Active", "Active/Standby", "否"],
       },
     ],
   },
@@ -421,10 +421,10 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         "DatabaseNoSql",
       ],
       "2-1": ["DataCacheYes", "DataCacheNo"],
-      "2-2": ["HighAvailabilityYes", "HighAvailabilityNo"],
+      "2-2": ["DataBaseActive", "DataBaseStandby", "No"],
       "3-0": ["ShareStorageYes", "ShareStorageNo"],
       "3-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
-      "3-2": ["StorageActive", "StorageStandby"],
+      "3-2": ["StorageActive", "StorageStandby", "No"],
       "4-0": ["HsmYes", "HsmNo"],
       "4-1": ["HighSecurityYes", "HighSecurityNo"],
       "4-2": ["PersonalInformationYes", "PersonalInformationNo"],
@@ -584,8 +584,8 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   // 動態調整 textarea 高度的函數
   const handleInput = (e) => {
     const textarea = e.target;
-    textarea.style.height = "auto"; // 先重設高度
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`; // 根據內容調整高度，最多4行（大約100px）
+    //textarea.style.height = "auto"; // 先重設高度
+    //textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`; // 根據內容調整高度，最多4行（大約100px）
   };
 
   // Enter 送出訊息，Shift + Enter 換行
@@ -595,10 +595,10 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
       handleSend(); // 執行送出訊息的函數
       setInputText("");
       // 重置 textarea 高度為一行
-      const textarea = document.querySelector(".chat-input textarea");
+      /*const textarea = document.querySelector(".chat-input textarea");
       if (textarea) {
         textarea.style.height = "1.5em"; // 一行的高度
-      }
+      }*/
     }
   };
 
@@ -801,7 +801,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
     <div className="survey-container" ref={surveyContainerRef}>
       <h1>Hi {username}! Welcome to Smart Archie!</h1>
       <h2>
-        Please provide the technical requirements blew, and we'll design a
+        Please provide the technical requirements below, and we'll design a
         custom cloud architecture diagram just for you.
       </h2>
       <TransitionGroup>
