@@ -631,8 +631,8 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
                         <button onClick={handleModifyPromptClick}>
                           Modify Prompt
                         </button>
-                        <button onClick={handleZoomOut}>Zoom out -</button>
-                        <button onClick={handleZoomIn}>Zoom in +</button>
+                        <button onClick={handleZoomOut}>🔍 -</button>
+                        <button onClick={handleZoomIn}>🔍 +</button>
                       </div>
 
                       <div className=".survey-result-content">
