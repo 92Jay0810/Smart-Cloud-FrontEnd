@@ -241,7 +241,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   //fetch url and show image
   const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
   const url = baseurl + "/api/diagram-as-code";
-  // const url = "http://localhost:3001/api";
+  // const url = "http://localhost:3001";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -261,7 +261,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   // Zoom in/out
   const [scale, setScale] = useState(1); // 初始縮放比例
   const handleZoomIn = () => {
-    setScale((prevScale) => Math.min(prevScale + 0.1, 1.5)); // 最大缩放2倍
+    setScale((prevScale) => Math.min(prevScale + 0.1, 1.8)); // 最大缩放2倍
   };
 
   const handleZoomOut = () => {
@@ -421,10 +421,10 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         "DatabaseNoSql",
       ],
       "2-1": ["DataCacheYes", "DataCacheNo"],
-      "2-2": ["DataBaseActive", "DataBaseStandby", "No"],
+      "2-2": ["HighAvailableActive", "HighAvailableStandby", "HighAvailableNo"],
       "3-0": ["ShareStorageYes", "ShareStorageNo"],
       "3-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
-      "3-2": ["StorageActive", "StorageStandby", "No"],
+      "3-2": ["StorageActive", "StorageStandby", "StorageNo"],
       "4-0": ["HsmYes", "HsmNo"],
       "4-1": ["HighSecurityYes", "HighSecurityNo"],
       "4-2": ["PersonalInformationYes", "PersonalInformationNo"],

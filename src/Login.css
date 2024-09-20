@@ -62,7 +62,7 @@
 }
 
 .login-container button:hover {
-  background-color: #9DBEBB;
+  background-color: #80d6b2;
   transform: scale(1.02); 
 }
 
@@ -84,13 +84,17 @@
 
 .login-container .button-group button:hover {
   
-  background-color: #9DBEBB;
+  background-color: #f3f1f1;
 }
 
 .login-container .button-group button.active {
-  background-color: #9DBEBB;
-  border: 1px solid #44b787;
+  background-color: #44b787;
   color: white;
+}
+
+.login-container .button-group button.active:hover {
+  background-color: #80d6b2;
+  border-color: #80d6b2;
 }
 
 

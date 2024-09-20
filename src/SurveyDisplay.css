@@ -69,7 +69,7 @@ h3 {
 }
 
 .option-button:hover { 
-  background-color: #C2EABA;
+  background-color: #baead0;
   /* color: white; */
 }
 
@@ -102,13 +102,13 @@ h3 {
 .previous-button:hover,
 .next-button:hover,
 .submit-button:hover {
-  background-color: #9DBEBB;
+  background-color: #80d6b2;
   transform: translateY(-2px);
 }
 
 .previous-button:disabled,
 .previous-button:disabled:hover {
-  background-color: #9DBEBB;
+  background-color: #aed2c3;
   cursor: not-allowed;
   transform: none;
 }
@@ -223,26 +223,31 @@ h3 {
 }
 
 .survey-image-container {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
   scroll-behavior: smooth;
-  transform-origin: 'top left';
-  overflow: auto;
   position: relative;
   flex: 2;
-  border: 1px solid #44b787;
+  /* border: 1px solid #44b787;
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1); */
 }
 
 .survey-image {
+  background-color: white;
   scroll-behavior: smooth;
-  transform-origin: top left;
-  overflow: hidden;
+  transform-origin: top center;
+  justify-content: center;
+  align-items: center;
   position: relative;
   max-width:75%;
   height: 70%;
-  /* border: 1px solid #44b787;
-  border-radius: 12px; */
-  /* box-shadow: 0 8px 16px rgba(0,0,0,0.1); */
+  border: 1px solid #44b787;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;
 }
 .survey-image:hover {
@@ -272,7 +277,7 @@ h3 {
 }
 
 .button-container button:hover {
-  background-color: #9DBEBB;
+  background-color: #80d6b2;
   box-shadow: 0 6px 8px rgba(47, 156, 149, 0.3);
 }
 
@@ -350,7 +355,7 @@ h3 {
 }
 
 .save-dialog-buttons button:hover {
-  background-color: #9DBEBB;
+  background-color: #80d6b2;
   transform: translateY(-2px);
 }
 
@@ -364,7 +369,7 @@ h3 {
 }
 
 .save-dialog-buttons button:last-child:hover {
-  background-color: #d0d0d0;
+  background-color: #f3f1f1;
 }
 
 .dialog-container {
@@ -562,7 +567,7 @@ h3 {
 }
 
 .chat-input button:hover {
-  background-color: #9DBEBB;
+  background-color: #80d6b2;
   transform: scale(1.05);
 }
 
