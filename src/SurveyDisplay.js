@@ -339,7 +339,9 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         console.log("responseData :", responseData);
         //確保body裡面是json讀取，後端可能誤傳string
         if (response.status === 504) {
-          seterrorMessage("The request to the API Gateway timed out. Please try again later.");
+          seterrorMessage(
+            "The request to the API Gateway timed out. Please try again later."
+          );
           setApiResponseReceived(true);
           return; // 退出函式，避免進一步處理
         }
@@ -349,7 +351,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
             : responseData.body;
         console.log("responseData 的body：", data);
         setApiResponseReceived(true);
-        
+
         if (typeof data === "undefined") {
           seterrorMessage("The response format is incorrect.");
           setApiResponseReceived(true);
@@ -364,8 +366,13 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
           );
           setShowDialog(true);
           setMessages([
-            ...messages,
-            { sender: "System", text: "Hi "+ username + ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time." },
+            {
+              sender: "System",
+              text:
+                "Hi " +
+                username +
+                ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
+            },
           ]);
         } else {
           console.log("s3_object_name not found");
@@ -508,7 +515,10 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         if (response.status === 504) {
           setMessages([
             ...newMessages,
-            { sender: "System", text: "The request to the API Gateway timed out. Please try again later." },
+            {
+              sender: "System",
+              text: "The request to the API Gateway timed out. Please try again later.",
+            },
           ]);
           return; // 退出函式，避免進一步處理
         }
@@ -570,28 +580,28 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   const handleModifyPromptClick = () => {
     setShowDialog(true);
   };
-  
-  // 動態調整 textarea 高度的函數
-const handleInput = (e) => {
-  const textarea = e.target;
-  textarea.style.height = 'auto'; // 先重設高度
-  textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`; // 根據內容調整高度，最多4行（大約100px）
-};
 
-// Enter 送出訊息，Shift + Enter 換行
-const handleKeyPress = (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault(); // 禁止預設的換行
-    handleSend(); // 執行送出訊息的函數
-    setInputText('');
-    // 重置 textarea 高度為一行
-    const textarea = document.querySelector('.chat-input textarea');
-    if (textarea) {
-      textarea.style.height = '1.5em'; // 一行的高度
+  // 動態調整 textarea 高度的函數
+  const handleInput = (e) => {
+    const textarea = e.target;
+    textarea.style.height = "auto"; // 先重設高度
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`; // 根據內容調整高度，最多4行（大約100px）
+  };
+
+  // Enter 送出訊息，Shift + Enter 換行
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // 禁止預設的換行
+      handleSend(); // 執行送出訊息的函數
+      setInputText("");
+      // 重置 textarea 高度為一行
+      const textarea = document.querySelector(".chat-input textarea");
+      if (textarea) {
+        textarea.style.height = "1.5em"; // 一行的高度
+      }
     }
-  }
-};
-  
+  };
+
   if (submitted) {
     return (
       <div className="App">
@@ -610,7 +620,10 @@ const handleKeyPress = (e) => {
               ) : (
                 <>
                   <h1>Nice, {username}! Here is your architecture:</h1>
-                  <h2>This architecture diagram is generated based on the technical requirements you provided.</h2>
+                  <h2>
+                    This architecture diagram is generated based on the
+                    technical requirements you provided.
+                  </h2>
                   {imageUrl ? (
                     <>
                       <div className="button-container">
@@ -642,9 +655,7 @@ const handleKeyPress = (e) => {
               )
             ) : (
               <>
-                <h1>
-                  Thank you, {username}!
-                </h1>
+                <h1>Thank you, {username}!</h1>
                 <h2>
                   We are designing your architecture now, please wait a moment.
                 </h2>
@@ -682,12 +693,17 @@ const handleKeyPress = (e) => {
               <div className="topic">
                 <span>Smart Archie</span>
               </div>
-              <button className="dialog-close"
-                onClick={() => setShowDialog(false)} >
-                <img src={close} style={{ width: '24px', height: '24px' }} alt="Close" />
+              <button
+                className="dialog-close"
+                onClick={() => setShowDialog(false)}
+              >
+                <img
+                  src={close}
+                  style={{ width: "24px", height: "24px" }}
+                  alt="Close"
+                />
               </button>
             </div>
-
 
             <div className="dialog-content">
               <div className="dialog-messages">
@@ -749,29 +765,32 @@ const handleKeyPress = (e) => {
                 Auto Revise is {autoRevise ? "Enabled" : "Disabled"}
               </p>
             </div> */}
-            <div className="chat-input">
-              <textarea
-                value={inputText}
-                onChange={(e) => {
-                  setInputText(e.target.value);
-                  handleInput(e); // 動態調整高度
-                }}
-                onKeyDown={handleKeyPress} // 監聽按鍵事件
-                placeholder="Enter your new prompt here..."
-                rows="1"
-              />
-              <button onClick={handleSend}>
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path
-                    fill="currentColor"
-                    d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                  ></path>
-                </svg>
-              </button>
-            </div>
-            <p className="warning">AI may make errors. Please try multiple times and review the results carefully.</p>
+              <div className="chat-input">
+                <textarea
+                  value={inputText}
+                  onChange={(e) => {
+                    setInputText(e.target.value);
+                    handleInput(e); // 動態調整高度
+                  }}
+                  onKeyDown={handleKeyPress} // 監聽按鍵事件
+                  placeholder="Enter your new prompt here..."
+                  rows="1"
+                />
+                <button onClick={handleSend}>
+                  <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path
+                      fill="currentColor"
+                      d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                    ></path>
+                  </svg>
+                </button>
               </div>
+              <p className="warning">
+                AI may make errors. Please try multiple times and review the
+                results carefully.
+              </p>
             </div>
+          </div>
         )}
       </div>
     );
@@ -781,8 +800,10 @@ const handleKeyPress = (e) => {
   return (
     <div className="survey-container" ref={surveyContainerRef}>
       <h1>Hi {username}! Welcome to Smart Archie!</h1>
-      <h2>Please provide the technical requirements blew,
-        and we'll design a custom cloud architecture diagram just for you.</h2>
+      <h2>
+        Please provide the technical requirements blew, and we'll design a
+        custom cloud architecture diagram just for you.
+      </h2>
       <TransitionGroup>
         <CSSTransition
           key={currentCategoryIndex}

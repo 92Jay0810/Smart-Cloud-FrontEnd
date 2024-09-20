@@ -3,7 +3,6 @@ import Sidebar from "./Sidebar";
 import SurveyDisplay from "./SurveyDisplay";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";
-import "./Logout.css";
 import "./App.css";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -78,25 +77,29 @@ function App() {
     setResetTrigger((prev) => prev + 1);
   }, []);
   return (
-  <div className="app">
-    <Sidebar onReset={handleReset} handleLogout={handleLogout} isLoggedIn={isLoggedIn}/>
-  <div className="mainContent">
-    {isLoggedIn ? (
-      <>
-        <SurveyDisplay
-          idToken={idToken}
-          user_id={user_id}
-          username={username}
-          resetTrigger={resetTrigger}
-        />
-      </>
-    ) : (
-      <>
-        <AWSLogin onLogin={handleLogin} />
-      </>
-    )}
-  </div>
-</div>
+    <div className="app">
+      <Sidebar
+        onReset={handleReset}
+        handleLogout={handleLogout}
+        isLoggedIn={isLoggedIn}
+      />
+      <div className="mainContent">
+        {isLoggedIn ? (
+          <>
+            <SurveyDisplay
+              idToken={idToken}
+              user_id={user_id}
+              username={username}
+              resetTrigger={resetTrigger}
+            />
+          </>
+        ) : (
+          <>
+            <AWSLogin onLogin={handleLogin} />
+          </>
+        )}
+      </div>
+    </div>
 
     // <div className="app">
     //   <Sidebar onReset={handleReset} />
