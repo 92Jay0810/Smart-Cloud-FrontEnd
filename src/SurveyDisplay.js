@@ -239,7 +239,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   ]);
 
   //fetch url and show image
-  const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
+  const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
   const url = baseurl + "/api/diagram-as-code";
   // const url = "http://localhost:3001";
 

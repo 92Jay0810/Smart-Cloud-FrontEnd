@@ -9,7 +9,7 @@ const Sidebar = ({ onReset, handleLogout, isLoggedIn }) => {
   return (
     <div className="sidebar">
       <div className="logo">
-        <a href="/service-survey-test/build/index.html">
+        <a href="/">
           <img src={logo} alt="cathay" />
         </a>
       </div>
@@ -24,10 +24,10 @@ const Sidebar = ({ onReset, handleLogout, isLoggedIn }) => {
             <a href="#survey">Survey</a>
           </li>
           <li>
-            <a href="https://d1fnvwdkrkz29m.cloudfront.net/FAQ/FAQ.html">FAQ</a>
+            <a href="https://d2s0u5536e7dee.cloudfront.net/FAQ/FAQ.html">FAQ</a>
           </li>
           <li>
-            <a href="https://d1fnvwdkrkz29m.cloudfront.net/Contact/contact.html">
+            <a href="https://d2s0u5536e7dee.cloudfront.net/Contact/contact.html">
               Contact
             </a>
           </li>
