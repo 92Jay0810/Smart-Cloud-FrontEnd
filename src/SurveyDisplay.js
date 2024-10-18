@@ -361,9 +361,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         }
         if (data?.s3_object_name) {
           console.log("s3_object_name found:", data.s3_object_name);
-          setImageUrl(
-            baseurl + "/diagram-as-code-output/" + data.s3_object_name
-          );
+          setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
           setShowDialog(true);
           setMessages([
             {
