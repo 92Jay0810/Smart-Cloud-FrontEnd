@@ -537,9 +537,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
           ]);
         } else if (data?.AIMessage) {
           if (data?.s3_object_name) {
-            setImageUrl(
-              baseurl + "/diagram-as-code-output/" + data.s3_object_name
-            );
+            setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
           }
           setMessages([
             ...newMessages,
