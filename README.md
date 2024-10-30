@@ -113,8 +113,14 @@ when error happen the response json need contain `errorCode`：
 
 ```json
 {
+  "headers": {
+    "authorizationToken": "idToken",
+    "Content-Type": "application/json"
+  },
   "body": {
-    "errorMessage": "Error Content "
+    "body": {
+      "errorMessage": "Error Content "
+    }
   }
 }
 ```
