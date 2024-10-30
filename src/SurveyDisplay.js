@@ -8,6 +8,15 @@ import { v4 as uuidv4 } from "uuid";
 import loadingImg from "./assets/loading1.gif";
 const survey = [
   {
+    category: "Cloud Platform 雲端平台",
+    questions: [
+      {
+        question: "系統要使用哪個平台？",
+        options: ["AWS", "GCP"],
+      },
+    ],
+  },
+  {
     category: "Networking 網路",
     questions: [
       {
@@ -239,7 +248,11 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   ]);
 
   //fetch url and show image
-  const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
+  //csd-lab
+  // const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
+
+  //csd-ca-lab
+  const baseurl = "https://d2s0u5536e7dee.cloudfront.net"; 
   const url = baseurl + "/api/diagram-as-code";
   // const url = "http://localhost:3001";
 
@@ -361,7 +374,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         }
         if (data?.s3_object_name) {
           console.log("s3_object_name found:", data.s3_object_name);
-          setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
+          setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
           setShowDialog(true);
           setMessages([
             {
@@ -393,39 +406,40 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   const transformAnswers = (answers) => {
     const result = {};
     const mappings = {
-      "0-0": ["SharedVpc", "SelfBuildVpc"],
-      "0-1": ["OpenServiceYes", "OpenServiceNo"],
-      "0-2": ["CloudDns", "SelfBuildDns", "DnsNo"],
-      "0-3": ["ExternalServiceYes", "ExternalServiceNo"],
-      "0-4": ["WebCacheYes", "WebCacheNo"],
-      "0-5": [
+      "0-0": ["aws", "gcp"],
+      "1-0": ["SharedVpc", "SelfBuildVpc"],
+      "1-1": ["OpenServiceYes", "OpenServiceNo"],
+      "1-2": ["CloudDns", "SelfBuildDns", "DnsNo"],
+      "1-3": ["ExternalServiceYes", "ExternalServiceNo"],
+      "1-4": ["WebCacheYes", "WebCacheNo"],
+      "1-5": [
         "ConnectionOnpremise",
         "ConnectionSamePlatform",
         "ConnectionCrossPlatform",
       ],
-      "1-0": [
+      "2-0": [
         "ArchitectureMicroservices",
         "ArchitectureNtier",
         "ArchitectureEbaf",
         "ArchitectureMonolith",
       ],
-      "1-1": ["ServiceLess10", "ServiceOver10"],
-      "1-2": ["Stateful", "Stateless"],
-      "1-3": ["GpuYes", "GpuNo"],
-      "2-0": [
+      "2-1": ["ServiceLess10", "ServiceOver10"],
+      "2-2": ["Stateful", "Stateless"],
+      "2-3": ["GpuYes", "GpuNo"],
+      "3-0": [
         "DatabasePostgreSql",
         "DatabaseMysql",
         "DatabaseMssql",
         "DatabaseNoSql",
       ],
-      "2-1": ["DataCacheYes", "DataCacheNo"],
-      "2-2": ["HighAvailableActive", "HighAvailableStandby", "HighAvailableNo"],
-      "3-0": ["ShareStorageYes", "ShareStorageNo"],
-      "3-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
-      "3-2": ["StorageActive", "StorageStandby", "StorageNo"],
-      "4-0": ["HsmYes", "HsmNo"],
-      "4-1": ["HighSecurityYes", "HighSecurityNo"],
-      "4-2": ["PersonalInformationYes", "PersonalInformationNo"],
+      "3-1": ["DataCacheYes", "DataCacheNo"],
+      "3-2": ["HighAvailableActive", "HighAvailableStandby", "HighAvailableNo"],
+      "4-0": ["ShareStorageYes", "ShareStorageNo"],
+      "4-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
+      "4-2": ["StorageActive", "StorageStandby", "StorageNo"],
+      "5-0": ["HsmYes", "HsmNo"],
+      "5-1": ["HighSecurityYes", "HighSecurityNo"],
+      "5-2": ["PersonalInformationYes", "PersonalInformationNo"],
     };
     Object.keys(answers).forEach((key) => {
       const optionID = answers[key];
@@ -537,7 +551,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
           ]);
         } else if (data?.AIMessage) {
           if (data?.s3_object_name) {
-            setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
+            setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
           }
           setMessages([
             ...newMessages,
@@ -546,7 +560,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
         } //如果只有圖片
         else if (data?.s3_object_name) {
           setImageUrl(
-            baseurl + "/diagram-as-code-output/" + data.s3_object_name
+            baseurl + "/diagram/" + data.s3_object_name
           );
           setMessages([
             ...newMessages,

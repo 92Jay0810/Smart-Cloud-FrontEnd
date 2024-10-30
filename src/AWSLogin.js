@@ -6,6 +6,15 @@ import {
   AuthenticationDetails,
 } from "amazon-cognito-identity-js";
 
+//csd-lab
+
+// const poolData = {
+//   UserPoolId: "ap-southeast-1_zPbHgCBA9",
+//   ClientId: "71u7r00hbo6o2c6vu40h92sln7",
+// };
+
+// csd-ca-lab
+
 const poolData = {
   UserPoolId: "ap-northeast-1_oplJt9drv",
   ClientId: "22cin8r8mik6i94mln9385iegs",
