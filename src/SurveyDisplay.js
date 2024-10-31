@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./SurveyDisplay.css";
+import { jwtDecode } from "jwt-decode";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
 import close from "./assets/grey close.png";
@@ -252,7 +253,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
   // const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
 
   //csd-ca-lab
-  const baseurl = "https://d2s0u5536e7dee.cloudfront.net"; 
+  const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
   const url = baseurl + "/api/diagram-as-code";
   // const url = "http://localhost:3001";
 
@@ -313,6 +314,14 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
 
   //注意url，可能在local測試或是s3測試，s3要放在cloudFront才能執行
   const handleSubmit = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const decodedToken = jwtDecode(accessToken);
+    const currentTime = Date.now() / 1000; // 當前時間 (秒)
+    // 檢查 token 是否過期
+    if (decodedToken.exp < currentTime) {
+      alert("Access token has expired. Please log in again.");
+      return;
+    }
     const totalQuestions = survey.reduce(
       (sum, category) => sum + category.questions.length,
       0
@@ -488,6 +497,14 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
 
   // HandleConversationSand
   const handleSend = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const decodedToken = jwtDecode(accessToken);
+    const currentTime = Date.now() / 1000; // 當前時間 (秒)
+    // 檢查 token 是否過期
+    if (decodedToken.exp < currentTime) {
+      alert("Access token has expired. Please log in again.");
+      return;
+    }
     if (inputText.trim() !== "") {
       const newMessages = [...messages, { sender: username, text: inputText }];
       setMessages(newMessages);
@@ -559,9 +576,7 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
           ]);
         } //如果只有圖片
         else if (data?.s3_object_name) {
-          setImageUrl(
-            baseurl + "/diagram/" + data.s3_object_name
-          );
+          setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
           setMessages([
             ...newMessages,
             { sender: "System", text: "AI no response but return image" },
