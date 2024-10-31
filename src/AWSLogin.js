@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Login.css";
+import { jwtDecode } from "jwt-decode";
 import {
   CognitoUserPool,
   CognitoUser,
@@ -28,7 +29,101 @@ const AWSLogin = ({ onLogin }) => {
   const [identifier, setIdentifier] = useState(""); // 儲存usrname or email
   const [password, setPassword] = useState("");
   const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
-  const REFRESH_INTERVAL = 45 * 60 * 1000; // 45 minutes in milliseconds
+
+  const handleSessionExpiration = () => {
+    // 清除所有相關的存儲和狀態
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("idToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("loginTime");
+
+    alert("Your session has expired (4 hours). Please log in again.");
+    window.location.reload();
+  };
+
+  // 檢查並刷新token的函數
+  const checkAndRefreshSession = useCallback(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    const loginTime = parseInt(localStorage.getItem("loginTime") || "0");
+    const currentTime = Date.now();
+
+    if (!accessToken || !refreshToken) return;
+
+    try {
+      // 檢查登入時間
+      if (currentTime - loginTime >= SESSION_DURATION) {
+        handleSessionExpiration();
+        return;
+      }
+      //時間在4小時內，沒問題
+      const cognitoUser = new CognitoUser({
+        Username:
+          jwtDecode(accessToken).username || jwtDecode(accessToken).email,
+        Pool: userPool,
+      });
+
+      cognitoUser.refreshSession(
+        new CognitoRefreshToken({ RefreshToken: refreshToken }),
+        (err, session) => {
+          if (err) {
+            console.error("Failed to refresh session", err);
+            handleSessionExpiration();
+            return;
+          }
+
+          const newAccessToken = session.getAccessToken().getJwtToken();
+          const newIdToken = session.getIdToken().getJwtToken();
+
+          // 更新token和登入時間
+          localStorage.setItem("accessToken", newAccessToken);
+          localStorage.setItem("IdToken", newIdToken);
+          localStorage.setItem("loginTime", currentTime.toString());
+
+          console.log("Token refreshed successfully");
+        }
+      );
+    } catch (error) {
+      console.error("Session check failed", error);
+      handleSessionExpiration();
+    }
+  }, [handleSessionExpiration]);
+
+  useEffect(() => {
+    const checkSession = () => {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+      const loginTime = parseInt(localStorage.getItem("loginTime") || "0");
+      const currentTime = Date.now();
+
+      if (accessToken && refreshToken) {
+        // 如果在4個小時內代表有效，可以刷新token
+        if (currentTime - loginTime < SESSION_DURATION) {
+          checkAndRefreshSession();
+        } else {
+          handleSessionExpiration();
+        }
+      }
+    };
+
+    // 畫面載入時自動刷新
+    checkSession();
+
+    // 添加事件监听器，处理页面可见性变化
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkSession();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // 清理函数
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [checkAndRefreshSession, handleSessionExpiration]);
+
   const signIn = (event) => {
     event.preventDefault();
     const authenticationDetails = new AuthenticationDetails({
@@ -62,27 +157,6 @@ const AWSLogin = ({ onLogin }) => {
         localStorage.setItem("IdToken", IdToken);
         localStorage.setItem("refreshToken", refreshToken);
 
-        // 設置自動刷新
-        const refreshInterval = setInterval(() => {
-          const currentTime = Date.now();
-          const initialLoginTime = parseInt(
-            localStorage.getItem("loginTime") || "0"
-          );
-          const timeElapsed = currentTime - initialLoginTime;
-
-          // 檢查是否在4小時session內
-          if (timeElapsed < SESSION_DURATION) {
-            refreshSession(cognitoUser);
-          } else {
-            // 4小時到期，清除所有狀態
-            clearInterval(refreshInterval);
-            handleSessionExpiration();
-          }
-        }, REFRESH_INTERVAL);
-
-        // 儲存interval ID以便之後清除
-        localStorage.setItem("refreshIntervalId", refreshInterval.toString());
-
         // 在這裡處理成功登錄後的邏輯，例如重定向到主頁
         onLogin();
       },
@@ -98,46 +172,7 @@ const AWSLogin = ({ onLogin }) => {
       },
     });
   };
-  //刷新token使用的function
-  const refreshSession = (cognitoUser) => {
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (!refreshToken) return;
 
-    cognitoUser.refreshSession(
-      new CognitoRefreshToken({ RefreshToken: refreshToken }),
-      (err, session) => {
-        if (err) {
-          console.error("Failed to refresh session", err);
-          return;
-        }
-
-        const newAccessToken = session.getAccessToken().getJwtToken();
-        const newIdToken = session.getIdToken().getJwtToken();
-
-        // 更新 tokens 和 refreshCount
-        localStorage.setItem("accessToken", newAccessToken);
-        localStorage.setItem("idToken", newIdToken);
-
-        console.log("Token refreshed successfully");
-      }
-    );
-  };
-  const handleSessionExpiration = () => {
-    // 清除所有相關的存儲和狀態
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("idToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("loginTime");
-
-    const intervalId = localStorage.getItem("refreshIntervalId");
-    if (intervalId) {
-      clearInterval(parseInt(intervalId));
-      localStorage.removeItem("refreshIntervalId");
-    }
-
-    alert("Your session has expired (4 hours). Please log in again.");
-    window.location.reload();
-  };
   return (
     <div className="login-container">
       <form onSubmit={signIn}>

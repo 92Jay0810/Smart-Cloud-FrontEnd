@@ -12,50 +12,19 @@ function App() {
   //重製用
   const [resetTrigger, setResetTrigger] = useState(0);
   //檢查token，時效內就自動登陸，token過期就remove token
-  const cleanupSession = () => {
-    const intervalId = localStorage.getItem("refreshIntervalId");
-    if (intervalId) {
-      clearInterval(parseInt(intervalId));
-    }
-
-    localStorage.removeItem("IdToken");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("loginTime");
-    localStorage.removeItem("refreshIntervalId");
-
-    setIsLoggedIn(false);
-    handleReset();
-    alert("Session expired, please log in again.");
-  };
   useEffect(() => {
     const token = localStorage.getItem("IdToken");
-    const loginTime = parseInt(localStorage.getItem("loginTime") || "0");
-    const currentTime = Date.now();
     if (token) {
       try {
-        const decodedToken = jwtDecode(token);
-        // 檢查token是否在有效期內且未超過4小時session
-        if (
-          decodedToken.exp * 1000 > currentTime &&
-          currentTime - loginTime < 4 * 60 * 60 * 1000
-        ) {
-          // Token有效，可以自動登陸
-          console.log("Token is valid, attempting auto-login");
-          setidToken(token);
-          const accessToken = localStorage.getItem("accessToken");
-          const decodedToken = jwtDecode(accessToken);
-          setusername(decodedToken.username || decodedToken.email || "User");
-          setuser_id(decodedToken.sub);
-          setIsLoggedIn(true);
-        } else {
-          // Token過期，直接移除Token。
-          console.log("Token has expired or session timeout");
-          cleanupSession();
-        }
+        const accessToken = localStorage.getItem("accessToken");
+        const decodedToken = jwtDecode(accessToken);
+        setusername(decodedToken.username || decodedToken.email || "User");
+        setuser_id(decodedToken.sub);
+        setidToken(token);
+        setIsLoggedIn(true);
       } catch (error) {
         console.error("Failed to decode token", error);
-        cleanupSession();
+        handleLogout();
       }
     }
   }, []);
@@ -76,7 +45,6 @@ function App() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("loginTime");
-    localStorage.removeItem("refreshIntervalId");
     setIsLoggedIn(false);
     setusername("");
     setuser_id("");
