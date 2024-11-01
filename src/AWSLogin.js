@@ -24,7 +24,7 @@ const poolData = {
 
 const userPool = new CognitoUserPool(poolData);
 
-const AWSLogin = ({ onLogin }) => {
+const AWSLogin = ({ onLogin, RefreshTokenCheckTrigger }) => {
   const [isEmailLogin, setIsEmailLogin] = useState(false); // 是否使用emails
   const [identifier, setIdentifier] = useState(""); // 儲存usrname or email
   const [password, setPassword] = useState("");
@@ -109,6 +109,11 @@ const AWSLogin = ({ onLogin }) => {
     // 畫面載入時自動刷新
     checkSession();
 
+    // 監聽 RefreshTokenCheckTrigger 的變化
+    if (RefreshTokenCheckTrigger > 0) {
+      checkSession();
+    }
+
     // 添加事件监听器，处理页面可见性变化
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
@@ -122,7 +127,11 @@ const AWSLogin = ({ onLogin }) => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [checkAndRefreshSession, handleSessionExpiration]);
+  }, [
+    checkAndRefreshSession,
+    handleSessionExpiration,
+    RefreshTokenCheckTrigger,
+  ]);
 
   const signIn = (event) => {
     event.preventDefault();

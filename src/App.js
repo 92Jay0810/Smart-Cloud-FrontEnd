@@ -11,6 +11,8 @@ function App() {
   const [idToken, setidToken] = useState("");
   //重製用
   const [resetTrigger, setResetTrigger] = useState(0);
+
+  const [RefreshTokenCheckTrigger, setRefreshTokenCheckTrigger] = useState(0);
   //檢查token，時效內就自動登陸，token過期就remove token
   useEffect(() => {
     const token = localStorage.getItem("IdToken");
@@ -54,6 +56,9 @@ function App() {
   const handleReset = useCallback(() => {
     setResetTrigger((prev) => prev + 1);
   }, []);
+  const handlRefreshTokenCheck = useCallback(() => {
+    setRefreshTokenCheckTrigger((prev) => prev + 1);
+  }, []);
   return (
     <div className="app">
       <Sidebar
@@ -69,11 +74,15 @@ function App() {
               user_id={user_id}
               username={username}
               resetTrigger={resetTrigger}
+              onRefreshTokenCheck={handlRefreshTokenCheck}
             />
           </>
         ) : (
           <>
-            <AWSLogin onLogin={handleLogin} />
+            <AWSLogin
+              onLogin={handleLogin}
+              RefreshTokenCheckTrigger={RefreshTokenCheckTrigger}
+            />
           </>
         )}
       </div>

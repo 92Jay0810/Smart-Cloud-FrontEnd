@@ -121,7 +121,17 @@ const survey = [
   // },
 ];
 
-function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
+function SurveyDisplay({
+  idToken,
+  user_id,
+  username,
+  resetTrigger,
+  onRefreshTokenCheck,
+}) {
+  const handleRefreshTokenCheck = (e) => {
+    e.preventDefault();
+    onRefreshTokenCheck();
+  };
   // 讀取 cookie 的函數
   const getCookie = (name) => {
     const nameEQ = name + "=";
@@ -317,10 +327,20 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
     const currentTime = Date.now() / 1000; // 當前時間 (秒)
+    const loginTime = parseInt(localStorage.getItem("loginTime") || "0");
+    const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
     // 檢查 token 是否過期
     if (decodedToken.exp < currentTime) {
-      alert("Access token has expired. Please log in again.");
-      return;
+      // 若過期，在檢查是否超過4小時
+      if (currentTime - loginTime >= SESSION_DURATION) {
+        //超過4小時，就trigger AWSLogin去登出並跳警告
+        handleRefreshTokenCheck();
+        return;
+      } else {
+        //未超過4小時，但是token過期，只要RefreshToken即可
+        handleRefreshTokenCheck();
+        //往下做
+      }
     }
     const totalQuestions = survey.reduce(
       (sum, category) => sum + category.questions.length,
@@ -500,10 +520,20 @@ function SurveyDisplay({ idToken, user_id, username, resetTrigger }) {
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
     const currentTime = Date.now() / 1000; // 當前時間 (秒)
+    const loginTime = parseInt(localStorage.getItem("loginTime") || "0");
+    const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
     // 檢查 token 是否過期
     if (decodedToken.exp < currentTime) {
-      alert("Access token has expired. Please log in again.");
-      return;
+      // 若過期，在檢查是否超過4小時
+      if (currentTime - loginTime >= SESSION_DURATION) {
+        //超過4小時，就trigger AWSLogin去登出並跳警告
+        handleRefreshTokenCheck();
+        return;
+      } else {
+        //未超過4小時，但是token過期，只要RefreshToken即可
+        handleRefreshTokenCheck();
+        //往下做
+      }
     }
     if (inputText.trim() !== "") {
       const newMessages = [...messages, { sender: username, text: inputText }];
