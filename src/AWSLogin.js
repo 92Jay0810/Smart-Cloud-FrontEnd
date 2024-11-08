@@ -30,6 +30,9 @@ const AWSLogin = ({ onLogin, RefreshTokenCheckTrigger }) => {
   const [password, setPassword] = useState("");
   const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
+  //Session Expiration Related
+  const [showModal, setShowModal] = useState(true);
+
   const handleSessionExpiration = () => {
     // 清除所有相關的存儲和狀態
     localStorage.removeItem("accessToken");
@@ -37,8 +40,15 @@ const AWSLogin = ({ onLogin, RefreshTokenCheckTrigger }) => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("loginTime");
 
+    //Old Version of Session Expiration
     alert("Your session has expired (4 hours). Please log in again.");
     window.location.reload();
+    //New Version
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   // 檢查並刷新token的函數
@@ -220,6 +230,18 @@ const AWSLogin = ({ onLogin, RefreshTokenCheckTrigger }) => {
         />
         <button type="submit">Sign In</button>
       </form>
+      {showModal &&  (
+        <>
+            {/* 背景遮罩 */}
+            <div className= "modal_overlay" onClick={closeModal}></div>
+              <div className="modal">
+                <div className="modal_content">
+                    <p>The session token has expired, please try to login again.</p>
+                    <button className="buttons" onClick={closeModal}>Close</button>
+                </div>
+              </div>
+        </> 
+      )};
     </div>
   );
 };

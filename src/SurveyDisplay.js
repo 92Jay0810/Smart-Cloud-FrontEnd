@@ -358,13 +358,12 @@ function SurveyDisplay({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      const formattedAnswers = {
-        body: {
+      const formattedAnswers = 
+      {
           query: transformAnswers(answers),
           timestamp: timestamp,
           session_id: session_id,
           user_id: user_id,
-        },
       };
       console.log("傳送格式:\n", formattedAnswers);
       try {
@@ -382,7 +381,7 @@ function SurveyDisplay({
         //確保body裡面是json讀取，後端可能誤傳string
         if (response.status === 504) {
           seterrorMessage(
-            "The request to the API Gateway timed out. Please try again later."
+            `The request to the API Gateway timed out. Please try again later.\nSession: ${session_id}\nResponse Time: ${timestamp}`
           );
           setApiResponseReceived(true);
           return; // 退出函式，避免進一步處理
@@ -395,11 +394,24 @@ function SurveyDisplay({
         setApiResponseReceived(true);
 
         if (typeof data === "undefined") {
-          seterrorMessage("The response format is incorrect.");
+          seterrorMessage(
+          `
+          The response format is incorrect: Cannot find the body, data type is undefined.
+          Session: ${session_id}
+          Response Time: ${timestamp}
+          `
+          );
+          
           setApiResponseReceived(true);
         }
         if (data?.errorMessage) {
-          seterrorMessage(data.errorMessage);
+          seterrorMessage(
+          `
+          Error: ${data.errorMessage}
+          Session: ${session_id}
+          Response Time: ${timestamp}
+          `
+          );
         }
         if (data?.s3_object_name) {
           console.log("s3_object_name found:", data.s3_object_name);
@@ -549,14 +561,13 @@ function SurveyDisplay({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      const consersationRequest = {
-        body: {
+      const consersationRequest = 
+      {
           prompt: inputText,
           verify: autoRevise,
           session_id: session_id,
           timestamp: timestamp,
           user_id: user_id,
-        },
       };
       console.log("傳送格式:\n", consersationRequest);
       try {
@@ -576,7 +587,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: "The request to the API Gateway timed out. Please try again later.",
+              text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           return; // 退出函式，避免進一步處理
@@ -589,12 +600,12 @@ function SurveyDisplay({
         if (typeof data === "undefined") {
           setMessages([
             ...newMessages,
-            { sender: "System", text: "the format of response is incorrect" },
+            { sender: "System", text:  `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}` },
           ]);
         } else if (data.errorMessage) {
           setMessages([
             ...newMessages,
-            { sender: "System", text: "Error occur " + data.errorMessage },
+            { sender: "System", text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}` },
           ]);
         } else if (data?.AIMessage) {
           if (data?.s3_object_name) {
@@ -609,21 +620,27 @@ function SurveyDisplay({
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
           setMessages([
             ...newMessages,
-            { sender: "System", text: "AI no response but return image" },
+            { 
+              sender: "System",
+              text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}` 
+            },
           ]);
         } else {
           setMessages([
             ...newMessages,
             {
               sender: "System",
-              text: "bad response format with internal server ",
+              text: `Bad response format with internal server\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
         }
       } catch (error) {
         setMessages([
           ...newMessages,
-          { sender: "System", text: "Error: Failed to fetch response." },
+          { 
+            sender: "System",
+            text: `Error: Failed to fetch response.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`
+          },
         ]);
         console.log(error);
       } finally {
