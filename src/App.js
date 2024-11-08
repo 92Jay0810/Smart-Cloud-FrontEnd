@@ -45,8 +45,6 @@ function App() {
     console.log("handleLogout called");
     localStorage.removeItem("IdToken");
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("loginTime");
     setIsLoggedIn(false);
     setusername("");
     setuser_id("");
