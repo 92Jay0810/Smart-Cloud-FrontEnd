@@ -327,21 +327,14 @@ function SurveyDisplay({
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
     const currentTime = Date.now() / 1000; // 當前時間 (秒)
-    const loginTime = parseInt(localStorage.getItem("loginTime") || "0");
-    const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
     // 檢查 token 是否過期
-    if (decodedToken.exp < currentTime) {
-      // 若過期，在檢查是否超過4小時
-      if (currentTime - loginTime >= SESSION_DURATION) {
-        //超過4小時，就trigger AWSLogin去登出並跳警告
-        handleRefreshTokenCheck();
-        return;
-      } else {
-        //未超過4小時，但是token過期，只要RefreshToken即可
-        handleRefreshTokenCheck();
-        //往下做
-      }
+    if (decodedToken.exp <= currentTime) {
+      //超過4小時，就trigger AWSLogin去登出並跳警告
+      handleRefreshTokenCheck();
+      return;
     }
+
     const totalQuestions = survey.reduce(
       (sum, category) => sum + category.questions.length,
       0
@@ -358,12 +351,11 @@ function SurveyDisplay({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      const formattedAnswers = 
-      {
-          query: transformAnswers(answers),
-          timestamp: timestamp,
-          session_id: session_id,
-          user_id: user_id,
+      const formattedAnswers = {
+        query: transformAnswers(answers),
+        timestamp: timestamp,
+        session_id: session_id,
+        user_id: user_id,
       };
       console.log("傳送格式:\n", formattedAnswers);
       try {
@@ -395,18 +387,18 @@ function SurveyDisplay({
 
         if (typeof data === "undefined") {
           seterrorMessage(
-          `
+            `
           The response format is incorrect: Cannot find the body, data type is undefined.
           Session: ${session_id}
           Response Time: ${timestamp}
           `
           );
-          
+
           setApiResponseReceived(true);
         }
         if (data?.errorMessage) {
           seterrorMessage(
-          `
+            `
           Error: ${data.errorMessage}
           Session: ${session_id}
           Response Time: ${timestamp}
@@ -532,20 +524,11 @@ function SurveyDisplay({
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
     const currentTime = Date.now() / 1000; // 當前時間 (秒)
-    const loginTime = parseInt(localStorage.getItem("loginTime") || "0");
-    const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
     // 檢查 token 是否過期
     if (decodedToken.exp < currentTime) {
-      // 若過期，在檢查是否超過4小時
-      if (currentTime - loginTime >= SESSION_DURATION) {
-        //超過4小時，就trigger AWSLogin去登出並跳警告
-        handleRefreshTokenCheck();
-        return;
-      } else {
-        //未超過4小時，但是token過期，只要RefreshToken即可
-        handleRefreshTokenCheck();
-        //往下做
-      }
+      //超過4小時，就trigger AWSLogin去登出並跳警告
+      handleRefreshTokenCheck();
+      return;
     }
     if (inputText.trim() !== "") {
       const newMessages = [...messages, { sender: username, text: inputText }];
@@ -561,13 +544,12 @@ function SurveyDisplay({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      const consersationRequest = 
-      {
-          prompt: inputText,
-          verify: autoRevise,
-          session_id: session_id,
-          timestamp: timestamp,
-          user_id: user_id,
+      const consersationRequest = {
+        prompt: inputText,
+        verify: autoRevise,
+        session_id: session_id,
+        timestamp: timestamp,
+        user_id: user_id,
       };
       console.log("傳送格式:\n", consersationRequest);
       try {
@@ -600,12 +582,18 @@ function SurveyDisplay({
         if (typeof data === "undefined") {
           setMessages([
             ...newMessages,
-            { sender: "System", text:  `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}` },
+            {
+              sender: "System",
+              text: `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
           ]);
         } else if (data.errorMessage) {
           setMessages([
             ...newMessages,
-            { sender: "System", text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}` },
+            {
+              sender: "System",
+              text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
           ]);
         } else if (data?.AIMessage) {
           if (data?.s3_object_name) {
@@ -620,9 +608,9 @@ function SurveyDisplay({
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
           setMessages([
             ...newMessages,
-            { 
+            {
               sender: "System",
-              text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}` 
+              text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
         } else {
@@ -637,9 +625,9 @@ function SurveyDisplay({
       } catch (error) {
         setMessages([
           ...newMessages,
-          { 
+          {
             sender: "System",
-            text: `Error: Failed to fetch response.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`
+            text: `Error: Failed to fetch response.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
           },
         ]);
         console.log(error);
