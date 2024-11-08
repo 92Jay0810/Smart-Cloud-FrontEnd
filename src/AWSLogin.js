@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Login.css";
+import { jwtDecode } from "jwt-decode";
 import {
   CognitoUserPool,
   CognitoUser,
@@ -89,14 +90,9 @@ const AWSLogin = ({ onLogin, RefreshTokenCheckTrigger }) => {
         console.log("accessToken：", accessToken);
         console.log("idToken：", IdToken);
 
-        // 儲存初始登入時間
-        const loginTime = Date.now();
-        localStorage.setItem("loginTime", loginTime.toString());
-
         // 将 Access Token 存储在 localStorage 中
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("IdToken", IdToken);
-        localStorage.setItem("refreshToken", refreshToken);
 
         // 在這裡處理成功登錄後的邏輯，例如重定向到主頁
         onLogin();
