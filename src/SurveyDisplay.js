@@ -128,8 +128,7 @@ function SurveyDisplay({
   resetTrigger,
   onRefreshTokenCheck,
 }) {
-  const handleRefreshTokenCheck = (e) => {
-    e.preventDefault();
+  const handleRefreshTokenCheck = () => {
     if (onRefreshTokenCheck) {
       onRefreshTokenCheck();
     }
