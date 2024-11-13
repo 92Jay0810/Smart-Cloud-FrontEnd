@@ -12,7 +12,9 @@ function App() {
   //重製用
   const [resetTrigger, setResetTrigger] = useState(0);
 
-  const [RefreshTokenCheckTrigger, setRefreshTokenCheckTrigger] = useState(0);
+  //Session Expiration Related
+  const [refreshTokenTrigger, setrefreshTokenTrigger] = useState(0);
+  const [showModal, setShowModal] = useState(true);
   //檢查token，時效內就自動登陸，token過期就remove token
   useEffect(() => {
     const token = localStorage.getItem("IdToken");
@@ -54,9 +56,49 @@ function App() {
   const handleReset = useCallback(() => {
     setResetTrigger((prev) => prev + 1);
   }, []);
-  const handlRefreshTokenCheck = useCallback(() => {
-    setRefreshTokenCheckTrigger((prev) => prev + 1);
+  const handleRefreshTokenCheck = useCallback(() => {
+    setrefreshTokenTrigger((prev) => {
+      const newValue = prev + 1;
+      console.log("Updating refreshTokenTrigger:", prev, "->", newValue);
+      return newValue;
+    });
   }, []);
+  const closeModal = () => {
+    setShowModal(false);
+  };
+  const handleSessionExpiration = useCallback(() => {
+    console.log("call remove Expiration session in AWSLogin");
+    // 清除所有相關的存儲和狀態
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("IdToken");
+    setShowModal(true);
+    window.location.reload();
+  }, []);
+
+  useEffect(() => {
+    const checkSession = () => {
+      const accessToken = localStorage.getItem("accessToken");
+      const IdToken = localStorage.getItem("IdToken");
+
+      if (accessToken && IdToken) {
+        const decodedToken = jwtDecode(IdToken);
+        const currentTime = Math.floor(Date.now() / 1000); // 當前時間（秒）
+
+        // 檢查 idToken 的 exp（過期時間）是否已過
+        if (decodedToken.exp <= currentTime) {
+          handleSessionExpiration();
+        }
+      }
+    };
+
+    // 畫面載入時自動刷新
+    checkSession();
+    console.log(
+      "Effect triggered with refreshTokenTrigger:",
+      refreshTokenTrigger
+    );
+  }, [refreshTokenTrigger]);
+
   return (
     <div className="app">
       <Sidebar
@@ -72,40 +114,32 @@ function App() {
               user_id={user_id}
               username={username}
               resetTrigger={resetTrigger}
-              onRefreshTokenCheck={handlRefreshTokenCheck}
+              onRefreshTokenCheck={handleRefreshTokenCheck}
             />
           </>
         ) : (
           <>
-            <AWSLogin
-              onLogin={handleLogin}
-              RefreshTokenCheckTrigger={RefreshTokenCheckTrigger}
-            />
+            <AWSLogin onLogin={handleLogin} />
           </>
         )}
       </div>
+      {showModal && (
+        <>
+          {/* 背景遮罩 */}
+          <div className="login-container">
+            <div className="modal_overlay" onClick={closeModal}></div>
+            <div className="modal">
+              <div className="modal_content">
+                <p>The session token has expired, please try to login again.</p>
+                <button className="buttons" onClick={closeModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
-
-    // <div className="app">
-    //   <Sidebar onReset={handleReset} />
-    //   {isLoggedIn ? (
-    //     <>
-    //       <button onClick={handleLogout} className="logout-button">
-    //         Logout
-    //       </button>
-    //       <SurveyDisplay
-    //         idToken={idToken}
-    //         user_id={user_id}
-    //         username={username}
-    //         resetTrigger={resetTrigger}
-    //       />
-    //     </>
-    //   ) : (
-    //     <>
-    //       <AWSLogin onLogin={handleLogin} />
-    //     </>
-    //   )}
-    // </div>
   );
 }
 export default App;

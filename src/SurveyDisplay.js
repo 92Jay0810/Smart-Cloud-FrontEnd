@@ -129,9 +129,8 @@ function SurveyDisplay({
   onRefreshTokenCheck,
 }) {
   const handleRefreshTokenCheck = () => {
-    if (onRefreshTokenCheck) {
-      onRefreshTokenCheck();
-    }
+    console.log("Refreshcall in SurveyDisplay");
+    onRefreshTokenCheck();
   };
   // 讀取 cookie 的函數
   const getCookie = (name) => {

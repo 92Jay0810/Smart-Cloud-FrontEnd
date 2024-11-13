@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Login.css";
 import { jwtDecode } from "jwt-decode";
 import {
@@ -23,50 +23,10 @@ const poolData = {
 
 const userPool = new CognitoUserPool(poolData);
 
-const AWSLogin = ({ onLogin, RefreshTokenCheckTrigger }) => {
+const AWSLogin = ({ onLogin }) => {
   const [isEmailLogin, setIsEmailLogin] = useState(false); // 是否使用emails
   const [identifier, setIdentifier] = useState(""); // 儲存usrname or email
   const [password, setPassword] = useState("");
-
-  //Session Expiration Related
-  const [showModal, setShowModal] = useState(true);
-
-  const handleSessionExpiration = () => {
-    // 清除所有相關的存儲和狀態
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("idToken");
-    localStorage.removeItem("refreshToken");
-
-    //Old Version of Session Expiration
-    alert("Your session has expired (4 hours). Please log in again.");
-    window.location.reload();
-    //New Version
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
-  useEffect(() => {
-    const checkSession = () => {
-      const accessToken = localStorage.getItem("accessToken");
-      const idToken = localStorage.getItem("idToken");
-
-      if (accessToken && idToken) {
-        const decodedToken = jwtDecode(idToken);
-        const currentTime = Math.floor(Date.now() / 1000); // 當前時間（秒）
-
-        // 檢查 idToken 的 exp（過期時間）是否已過
-        if (decodedToken.exp <= currentTime) {
-          handleSessionExpiration();
-        }
-      }
-    };
-
-    // 畫面載入時自動刷新
-    checkSession();
-  }, [handleSessionExpiration, RefreshTokenCheckTrigger]);
 
   const signIn = (event) => {
     event.preventDefault();
@@ -148,20 +108,6 @@ const AWSLogin = ({ onLogin, RefreshTokenCheckTrigger }) => {
         />
         <button type="submit">Sign In</button>
       </form>
-      {showModal && (
-        <>
-          {/* 背景遮罩 */}
-          <div className="modal_overlay" onClick={closeModal}></div>
-          <div className="modal">
-            <div className="modal_content">
-              <p>The session token has expired, please try to login again.</p>
-              <button className="buttons" onClick={closeModal}>
-                Close
-              </button>
-            </div>
-          </div>
-        </>
-      )}
       ;
     </div>
   );
