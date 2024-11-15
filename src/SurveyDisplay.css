@@ -257,7 +257,7 @@ h3 {
 .button-container {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 12px;
   margin-top: 20px;
   margin-bottom: 10%;
   width: 60%;
@@ -268,7 +268,7 @@ h3 {
   font-size: 100%;
   font-weight: 200%;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: #44b787;
   color: white;
   cursor: pointer;
@@ -281,6 +281,31 @@ h3 {
   box-shadow: 0 6px 8px rgba(47, 156, 149, 0.3);
 }
 
+.platform-button-container{
+  display: flex;
+  border: none;
+  border-color: #44b787;
+  gap: 12px;
+}
+
+.platform-button-container button{
+  padding: 10px 14px;
+  font-size: 100%;
+  font-weight: 200%;
+  border: none;
+  background-color: #44b787;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(68, 183, 135, 0.2);
+}
+
+.platform-button-container button:disabled{
+  gap: 5px;
+  background-color: #aed2c3;
+  cursor: not-allowed;
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.2); /* 增加內陰影 */
+}
 
 .response-details {
     margin-top: 20px;

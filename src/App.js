@@ -126,7 +126,6 @@ function App() {
       {showModal && (
         <>
           {/* 背景遮罩 */}
-          <div className="login-container">
             <div className="modal_overlay" onClick={closeModal}></div>
             <div className="modal">
               <div className="modal_content">
@@ -136,7 +135,6 @@ function App() {
                 </button>
               </div>
             </div>
-          </div>
         </>
       )}
     </div>

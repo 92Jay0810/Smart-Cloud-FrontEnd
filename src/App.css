@@ -6,23 +6,7 @@ body {
   display: flex;
 }
 
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 80vh;
-  background: #f4f7f6; 
-}
-
-.login-container p {
-  color: #777;
-  margin-bottom: 20px;
-  text-align: center; 
-}
-
-
-.login-container button {
+.buttons {
   padding: 12px;
   background-color: #44b787;
   color: #ffffff;
@@ -33,7 +17,7 @@ body {
   transition: background-color 0.1s ease, transform 0.1s ease;
 }
 
-.login-container button:hover {
+.buttons:hover {
   background-color: #80d6b2;
   transform: scale(1.02); 
 }

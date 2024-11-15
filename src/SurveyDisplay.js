@@ -121,6 +121,13 @@ const survey = [
   // },
 ];
 
+const CustomPromptTemplate = `transform to {platform}, make sure to follow the transformation and service mapping rules, and ensure all security and operational components present.`;
+
+// 定义一个函数来替换 {platform} 占位符
+const generatePrompt = (platform) => {
+  return CustomPromptTemplate.replace("{platform}", platform);
+};
+
 function SurveyDisplay({
   idToken,
   user_id,
@@ -264,8 +271,8 @@ function SurveyDisplay({
 
   //csd-ca-lab
   const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
-  const url = baseurl + "/api/diagram-as-code";
-  // const url = "http://localhost:3001";
+  // const url = baseurl + "/api/diagram-as-code";
+  const url = "http://localhost:3001";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -273,6 +280,10 @@ function SurveyDisplay({
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const [platform, setPlatform] = useState("");
+  const [triggerTransform, setTriggerTransform] = useState(false);
+
   // 切換 autoRevise 狀態的函數
   const toggleAutoRevise = () => {
     setAutoRevise((prevState) => !prevState);
@@ -342,6 +353,7 @@ function SurveyDisplay({
     if (Object.keys(answers).length === totalQuestions) {
       setSubmitted(true);
       console.log("提交的答案：", answers);
+      console.log(answers[0])
       const now = new Date();
       const timestamp =
         now.getFullYear().toString() + // 年份
@@ -358,6 +370,9 @@ function SurveyDisplay({
         user_id: user_id,
       };
       console.log("傳送格式:\n", formattedAnswers);
+
+      setPlatform(formattedAnswers.query['0-0'])
+      console.log(formattedAnswers.query['0-0']);
       try {
         let response = "";
         response = await fetch(url, {
@@ -662,6 +677,130 @@ function SurveyDisplay({
     }
   };
 
+  const handleTransform = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const decodedToken = jwtDecode(accessToken);
+    const currentTime = Date.now() / 1000; // 當前時間 (秒)
+    // 檢查 token 是否過期
+    if (decodedToken.exp < currentTime) {
+      //超過4小時，就trigger AWSLogin去登出並跳警告
+      handleRefreshTokenCheck();
+      return;
+    }
+    const newPlatform = platform === "aws" ? "gcp" : "aws";
+    setPlatform(newPlatform);
+
+    const promptText = generatePrompt(newPlatform);
+    if (promptText.trim() !== "") {
+      console.log(promptText);
+      const newMessages = [...messages, { sender: username, text: `transforming to ${newPlatform}...` }];
+      setMessages(newMessages);
+      setInputText("");
+      setLoading(true);
+      const now = new Date();
+      const timestamp =
+        now.getFullYear().toString() + // 年份
+        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+        now.getDate().toString().padStart(2, "0") + // 日期
+        now.getHours().toString().padStart(2, "0") + // 小时
+        now.getMinutes().toString().padStart(2, "0") + // 分钟
+        now.getSeconds().toString().padStart(2, "0") + // 秒
+        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+      const transformationRequest = {
+        prompt: promptText,
+        verify: autoRevise,
+        session_id: session_id,
+        timestamp: timestamp,
+        user_id: user_id,
+      };
+      console.log("傳送格式:\n", transformationRequest);
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorizationToken: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify(transformationRequest),
+        });
+        const responseData = await response.json();
+        console.log("responseData :", responseData);
+        //確保body裡面是json讀取，後端可能誤傳string
+        if (response.status === 504) {
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
+          return; // 退出函式，避免進一步處理
+        }
+        let data =
+          typeof responseData.body === "string"
+            ? JSON.parse(responseData.body)
+            : responseData.body;
+        console.log("responseData 的body：", data);
+        if (typeof data === "undefined") {
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
+        } else if (data.errorMessage) {
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
+        } else if (data?.AIMessage) {
+          if (data?.s3_object_name) {
+            setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
+          }
+          setMessages([
+            ...newMessages,
+            { sender: "System", text: data.AIMessage },
+          ]);
+        } //如果只有圖片
+        else if (data?.s3_object_name) {
+          setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
+        } else {
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `Bad response format with internal server\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
+        }
+      } catch (error) {
+        setMessages([
+          ...newMessages,
+          {
+            sender: "System",
+            text: `Error: Failed to fetch response.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+          },
+        ]);
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    }   
+  };
+  
+  
+
   if (submitted) {
     return (
       <div className="App">
@@ -693,6 +832,15 @@ function SurveyDisplay({
                         </button>
                         <button onClick={handleZoomOut}>🔍 -</button>
                         <button onClick={handleZoomIn}>🔍 +</button>
+                        <div className="platform-button-container">
+                          <button onClick={() => handleTransform()} disabled={platform === 'aws'}>
+                            AWS
+                          </button>
+                          <button onClick={() => handleTransform()} disabled={platform === 'gcp'}>
+                            GCP
+                          </button>
+                        </div>
+
                       </div>
 
                       <div className=".survey-result-content">
