@@ -74,7 +74,7 @@ function App() {
     setShowModal(true);
     window.location.reload();
   }, []);
-
+ //檢查token過期
   useEffect(() => {
     const checkSession = () => {
       const accessToken = localStorage.getItem("accessToken");
@@ -108,7 +108,6 @@ function App() {
       />
       <div className="mainContent">
         {isLoggedIn ? (
-          <>
             <SurveyDisplay
               idToken={idToken}
               user_id={user_id}
@@ -116,11 +115,8 @@ function App() {
               resetTrigger={resetTrigger}
               onRefreshTokenCheck={handleRefreshTokenCheck}
             />
-          </>
         ) : (
-          <>
             <AWSLogin onLogin={handleLogin} />
-          </>
         )}
       </div>
       {showModal && (

@@ -271,8 +271,8 @@ function SurveyDisplay({
 
   //csd-ca-lab
   const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
-  // const url = baseurl + "/api/diagram-as-code";
-  const url = "http://localhost:3001";
+  const url = baseurl + "/api/diagram-as-code";
+  //const url = "http://localhost:3001";
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -441,7 +441,11 @@ function SurveyDisplay({
       } catch (error) {
         console.error("Error submitting survey:", error);
         setApiResponseReceived(true);
+        if(error.message.includes("504")){
+          seterrorMessage("提交失敗，請稍後再試。");
+        }else{
         seterrorMessage("提交失敗，請稍後再試。");
+        }
         // 清除 cookie 中的答案
         setCookie("surveyAnswers", "", -1);
       }
@@ -980,7 +984,7 @@ function SurveyDisplay({
                     setInputText(e.target.value);
                     handleInput(e); // 動態調整高度
                   }}
-                  onKeyDown={handleKeyPress} // 監聽按鍵事件
+                  //onKeyDown={handleKeyPress}  監聽按鍵事件
                   placeholder="Enter your new prompt here..."
                   rows="1"
                 />
