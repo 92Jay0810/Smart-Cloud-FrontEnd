@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./Login.css";
-import { jwtDecode } from "jwt-decode";
 import {
   CognitoUserPool,
   CognitoUser,

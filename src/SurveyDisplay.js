@@ -102,23 +102,15 @@ const survey = [
       },
     ],
   },
-  // {
-  //   category: "Security 安全",
-  //   questions: [
-  //     {
-  //       question: "是否需要硬體安全模組(HSM) ?",
-  //       options: ["是", "否"],
-  //     },
-  //     {
-  //       question: "是否有高安全需求？",
-  //       options: ["是", "否"],
-  //     },
-  //     {
-  //       question: "是否有個資需要額外保護？",
-  //       options: ["是", "否"],
-  //     },
-  //   ],
-  // },
+  {
+    category: "tool 繪圖工具",
+    questions: [
+      {
+        question: "請選擇架構圖的繪圖工具",
+        options: ["Diagrams", "PlantUML"],
+      },
+    ],
+  },
 ];
 
 const CustomPromptTemplate = `transform to {platform}, make sure to follow the transformation and service mapping rules, and ensure all security and operational components present.`;
@@ -282,7 +274,7 @@ function SurveyDisplay({
   const messagesEndRef = useRef(null);
 
   const [platform, setPlatform] = useState("");
-  const [triggerTransform, setTriggerTransform] = useState(false);
+  const [tool, setTool] = useState("");
 
   // 切換 autoRevise 狀態的函數
   const toggleAutoRevise = () => {
@@ -353,7 +345,6 @@ function SurveyDisplay({
     if (Object.keys(answers).length === totalQuestions) {
       setSubmitted(true);
       console.log("提交的答案：", answers);
-      console.log(answers[0])
       const now = new Date();
       const timestamp =
         now.getFullYear().toString() + // 年份
@@ -363,16 +354,18 @@ function SurveyDisplay({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      const formattedAnswers = {
-        query: transformAnswers(answers),
+
+      let TransformAsnwers = transformAnswers(answers);
+      const SumbitAnswers = {
+        query: TransformAsnwers,
         timestamp: timestamp,
         session_id: session_id,
         user_id: user_id,
+        tool: TransformAsnwers["5-0"],
       };
-      console.log("傳送格式:\n", formattedAnswers);
-
-      setPlatform(formattedAnswers.query['0-0'])
-      console.log(formattedAnswers.query['0-0']);
+      setPlatform(SumbitAnswers.query["0-0"]);
+      setTool(SumbitAnswers.query["5-0"]);
+      console.log("傳送格式:\n", SumbitAnswers);
       try {
         let response = "";
         response = await fetch(url, {
@@ -381,7 +374,7 @@ function SurveyDisplay({
             authorizationToken: `Bearer ${idToken}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formattedAnswers),
+          body: JSON.stringify(SumbitAnswers),
         });
         const responseData = await response.json();
         console.log("responseData :", responseData);
@@ -441,10 +434,15 @@ function SurveyDisplay({
       } catch (error) {
         console.error("Error submitting survey:", error);
         setApiResponseReceived(true);
-        if(error.message.includes("504")){
-          seterrorMessage("提交失敗，請稍後再試。");
-        }else{
-        seterrorMessage("提交失敗，請稍後再試。");
+        if (error.message.includes("504")) {
+          seterrorMessage(`
+          The request to the API Gateway timed out. Please try again later.
+          Session: ${session_id}
+          Response Time: ${timestamp}`);
+        } else {
+          seterrorMessage(`提交失敗，請稍後再試。
+          Session: ${session_id}
+          Response Time: ${timestamp}`);
         }
         // 清除 cookie 中的答案
         setCookie("surveyAnswers", "", -1);
@@ -489,9 +487,7 @@ function SurveyDisplay({
       "4-0": ["ShareStorageYes", "ShareStorageNo"],
       "4-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
       "4-2": ["StorageActive", "StorageStandby", "StorageNo"],
-      "5-0": ["HsmYes", "HsmNo"],
-      "5-1": ["HighSecurityYes", "HighSecurityNo"],
-      "5-2": ["PersonalInformationYes", "PersonalInformationNo"],
+      "5-0": ["diagrams", "plantuml"],
     };
     Object.keys(answers).forEach((key) => {
       const optionID = answers[key];
@@ -697,7 +693,10 @@ function SurveyDisplay({
     const promptText = generatePrompt(newPlatform);
     if (promptText.trim() !== "") {
       console.log(promptText);
-      const newMessages = [...messages, { sender: username, text: `transforming to ${newPlatform}...` }];
+      const newMessages = [
+        ...messages,
+        { sender: username, text: `transforming to ${newPlatform}...` },
+      ];
       setMessages(newMessages);
       setInputText("");
       setLoading(true);
@@ -800,10 +799,8 @@ function SurveyDisplay({
       } finally {
         setLoading(false);
       }
-    }   
+    }
   };
-  
-  
 
   if (submitted) {
     return (
@@ -837,14 +834,27 @@ function SurveyDisplay({
                         <button onClick={handleZoomOut}>🔍 -</button>
                         <button onClick={handleZoomIn}>🔍 +</button>
                         <div className="platform-button-container">
-                          <button onClick={() => handleTransform()} disabled={platform === 'aws'}>
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "aws"}
+                          >
                             AWS
                           </button>
-                          <button onClick={() => handleTransform()} disabled={platform === 'gcp'}>
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "gcp"}
+                          >
                             GCP
                           </button>
                         </div>
-
+                        <div className="platform-button-container">
+                          <button disabled={tool === "diagrams"}>
+                            Diagrams
+                          </button>
+                          <button disabled={tool === "plantuml"}>
+                            PlantUML
+                          </button>
+                        </div>
                       </div>
 
                       <div className=".survey-result-content">
