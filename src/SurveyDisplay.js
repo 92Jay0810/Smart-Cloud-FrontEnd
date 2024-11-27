@@ -666,14 +666,13 @@ function SurveyDisplay({
   // Enter 送出訊息，Shift + Enter 換行
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
+      if (e.isComposing) {
+        // 如果正在選字，不進行任何操作
+        return;
+      }
       e.preventDefault(); // 禁止預設的換行
       handleSend(); // 執行送出訊息的函數
       setInputText("");
-      // 重置 textarea 高度為一行
-      /*const textarea = document.querySelector(".chat-input textarea");
-      if (textarea) {
-        textarea.style.height = "1.5em"; // 一行的高度
-      }*/
     }
   };
 
@@ -994,7 +993,7 @@ function SurveyDisplay({
                     setInputText(e.target.value);
                     handleInput(e); // 動態調整高度
                   }}
-                  //onKeyDown={handleKeyPress}  監聽按鍵事件
+                  onKeyDown={handleKeyPress} //監聽按鍵事件
                   placeholder="Enter your new prompt here..."
                   rows="1"
                 />
