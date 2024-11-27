@@ -226,6 +226,10 @@ function SurveyDisplay({
   const [imageUrl, setImageUrl] = useState(() => {
     return getCookie("imageUrl") || "";
   });
+  const [savecode, setsavecode] = useState(() => {
+    return getCookie("savecode") || false;
+  });
+
   const [messages, setMessages] = useState(() => {
     try {
       const saved = getCookie("messages");
@@ -241,6 +245,7 @@ function SurveyDisplay({
     setCookie("apiResponseReceived", apiResponseReceived);
     setCookie("errorMessage", errorMessage);
     setCookie("imageUrl", imageUrl);
+    setCookie("savecode", savecode);
     setCookie("messages", JSON.stringify(messages));
     setCookie("session_id", session_id);
   };
@@ -253,6 +258,7 @@ function SurveyDisplay({
     apiResponseReceived,
     errorMessage,
     imageUrl,
+    savecode,
     messages,
     session_id,
   ]);
@@ -413,9 +419,10 @@ function SurveyDisplay({
           `
           );
         }
-        if (data?.s3_object_name) {
+        if (data?.s3_object_name&& data?.s3_python_code){
           console.log("s3_object_name found:", data.s3_object_name);
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
+          setsavecode(baseurl + "/diagram/" + data.s3_python_code); 
           setShowDialog(true);
           setMessages([
             {
@@ -427,7 +434,7 @@ function SurveyDisplay({
             },
           ]);
         } else {
-          console.log("s3_object_name not found");
+          console.log("s3_object_name&s3_python_code not found");
         }
         // 清除 cookie 中的答案
         setCookie("surveyAnswers", "", -1);
@@ -529,6 +536,29 @@ function SurveyDisplay({
     }
   };
 
+  const handleSaveCode= async () => {
+    if (apiResponseReceived && savecode) {
+      try {
+        const response = await fetch(savecode);
+        const blob = await response.blob();
+        const temp_url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = temp_url;
+        const fileNameWithExtension ="diagram.py";
+        link.download = fileNameWithExtension;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(temp_url);
+        setShowSaveDialog(false);
+      } catch (error) {
+        console.error("Error downloading the file:", error);
+        setShowSaveDialog(false);
+      }
+    }
+  };
+
   // 當message改變滑動到指定參考位置
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -611,16 +641,19 @@ function SurveyDisplay({
             },
           ]);
         } else if (data?.AIMessage) {
-          if (data?.s3_object_name) {
+          if (data?.s3_object_name&& data?.s3_python_code) {
             setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
+            setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           }
+            
           setMessages([
             ...newMessages,
             { sender: "System", text: data.AIMessage },
           ]);
         } //如果只有圖片
-        else if (data?.s3_object_name) {
+        else if (data?.s3_object_name&& data?.s3_python_code) {
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
+          setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           setMessages([
             ...newMessages,
             {
@@ -760,16 +793,18 @@ function SurveyDisplay({
             },
           ]);
         } else if (data?.AIMessage) {
-          if (data?.s3_object_name) {
+          if (data?.s3_object_name&& data?.s3_python_code) {
             setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
+            setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           }
           setMessages([
             ...newMessages,
             { sender: "System", text: data.AIMessage },
           ]);
         } //如果只有圖片
-        else if (data?.s3_object_name) {
+        else if (data?.s3_object_name&& data?.s3_python_code) {
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
+          setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           setMessages([
             ...newMessages,
             {
@@ -826,7 +861,8 @@ function SurveyDisplay({
                   {imageUrl ? (
                     <>
                       <div className="button-container">
-                        <button onClick={handleSaveFile}>Save File</button>
+                        <button onClick={handleSaveFile}>Save Image</button>
+                        <button onClick={handleSaveCode}>Save Code</button>
                         <button onClick={handleModifyPromptClick}>
                           Modify Prompt
                         </button>
@@ -895,11 +931,11 @@ function SurveyDisplay({
         {showSaveDialog && (
           <div className="save-dialog">
             <div className="save-dialog-content">
-              <h3>Save File</h3>
+              <h3>Save Image</h3>
               <input
                 type="text"
                 onChange={(e) => setFileName(e.target.value)}
-                placeholder="Enter file name"
+                placeholder="Enter image name"
               />
               <div className="save-dialog-buttons">
                 <button onClick={saveFile}>Save</button>
