@@ -14,7 +14,7 @@ function App() {
 
   //Session Expiration Related
   const [refreshTokenTrigger, setrefreshTokenTrigger] = useState(0);
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   //檢查token，時效內就自動登陸，token過期就remove token
   useEffect(() => {
     const token = localStorage.getItem("IdToken");
@@ -74,20 +74,29 @@ function App() {
     setShowModal(true);
     window.location.reload();
   }, []);
- //檢查token過期
+  //檢查token過期
   useEffect(() => {
     const checkSession = () => {
       const accessToken = localStorage.getItem("accessToken");
       const IdToken = localStorage.getItem("IdToken");
 
-      if (accessToken && IdToken) {
+      // 如果 token 缺失，直接返回
+      if (!accessToken || !IdToken) {
+        console.log("Missing tokens, skipping session expiration check.");
+        return;
+      }
+      try {
         const decodedToken = jwtDecode(IdToken);
         const currentTime = Math.floor(Date.now() / 1000); // 當前時間（秒）
 
         // 檢查 idToken 的 exp（過期時間）是否已過
         if (decodedToken.exp <= currentTime) {
+          console.log("Token expired, calling handleSessionExpiration");
           handleSessionExpiration();
         }
+      } catch (error) {
+        console.error("Failed to decode IdToken", error);
+        handleSessionExpiration(); // token無法處理，直接預設過期。
       }
     };
 
@@ -108,29 +117,29 @@ function App() {
       />
       <div className="mainContent">
         {isLoggedIn ? (
-            <SurveyDisplay
-              idToken={idToken}
-              user_id={user_id}
-              username={username}
-              resetTrigger={resetTrigger}
-              onRefreshTokenCheck={handleRefreshTokenCheck}
-            />
+          <SurveyDisplay
+            idToken={idToken}
+            user_id={user_id}
+            username={username}
+            resetTrigger={resetTrigger}
+            onRefreshTokenCheck={handleRefreshTokenCheck}
+          />
         ) : (
-            <AWSLogin onLogin={handleLogin} />
+          <AWSLogin onLogin={handleLogin} />
         )}
       </div>
       {showModal && (
         <>
           {/* 背景遮罩 */}
-            <div className="modal_overlay" onClick={closeModal}></div>
-            <div className="modal">
-              <div className="modal_content">
-                <p>The session token has expired, please try to login again.</p>
-                <button className="buttons" onClick={closeModal}>
-                  Close
-                </button>
-              </div>
+          <div className="modal_overlay" onClick={closeModal}></div>
+          <div className="modal">
+            <div className="modal_content">
+              <p>The session token has expired, please try to login again.</p>
+              <button className="buttons" onClick={closeModal}>
+                Close
+              </button>
             </div>
+          </div>
         </>
       )}
     </div>
