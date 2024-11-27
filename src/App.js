@@ -72,7 +72,11 @@ function App() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("IdToken");
     setShowModal(true);
-    window.location.reload();
+    setIsLoggedIn(false);
+    setusername("");
+    setuser_id("");
+    setidToken("");
+    handleReset();
   }, []);
   //檢查token過期
   useEffect(() => {

@@ -159,6 +159,9 @@ function SurveyDisplay({
     setApiResponseReceived(false);
     seterrorMessage("");
     setImageUrl("");
+    setsavecode("");
+    setPlatform("");
+    setTool("");
     setMessages([]);
     const newSessionId = uuidv4();
     console.log("New Session ID generated:", newSessionId);
@@ -169,6 +172,9 @@ function SurveyDisplay({
     setCookie("apiResponseReceived", "", -1);
     setCookie("errorMessage", "", -1);
     setCookie("imageUrl", "", -1);
+    setCookie("savecode", "", -1);
+    setCookie("platform", "", -1);
+    setCookie("tool", "", -1);
     setCookie("messages", "", -1);
     setCookie("surveyAnswers", "", -1);
     // 重置其他相關狀態
@@ -229,6 +235,12 @@ function SurveyDisplay({
   const [savecode, setsavecode] = useState(() => {
     return getCookie("savecode") || false;
   });
+  const [platform, setPlatform] = useState(() => {
+    return getCookie("platform") || "";
+  });
+  const [tool, setTool] = useState(() => {
+    return getCookie("tool") || "";
+  });
 
   const [messages, setMessages] = useState(() => {
     try {
@@ -246,6 +258,8 @@ function SurveyDisplay({
     setCookie("errorMessage", errorMessage);
     setCookie("imageUrl", imageUrl);
     setCookie("savecode", savecode);
+    setCookie("platform", platform);
+    setCookie("tool", tool);
     setCookie("messages", JSON.stringify(messages));
     setCookie("session_id", session_id);
   };
@@ -259,6 +273,8 @@ function SurveyDisplay({
     errorMessage,
     imageUrl,
     savecode,
+    platform,
+    tool,
     messages,
     session_id,
   ]);
@@ -278,9 +294,6 @@ function SurveyDisplay({
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
-
-  const [platform, setPlatform] = useState("");
-  const [tool, setTool] = useState("");
 
   // 切換 autoRevise 狀態的函數
   const toggleAutoRevise = () => {
@@ -419,10 +432,10 @@ function SurveyDisplay({
           `
           );
         }
-        if (data?.s3_object_name&& data?.s3_python_code){
+        if (data?.s3_object_name && data?.s3_python_code) {
           console.log("s3_object_name found:", data.s3_object_name);
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
-          setsavecode(baseurl + "/diagram/" + data.s3_python_code); 
+          setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           setShowDialog(true);
           setMessages([
             {
@@ -536,7 +549,7 @@ function SurveyDisplay({
     }
   };
 
-  const handleSaveCode= async () => {
+  const handleSaveCode = async () => {
     if (apiResponseReceived && savecode) {
       try {
         const response = await fetch(savecode);
@@ -545,7 +558,7 @@ function SurveyDisplay({
         const link = document.createElement("a");
         link.style.display = "none";
         link.href = temp_url;
-        const fileNameWithExtension ="diagram.py";
+        const fileNameWithExtension = "diagram.py";
         link.download = fileNameWithExtension;
         document.body.appendChild(link);
         link.click();
@@ -641,17 +654,17 @@ function SurveyDisplay({
             },
           ]);
         } else if (data?.AIMessage) {
-          if (data?.s3_object_name&& data?.s3_python_code) {
+          if (data?.s3_object_name && data?.s3_python_code) {
             setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
             setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           }
-            
+
           setMessages([
             ...newMessages,
             { sender: "System", text: data.AIMessage },
           ]);
         } //如果只有圖片
-        else if (data?.s3_object_name&& data?.s3_python_code) {
+        else if (data?.s3_object_name && data?.s3_python_code) {
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
           setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           setMessages([
@@ -793,7 +806,7 @@ function SurveyDisplay({
             },
           ]);
         } else if (data?.AIMessage) {
-          if (data?.s3_object_name&& data?.s3_python_code) {
+          if (data?.s3_object_name && data?.s3_python_code) {
             setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
             setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           }
@@ -802,7 +815,7 @@ function SurveyDisplay({
             { sender: "System", text: data.AIMessage },
           ]);
         } //如果只有圖片
-        else if (data?.s3_object_name&& data?.s3_python_code) {
+        else if (data?.s3_object_name && data?.s3_python_code) {
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
           setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           setMessages([
