@@ -608,6 +608,7 @@ function SurveyDisplay({
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
+        tool: tool,
       };
       console.log("傳送格式:\n", consersationRequest);
       try {
@@ -760,6 +761,7 @@ function SurveyDisplay({
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
+        tool: tool,
       };
       console.log("傳送格式:\n", transformationRequest);
       try {

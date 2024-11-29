@@ -297,7 +297,6 @@ h3 {
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(68, 183, 135, 0.2);
 }
 
 .platform-button-container button:disabled{
