@@ -31,7 +31,6 @@ h2 {
   background-color: white;
   border-radius: 8px;
   border: 2px solid #e0e0e0;
-  /* border-color: #44b787; */
   padding: 5%;
   margin-bottom: 5%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -111,6 +110,29 @@ h3 {
   background-color: #aed2c3;
   cursor: not-allowed;
   transform: none;
+}
+.confirm-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  width: 100%;
+}
+/* 背景遮罩 */
+.confirm-dialog_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);  /* 半透明背景 */
+  z-index: 1000;  /* 設置比內容更低的層級 */
 }
 
 .fade-enter {
@@ -231,9 +253,6 @@ h3 {
   scroll-behavior: smooth;
   position: relative;
   flex: 2;
-  /* border: 1px solid #44b787;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1); */
 }
 
 .survey-image {
@@ -303,7 +322,6 @@ h3 {
   gap: 5px;
   background-color: #aed2c3;
   cursor: not-allowed;
-  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.2); /* 增加內陰影 */
 }
 
 .response-details {
@@ -725,17 +743,3 @@ input:checked + .toggle-slider:before {
   transform: scale(1.1); /* Slightly enlarge the image on hover */
   transition: transform 0.2s ease, opacity 0.2s ease; /* Smooth transition for hover effect */
 }
-
-/* .dialog-close button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #44b787;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-} */
-
-/* .dialog-close button:hover {
-  background-color: #2F9C95;
-} */

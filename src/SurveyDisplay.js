@@ -204,6 +204,7 @@ function SurveyDisplay({
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const categoryRefs = useRef(survey.map(() => React.createRef()));
   const surveyContainerRef = useRef(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false); // 服務確認頁面
 
   // need store in cookie and read
 
@@ -346,17 +347,16 @@ function SurveyDisplay({
 
   //注意url，可能在local測試或是s3測試，s3要放在cloudFront才能執行
   const handleSubmit = async () => {
+    setShowConfirmDialog(false); // 關閉對話框
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
     const currentTime = Date.now() / 1000; // 當前時間 (秒)
-
     // 檢查 token 是否過期
     if (decodedToken.exp <= currentTime) {
       //超過4小時，就trigger AWSLogin去登出並跳警告
       handleRefreshTokenCheck();
       return;
     }
-
     const totalQuestions = survey.reduce(
       (sum, category) => sum + category.questions.length,
       0
@@ -518,6 +518,28 @@ function SurveyDisplay({
       }
     });
     return result;
+  };
+  // 顯示確認對話框
+  const handleConfirmSubmit = () => {
+    setShowConfirmDialog(true);
+  };
+  // 關閉確認對話框
+  const handleCancelSubmit = () => {
+    setShowConfirmDialog(false);
+  };
+  const renderAnswerSummary = () => {
+    return Object.keys(answers).map((key) => {
+      const [categoryIndex, questionIndex] = key.split("-");
+      const question = survey[categoryIndex].questions[questionIndex];
+      const selectedOption = question.options[answers[key]];
+      return (
+        <div key={key}>
+          <p>
+            <strong>{question.question}</strong>: {selectedOption}
+          </p>
+        </div>
+      );
+    });
   };
 
   const handleSaveFile = () => {
@@ -1135,11 +1157,31 @@ function SurveyDisplay({
             下一頁
           </button>
         ) : (
-          <button className="submit-button" onClick={handleSubmit}>
+          <button className="submit-button" onClick={handleConfirmSubmit}>
             提交問卷
           </button>
         )}
       </div>
+      {showConfirmDialog && (
+        <>
+          <div
+            className="confirm-dialog_overlay"
+            onClick={handleCancelSubmit}
+          ></div>
+          <div className="confirm-dialog">
+            <h1>確認您的答案及選擇</h1>
+            {renderAnswerSummary()}
+            <div className="navigation-buttons">
+              <button className="submit-button" onClick={handleCancelSubmit}>
+                取消
+              </button>
+              <button className="submit-button" onClick={handleSubmit}>
+                確認提交
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
