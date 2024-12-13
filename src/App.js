@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "./Sidebar";
+import PortalPage from "./PortalPage";
 import SurveyDisplay from "./SurveyDisplay";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";
@@ -11,10 +12,34 @@ function App() {
   const [idToken, setidToken] = useState("");
   //重製用
   const [resetTrigger, setResetTrigger] = useState(0);
-
   //Session Expiration Related
   const [refreshTokenTrigger, setrefreshTokenTrigger] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const getCookie = (name) => {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === " ") c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  };
+  // 設置 cookie 的函數
+  const setCookie = (name, value, days) => {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  };
+  //選擇服務
+  const [selectedService, setSelectedService] = useState(() => {
+    const selectedService = getCookie("selectedService");
+    return selectedService ? selectedService : null;
+  });
   //檢查token，時效內就自動登陸，token過期就remove token
   useEffect(() => {
     const token = localStorage.getItem("IdToken");
@@ -32,6 +57,7 @@ function App() {
       }
     }
   }, []);
+  // 讀取 cookie 的函數
 
   const handleLogin = useCallback(() => {
     console.log("handleLogin called");
@@ -43,6 +69,7 @@ function App() {
     setuser_id(decodedToken.sub);
     setIsLoggedIn(true);
   }, []);
+
   const handleLogout = useCallback(() => {
     console.log("handleLogout called");
     localStorage.removeItem("IdToken");
@@ -54,8 +81,13 @@ function App() {
     handleReset();
   }, []);
   const handleReset = useCallback(() => {
+    setSelectedService(null);
+    setCookie("selectedService", "", -1);
     setResetTrigger((prev) => prev + 1);
   }, []);
+  const handleServiceSelection = (service) => {
+    setSelectedService(service);
+  };
   const handleRefreshTokenCheck = useCallback(() => {
     setrefreshTokenTrigger((prev) => {
       const newValue = prev + 1;
@@ -76,8 +108,18 @@ function App() {
     setusername("");
     setuser_id("");
     setidToken("");
+    //setSelectedService(null);
+    //setCookie("selectedService", "", -1);
     handleReset();
   }, []);
+  // 更新 cookie 的函數
+  const updateCookies = () => {
+    setCookie("selectedService", selectedService);
+  };
+  // 在狀態更新時更新 cookie
+  useEffect(() => {
+    updateCookies();
+  }, [selectedService]);
   //檢查token過期
   useEffect(() => {
     const checkSession = () => {
@@ -121,13 +163,22 @@ function App() {
       />
       <div className="mainContent">
         {isLoggedIn ? (
-          <SurveyDisplay
-            idToken={idToken}
-            user_id={user_id}
-            username={username}
-            resetTrigger={resetTrigger}
-            onRefreshTokenCheck={handleRefreshTokenCheck}
-          />
+          selectedService === null ? (
+            <PortalPage
+              username={username}
+              onSelectService={handleServiceSelection}
+            />
+          ) : selectedService === "一般模式" ? (
+            <SurveyDisplay
+              idToken={idToken}
+              user_id={user_id}
+              username={username}
+              resetTrigger={resetTrigger}
+              onRefreshTokenCheck={handleRefreshTokenCheck}
+            />
+          ) : (
+            <div>Selected Service: {selectedService}</div> // 其他服務之後再加入
+          )
         ) : (
           <AWSLogin onLogin={handleLogin} />
         )}
