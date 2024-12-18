@@ -3,24 +3,39 @@
   padding: 20px;
 }
 
+
 .serviceButtons button {
-  margin: 10px;
+  margin: 25px;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+  border: solid;
+  border-color: #44b787;
+  background-color: white;
+  color: #44b787;
+}
+.serviceButtons button:hover { 
+  background-color: #baead0;
+  /* color: white; */
 }
 
 .modeDescription {
+  top: 35%;
+  left: 39%;
   margin-top: 20px;
   padding: 15px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
+  width: 500px;
+  height: 300px;
+  margin: 0 auto;
 }
 
 .nextStepButton {
-  margin-top: 10px;
-  padding: 10px 20px;
+position: relative;
+  margin-top: 30px;
+  padding: 10px 50px;
   font-size: 16px;
   background-color: #44b787;
   color: white;
@@ -32,3 +47,4 @@
 .nextStepButton:hover {
   background-color: #44b787;
 }
+

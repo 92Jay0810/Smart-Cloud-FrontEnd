@@ -1,0 +1,81 @@
+from diagrams import Cluster, Diagram, Edge
+from diagrams.gcp.compute import ComputeEngine, KubernetesEngine
+from diagrams.gcp.database import Firestore, Memorystore,SQL
+from diagrams.gcp.storage import GCS,Filestore
+from diagrams.gcp.network import CDN, Armor, DNS, LoadBalancing, VPN, Network
+from diagrams.gcp.security import Iam, KeyManagementService, SecurityCommandCenter
+from diagrams.gcp.operations import Monitoring, Logging 
+from diagrams.custom import Custom
+from diagrams.onprem.client import Client
+from urllib.request import urlretrieve
+
+
+with Diagram("Urls3testing", show=False,graph_attr={"layout":"osage","pack":"40"}):
+    client1=Client("Client")
+    client2=Client("Client")
+    with Cluster(label = "Service Project",direction="LR"):
+        Cloud_CDN = CDN("Cloud CDN")
+        Cloud_LoadBalancing = LoadBalancing("Cloud load balancing")
+        Cloud_Armor = Armor("Cloud Armor")
+        [client1,client2] >> Cloud_CDN << Edge(default="solid")>> Cloud_LoadBalancing << DNS("Cloud DNS")
+        Cloud_Armor - Edge(style = "dotted") - Cloud_LoadBalancing
+
+        with Cluster(label = "Computing",direction="LR"):    
+            with Cluster("Subnet"):
+                Kuber = KubernetesEngine("Kubernetes\nEngine")
+                Cloud_LoadBalancing >> Kuber
+
+        with Cluster("Storage"):
+            fs = Filestore("Filestore")
+            gcs = GCS("Cloud Storage")
+            Kuber >>Edge(label="http")>> gcs >> fs
+
+        with Cluster("Database"):
+            Cloud_Firestore = Firestore("Firestore")
+            Kuber >>Edge(label="http")>> Cloud_Firestore
+            with Cluster("Subnet"):
+                with Cluster("zone-a"):
+                    Redis_Primary= Memorystore("Redis\nPrimary")
+                    sql_P = SQL("PostgreSOL\nPrimary")
+
+                with Cluster("zone-b"):
+                    Redis_Replica = Memorystore("Redis\nReplica") 
+                    sql_S = SQL("PostgreSOL\nStandby")
+
+                Kuber >>Edge(label = "Private Service Access / TLS")>> Redis_Primary <<Edge(style = "dotted") >> sql_P
+                Kuber >> Redis_Replica <<Edge(style = "dotted") >> sql_S
+
+                Redis_Primary<<Edge(label="Memorystore HA",style = "dotted")>>Redis_Replica
+                sql_P<<Edge(label="Cloud SQL HA",style = "dotted")>>sql_S 
+
+        with Cluster(label="Operations",direction="LR"):
+            trace_url= "https://lh3.googleusercontent.com/OtgF6e6zXgd3ZYkwxuQengezPLH7eFEESd7DdQ5mN3jb_S95Lb87aXUyRhamnVBSnDiCbX4pBUQfCw5zUUJ_=w240-h240"
+            trace_icon = "trace.png"
+            urlretrieve(trace_url, trace_icon)
+            monitoring = Monitoring("Monitoring")
+            logging = Logging("Logging")
+            trace = Custom("trace", trace_icon)
+            
+        with Cluster(label="Security",direction="LR"):
+            I_am = Iam("Cloud Iam")
+            KeyM = KeyManagementService("Key Management\n Service")
+            SecurityCommand = SecurityCommandCenter("Cloud Security \n Command Center")
+            Custommm = Custom("Secret Manger","./resource/secret.png")
+        
+    with Cluster("Host Project"):
+        with Cluster("Share VPC network"):
+            with Cluster("Asia-east1"):
+                Cloud_VPN = VPN("Cloud VPN")
+                with Cluster("Subnet"):
+                     subnet = Network("")
+                with Cluster("Subnet2"):
+                     subnet2 = Network("")
+                subnet - subnet2
+                subnet >> Cloud_VPN
+                Kuber- Edge( style = "dotted")-subnet
+                sql_P - Edge(style = "dotted")-subnet2
+
+    with Cluster("Cathay on Premise"):
+            Cloud_VPN <<Edge(default="solid") >> ComputeEngine("Batch Service")
+            Internal_website = ComputeEngine("Internal Website")
+            Local_storage = GCS("Local-storage")
