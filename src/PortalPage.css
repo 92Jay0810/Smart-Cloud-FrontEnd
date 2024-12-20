@@ -1,50 +1,103 @@
-.portalPage {
-  text-align: center;
-  padding: 20px;
-}
-
-
-.serviceButtons button {
-  margin: 25px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border: solid;
-  border-color: #44b787;
-  background-color: white;
-  color: #44b787;
-}
-.serviceButtons button:hover { 
-  background-color: #baead0;
-  /* color: white; */
-}
-
-.modeDescription {
-  top: 35%;
-  left: 39%;
-  margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  width: 500px;
-  height: 270px;
+/* 使用特定的父級選擇器來限制樣式範圍 */
+.portal-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1024px;
   margin: 0 auto;
 }
 
-.nextStepButton {
-position: relative;
-  margin-top: 30px;
-  padding: 10px 50px;
-  font-size: 16px;
+.portal-page .portal-title {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.portal-page .portal-subtitle {
+  margin-bottom: 2rem;
+  display: block;
+}
+
+.portal-page .mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  width: 100%;
+}
+
+.portal-page .mode-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-page .mode-button {
+  padding: 1rem 1.5rem;
+  font-size: 1.125rem;
+  border: 2px solid #44b787;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #44b787;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.portal-page .mode-button:hover {
+  background-color: #f0faf5;
+}
+
+.portal-page .mode-button.selected {
+  background-color: #44b787;
+  color: white;
+}
+
+.portal-page .mode-subtitle {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.portal-page .mode-button.selected .mode-subtitle {
+  color: #e6e6e6;
+}
+
+.portal-page .mode-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #e6e6e6;
+  border-radius: 0.5rem;
+  text-align: left;
+}
+
+.portal-page .mode-suitable {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.portal-page .mode-description {
+  font-size: 0.875rem;
+  white-space: pre-line;
+}
+
+.portal-page .portal-next-button {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
   background-color: #44b787;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.nextStepButton:hover {
-  background-color: #44b787;
+.portal-page .portal-next-button:hover {
+  background-color: #3a9c73;
 }
 
+/* Responsive styles */
+@media (max-width: 768px) {
+  .portal-page .mode-grid {
+    grid-template-columns: 1fr;
+  }
+}
