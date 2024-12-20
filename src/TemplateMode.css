@@ -1,0 +1,147 @@
+/* TemplateMode.css */
+.image-grid-container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.image-grid-title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #10b981;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 1024px) {
+  .image-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.station-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.station-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+}
+
+.card-content {
+  padding: 16px;
+}
+
+.image-container {
+  aspect-ratio: 16 / 9;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.station-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.station-card:hover .station-image {
+  transform: scale(1.1);
+}
+
+.station-caption {
+  text-align: center;
+  color: #374151;
+  margin: 0;
+}
+
+/* 詳情視圖樣式 */
+.detail-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.detail-image-container {
+  width: 100%;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detail-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.detail-caption {
+  font-size: 20px;
+  color: #374151;
+  margin: 16px 0 32px;
+  text-align: center;
+}
+
+.Tnavigation-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  width: 100%;
+}
+
+.back-button,
+.Tnext-button {
+  padding: 12px 24px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.back-button {
+  background-color: #6b7280;
+  color: white;
+}
+
+.back-button:hover {
+  background-color: #4b5563;
+  transform: translateX(-5px);
+}
+
+.Tnext-button {
+  background-color: #10b981;
+  color: white;
+}
+
+.Tnext-button:hover {
+  background-color: #059669;
+  transform: translateX(5px);
+}
+
+.back-button::before {
+  content: "←";
+  margin-right: 8px;
+}
+
+.Tnext-button::after {
+  content: "→";
+  margin-left: 8px;
+}

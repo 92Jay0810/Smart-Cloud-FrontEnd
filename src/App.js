@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "./Sidebar";
 import PortalPage from "./PortalPage";
+import TemplateMode from "./TemplateMode";
 import SurveyDisplay from "./SurveyDisplay";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";
@@ -176,6 +177,8 @@ function App() {
               resetTrigger={resetTrigger}
               onRefreshTokenCheck={handleRefreshTokenCheck}
             />
+          ) : selectedService === "快速模式" ? (
+            <TemplateMode username={username} />
           ) : (
             <div>Selected Service: {selectedService}</div> // 其他服務之後再加入
           )
