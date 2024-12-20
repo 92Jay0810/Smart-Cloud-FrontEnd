@@ -15,6 +15,7 @@
 }
 
 .portal-page .portal-subtitle {
+  font-size: 20px;
   margin-bottom: 2rem;
   display: block;
 }
@@ -29,7 +30,10 @@
 .portal-page .mode-container {
   display: flex;
   flex-direction: column;
+  width: 350px;
+  height: 200px;
 }
+
 
 .portal-page .mode-button {
   padding: 1rem 1.5rem;
@@ -40,6 +44,8 @@
   color: #44b787;
   cursor: pointer;
   transition: all 0.2s ease;
+  width: 350px;
+  height: 200px;
 }
 
 .portal-page .mode-button:hover {
@@ -52,8 +58,8 @@
 }
 
 .portal-page .mode-subtitle {
-  font-size: 0.875rem;
-  color: #666;
+  font-size: 16px;
+  color: #212121;
 }
 
 .portal-page .mode-button.selected .mode-subtitle {
@@ -61,23 +67,34 @@
 }
 
 .portal-page .mode-info {
-  margin-top: 1rem;
   padding: 1rem;
   background-color: #f9f9f9;
   border: 1px solid #e6e6e6;
   border-radius: 0.5rem;
   text-align: left;
+  height: 400px;
 }
 
 .portal-page .mode-suitable {
-  font-size: 0.875rem;
+  font-size: 18px;
   margin-bottom: 0.5rem;
+  font-style: bold;
+}
+.portal-page .mode-suitable2 {
+  font-size: 16px;
+  white-space: pre-line;
+  
 }
 
 .portal-page .mode-description {
-  font-size: 0.875rem;
+  font-size:18px;
+  font-style: bold;
+}
+.portal-page .mode-description2 {
+  font-size:16px;
   white-space: pre-line;
 }
+
 
 .portal-page .portal-next-button {
   width: 100%;
@@ -88,7 +105,7 @@
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.3s ease;
 }
 
 .portal-page .portal-next-button:hover {
