@@ -131,7 +131,9 @@ if no error
 {
   "body": {
     "s3_object_name": "xxx.png",
-    "errorMessage": ""
+    "errorMessage": "",
+    "s3_python_code": "..",
+    "drawio_xml": ""
   }
 }
 ```
@@ -164,6 +166,7 @@ if no error
   "body": {
     "s3_object_name": "xxx.png",
     "errorMessage": "errorMessage",
+    "s3_python_code": "..",
     "AIMessage": "AIMessage for user"
   }
 }

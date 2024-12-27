@@ -107,7 +107,7 @@ const survey = [
     questions: [
       {
         question: "請選擇架構圖的繪圖工具",
-        options: ["Diagrams", "PlantUML"],
+        options: ["Diagrams", "PlantUML", "Draw.io"],
       },
     ],
   },
@@ -242,7 +242,6 @@ function SurveyDisplay({
   const [tool, setTool] = useState(() => {
     return getCookie("tool") || "";
   });
-
   const [messages, setMessages] = useState(() => {
     try {
       const saved = getCookie("messages");
@@ -251,6 +250,10 @@ function SurveyDisplay({
       console.error("Error parsing messages from cookie:", error);
       return [];
     }
+  });
+  const [diagramXml, setDiagramXml] = useState(() => {
+    const diagramxml = getCookie("diagramXml");
+    return diagramxml ? diagramxml : false;
   });
   // 更新 cookie 的函數
   const updateCookies = () => {
@@ -263,6 +266,7 @@ function SurveyDisplay({
     setCookie("tool", tool);
     setCookie("messages", JSON.stringify(messages));
     setCookie("session_id", session_id);
+    setCookie("diagramXml", diagramXml);
   };
 
   // 在狀態更新時更新 cookie
@@ -278,11 +282,10 @@ function SurveyDisplay({
     tool,
     messages,
     session_id,
+    diagramXml,
   ]);
 
   //fetch url and show image
-  //csd-lab
-  // const baseurl = "https://d1fnvwdkrkz29m.cloudfront.net";
 
   //csd-ca-lab
   const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
@@ -291,15 +294,10 @@ function SurveyDisplay({
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
-  const [autoRevise, setAutoRevise] = useState(false);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
-
-  // 切換 autoRevise 狀態的函數
-  const toggleAutoRevise = () => {
-    setAutoRevise((prevState) => !prevState);
-  };
+  const iframeRef = useRef(null);
 
   //saveDialog
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -383,7 +381,7 @@ function SurveyDisplay({
         tool: TransformAsnwers["5-0"],
       };
       setPlatform(SumbitAnswers.query["0-0"]);
-      setTool(SumbitAnswers.query["5-0"]);
+      setTool(SumbitAnswers.tool);
       console.log("傳送格式:\n", SumbitAnswers);
       try {
         let response = "";
@@ -432,7 +430,20 @@ function SurveyDisplay({
           `
           );
         }
-        if (data?.s3_object_name && data?.s3_python_code) {
+        if (SumbitAnswers.tool === "drawio" && data?.drawio_xml) {
+          setDiagramXml(data.drawio_xml);
+          console.log("drawio_xml received:", data.drawio_xml);
+          setShowDialog(true);
+          setMessages([
+            {
+              sender: "System",
+              text:
+                "Hi " +
+                username +
+                ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
+            },
+          ]);
+        } else if (data?.s3_object_name && data?.s3_python_code) {
           console.log("s3_object_name found:", data.s3_object_name);
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
           setsavecode(baseurl + "/diagram/" + data.s3_python_code);
@@ -447,7 +458,9 @@ function SurveyDisplay({
             },
           ]);
         } else {
-          console.log("s3_object_name&s3_python_code not found");
+          console.log(
+            "drawio_xml and s3_object_name and s3_python_code not found"
+          );
         }
         // 清除 cookie 中的答案
         setCookie("surveyAnswers", "", -1);
@@ -507,7 +520,7 @@ function SurveyDisplay({
       "4-0": ["ShareStorageYes", "ShareStorageNo"],
       "4-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
       "4-2": ["StorageActive", "StorageStandby", "StorageNo"],
-      "5-0": ["diagrams", "plantuml"],
+      "5-0": ["diagrams", "plantuml", "drawio"],
     };
     Object.keys(answers).forEach((key) => {
       const optionID = answers[key];
@@ -541,6 +554,33 @@ function SurveyDisplay({
       );
     });
   };
+  //處理draw io
+  const loadDiagram = () => {
+    if (!iframeRef.current || !diagramXml) return;
+    const message = {
+      action: "load",
+      xml: diagramXml,
+    };
+    iframeRef.current.contentWindow.postMessage(JSON.stringify(message), "*");
+  };
+  //處理draw io
+  useEffect(() => {
+    const handleMessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.event === "init") {
+          loadDiagram();
+        }
+      } catch (error) {
+        // Ignore non-JSON messages
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [diagramXml]);
 
   const handleSaveFile = () => {
     setShowSaveDialog(true);
@@ -626,7 +666,6 @@ function SurveyDisplay({
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
       const consersationRequest = {
         prompt: inputText,
-        verify: autoRevise,
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
@@ -779,7 +818,6 @@ function SurveyDisplay({
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
       const transformationRequest = {
         prompt: promptText,
-        verify: autoRevise,
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
@@ -895,40 +933,45 @@ function SurveyDisplay({
                     This architecture diagram is generated based on the
                     technical requirements you provided.
                   </h2>
-                  {imageUrl ? (
+                  <div className="button-container">
+                    <button onClick={handleSaveFile}>Save Image</button>
+                    <button onClick={handleSaveCode}>Save Code</button>
+                    <button onClick={handleModifyPromptClick}>
+                      Modify Prompt
+                    </button>
+                    <button onClick={handleZoomOut}>🔍 -</button>
+                    <button onClick={handleZoomIn}>🔍 +</button>
+                    <div className="platform-button-container">
+                      <button
+                        onClick={() => handleTransform()}
+                        disabled={platform === "aws"}
+                      >
+                        AWS
+                      </button>
+                      <button
+                        onClick={() => handleTransform()}
+                        disabled={platform === "gcp"}
+                      >
+                        GCP
+                      </button>
+                    </div>
+                    <div className="platform-button-container">
+                      <button disabled={tool === "diagrams"}>Diagrams</button>
+                      <button disabled={tool === "plantuml"}>PlantUML</button>
+                      <button disabled={tool === "drawio"}>Draw.io</button>
+                    </div>
+                  </div>
+                  {diagramXml ? (
                     <>
-                      <div className="button-container">
-                        <button onClick={handleSaveFile}>Save Image</button>
-                        <button onClick={handleSaveCode}>Save Code</button>
-                        <button onClick={handleModifyPromptClick}>
-                          Modify Prompt
-                        </button>
-                        <button onClick={handleZoomOut}>🔍 -</button>
-                        <button onClick={handleZoomIn}>🔍 +</button>
-                        <div className="platform-button-container">
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "aws"}
-                          >
-                            AWS
-                          </button>
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "gcp"}
-                          >
-                            GCP
-                          </button>
-                        </div>
-                        <div className="platform-button-container">
-                          <button disabled={tool === "diagrams"}>
-                            Diagrams
-                          </button>
-                          <button disabled={tool === "plantuml"}>
-                            PlantUML
-                          </button>
-                        </div>
-                      </div>
-
+                      <iframe
+                        ref={iframeRef}
+                        id="drawio-frame"
+                        src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
+                        allowFullScreen
+                      ></iframe>
+                    </>
+                  ) : imageUrl ? (
+                    <>
                       <div className=".survey-result-content">
                         <div className="survey-image-container">
                           <img
@@ -1045,20 +1088,6 @@ function SurveyDisplay({
                 )}
                 <div ref={messagesEndRef} />
               </div>
-
-              {/* <div className="toggle-container">
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={autoRevise}
-                  onChange={toggleAutoRevise}
-                />
-                <span className="toggle-slider"></span>
-              </label>
-              <p className="toggle-label">
-                Auto Revise is {autoRevise ? "Enabled" : "Disabled"}
-              </p>
-            </div> */}
               <div className="chat-input">
                 <textarea
                   value={inputText}
