@@ -8,7 +8,12 @@ const TemplateMode = ({ username }) => {
   const [view, setView] = useState("grid"); // 'grid' or 'detail'
 
   const workstations = [
-    { id: 1, caption: "適用情境：工作站", image: logo },
+    {
+      id: 1,
+      caption: "適用情境：website",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/website/website.png",
+    },
     { id: 2, caption: "適用情境：工作站", image: logo },
     { id: 3, caption: "適用情境：工作站", image: logo },
     { id: 4, caption: "適用情境：工作站", image: logo },

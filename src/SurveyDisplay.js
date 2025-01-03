@@ -107,7 +107,7 @@ const survey = [
     questions: [
       {
         question: "請選擇架構圖的繪圖工具",
-        options: ["Diagrams", "PlantUML", "Draw.io"],
+        options: ["Diagrams", "Draw.io"],
       },
     ],
   },
@@ -520,7 +520,7 @@ function SurveyDisplay({
       "4-0": ["ShareStorageYes", "ShareStorageNo"],
       "4-1": ["DocumentOver1GbYes", "DocumentOver2GbNo"],
       "4-2": ["StorageActive", "StorageStandby", "StorageNo"],
-      "5-0": ["diagrams", "plantuml", "drawio"],
+      "5-0": ["diagrams", "drawio"],
     };
     Object.keys(answers).forEach((key) => {
       const optionID = answers[key];
@@ -640,6 +640,7 @@ function SurveyDisplay({
   }, [messages]);
 
   // HandleConversationSand
+  //對話目前未處裡 XML的回應
   const handleSend = async () => {
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
@@ -933,36 +934,27 @@ function SurveyDisplay({
                     This architecture diagram is generated based on the
                     technical requirements you provided.
                   </h2>
-                  <div className="button-container">
-                    <button onClick={handleSaveFile}>Save Image</button>
-                    <button onClick={handleSaveCode}>Save Code</button>
-                    <button onClick={handleModifyPromptClick}>
-                      Modify Prompt
-                    </button>
-                    <button onClick={handleZoomOut}>🔍 -</button>
-                    <button onClick={handleZoomIn}>🔍 +</button>
-                    <div className="platform-button-container">
-                      <button
-                        onClick={() => handleTransform()}
-                        disabled={platform === "aws"}
-                      >
-                        AWS
-                      </button>
-                      <button
-                        onClick={() => handleTransform()}
-                        disabled={platform === "gcp"}
-                      >
-                        GCP
-                      </button>
-                    </div>
-                    <div className="platform-button-container">
-                      <button disabled={tool === "diagrams"}>Diagrams</button>
-                      <button disabled={tool === "plantuml"}>PlantUML</button>
-                      <button disabled={tool === "drawio"}>Draw.io</button>
-                    </div>
-                  </div>
                   {diagramXml ? (
                     <>
+                      <div className="button-container">
+                        <button onClick={handleModifyPromptClick}>
+                          Modify Prompt
+                        </button>
+                        <div className="platform-button-container">
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "aws"}
+                          >
+                            AWS
+                          </button>
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "gcp"}
+                          >
+                            GCP
+                          </button>
+                        </div>
+                      </div>
                       <iframe
                         ref={iframeRef}
                         id="drawio-frame"
@@ -972,6 +964,29 @@ function SurveyDisplay({
                     </>
                   ) : imageUrl ? (
                     <>
+                      <div className="button-container">
+                        <button onClick={handleSaveFile}>Save Image</button>
+                        <button onClick={handleSaveCode}>Save Code</button>
+                        <button onClick={handleModifyPromptClick}>
+                          Modify Prompt
+                        </button>
+                        <button onClick={handleZoomOut}>🔍 -</button>
+                        <button onClick={handleZoomIn}>🔍 +</button>
+                        <div className="platform-button-container">
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "aws"}
+                          >
+                            AWS
+                          </button>
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "gcp"}
+                          >
+                            GCP
+                          </button>
+                        </div>
+                      </div>
                       <div className=".survey-result-content">
                         <div className="survey-image-container">
                           <img
