@@ -26,7 +26,12 @@ h2 {
   margin-bottom: 30px;
 }
 
-
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
 .question-container {
   background-color: white;
   border-radius: 8px;

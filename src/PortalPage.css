@@ -118,3 +118,9 @@
     grid-template-columns: 1fr;
   }
 }
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}

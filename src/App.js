@@ -11,8 +11,6 @@ function App() {
   const [username, setusername] = useState("");
   const [user_id, setuser_id] = useState("");
   const [idToken, setidToken] = useState("");
-  //重製用
-  const [resetTrigger, setResetTrigger] = useState(0);
   //Session Expiration Related
   const [refreshTokenTrigger, setrefreshTokenTrigger] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -59,7 +57,6 @@ function App() {
     }
   }, []);
   // 讀取 cookie 的函數
-
   const handleLogin = useCallback(() => {
     console.log("handleLogin called");
     const idToken = localStorage.getItem("IdToken");
@@ -79,15 +76,16 @@ function App() {
     setusername("");
     setuser_id("");
     setidToken("");
-    handleReset();
-  }, []);
-  const handleReset = useCallback(() => {
     setSelectedService(null);
     setCookie("selectedService", "", -1);
-    setResetTrigger((prev) => prev + 1);
   }, []);
+
   const handleServiceSelection = (service) => {
     setSelectedService(service);
+  };
+  const handleBackPrortalPage = (service) => {
+    setSelectedService(null);
+    setCookie("selectedService", "", -1);
   };
   const handleRefreshTokenCheck = useCallback(() => {
     setrefreshTokenTrigger((prev) => {
@@ -109,18 +107,17 @@ function App() {
     setusername("");
     setuser_id("");
     setidToken("");
-    //setSelectedService(null);
-    //setCookie("selectedService", "", -1);
-    handleReset();
   }, []);
   // 更新 cookie 的函數
   const updateCookies = () => {
     setCookie("selectedService", selectedService);
   };
+
   // 在狀態更新時更新 cookie
   useEffect(() => {
     updateCookies();
   }, [selectedService]);
+
   //檢查token過期
   useEffect(() => {
     const checkSession = () => {
@@ -157,28 +154,32 @@ function App() {
 
   return (
     <div className="app">
-      <Sidebar
-        onReset={handleReset}
-        handleLogout={handleLogout}
-        isLoggedIn={isLoggedIn}
-      />
       <div className="mainContent">
         {isLoggedIn ? (
           selectedService === null ? (
             <PortalPage
               username={username}
               onSelectService={handleServiceSelection}
+              handleLogout={handleLogout}
             />
           ) : selectedService === "一般模式" ? (
             <SurveyDisplay
               idToken={idToken}
               user_id={user_id}
               username={username}
-              resetTrigger={resetTrigger}
+              handleBackPrortalPage={handleBackPrortalPage}
               onRefreshTokenCheck={handleRefreshTokenCheck}
+              handleLogout={handleLogout}
             />
           ) : selectedService === "快速模式" ? (
-            <TemplateMode username={username} />
+            <TemplateMode
+              idToken={idToken}
+              user_id={user_id}
+              username={username}
+              handleBackPrortalPage={handleBackPrortalPage}
+              onRefreshTokenCheck={handleRefreshTokenCheck}
+              handleLogout={handleLogout}
+            />
           ) : (
             <div>Selected Service: {selectedService}</div> // 其他服務之後再加入
           )

@@ -113,19 +113,13 @@ const survey = [
   },
 ];
 
-const CustomPromptTemplate = `transform to {platform}, make sure to follow the transformation and service mapping rules, and ensure all security and operational components present.`;
-
-// 定义一个函数来替换 {platform} 占位符
-const generatePrompt = (platform) => {
-  return CustomPromptTemplate.replace("{platform}", platform);
-};
-
 function SurveyDisplay({
   idToken,
   user_id,
   username,
-  resetTrigger,
+  handleBackPrortalPage,
   onRefreshTokenCheck,
+  handleLogout,
 }) {
   const handleRefreshTokenCheck = () => {
     console.log("Refreshcall in SurveyDisplay");
@@ -187,12 +181,11 @@ function SurveyDisplay({
     setFileName("");
   }, []);
 
-  // 監聽 resetTrigger 的變化
-  useEffect(() => {
-    if (resetTrigger > 0) {
-      resetSurvey();
-    }
-  }, [resetTrigger, resetSurvey]);
+  //返回按鈕
+  const handleBack = useCallback(() => {
+    resetSurvey(); // 先執行當前組件的重置
+    handleBackPrortalPage(); // 返回服務選擇頁面
+  }, [resetSurvey, handleBackPrortalPage]);
 
   //service
   const [answers, setAnswers] = useState(() => {
@@ -784,7 +777,12 @@ function SurveyDisplay({
       setInputText("");
     }
   };
+  const CustomPromptTemplate = `transform to {platform}, make sure to follow the transformation and service mapping rules, and ensure all security and operational components present.`;
 
+  // 定义一个函数来替换 {platform} 占位符
+  const generatePrompt = (platform) => {
+    return CustomPromptTemplate.replace("{platform}", platform);
+  };
   const handleTransform = async () => {
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
@@ -915,6 +913,14 @@ function SurveyDisplay({
   if (submitted) {
     return (
       <div className="App">
+        <div className="header-container">
+          <button onClick={handleBack} className="back-button">
+            返回
+          </button>
+          <button onClick={handleLogout} className="next-button">
+            登出
+          </button>
+        </div>
         <CSSTransition
           in={submitted}
           timeout={300}
@@ -1142,6 +1148,14 @@ function SurveyDisplay({
         Please provide the technical requirements below, and we'll design a
         custom cloud architecture diagram just for you.
       </h2>
+      <div className="header-container">
+        <button onClick={handleBack} className="back-button">
+          返回
+        </button>
+        <button onClick={handleLogout} className="next-button">
+          登出
+        </button>
+      </div>
       <TransitionGroup>
         <CSSTransition
           key={currentCategoryIndex}
