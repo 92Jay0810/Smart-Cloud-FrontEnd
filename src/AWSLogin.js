@@ -107,7 +107,7 @@ const AWSLogin = ({ onLogin }) => {
         />
         <button type="submit">Sign In</button>
       </form>
-      ;
+      
     </div>
   );
 };

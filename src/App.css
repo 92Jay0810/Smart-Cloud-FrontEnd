@@ -24,9 +24,8 @@ body {
 
 .mainContent {
   width: 100%;
-  margin-left: 15%;
   flex: 1;
-  padding: 20px;
+  padding:  10px;
   background-color: #f4f4f4;
   height: 100vh;
   overflow-y: auto;
