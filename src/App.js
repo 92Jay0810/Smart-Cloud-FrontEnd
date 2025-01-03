@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Sidebar from "./Sidebar";
 import PortalPage from "./PortalPage";
 import TemplateMode from "./TemplateMode";
 import SurveyDisplay from "./SurveyDisplay";
