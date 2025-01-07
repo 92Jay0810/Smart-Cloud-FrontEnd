@@ -1,4 +1,4 @@
-// TemplateMode.js
+// TemplateMode.jsz
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
 import "./TemplateMode.css";

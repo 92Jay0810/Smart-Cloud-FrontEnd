@@ -7,6 +7,7 @@
   width: 100%;
   max-width: 1024px;
   margin: 0 auto;
+  
 }
 
 .portal-page .portal-title {
@@ -21,11 +22,19 @@
 }
 
 .portal-page .mode-grid {
+  max-width: 72rem;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  width: 100%;
 }
+
+.header-container {
+  position: absolute;
+  top: 1rem; /* 距離畫面頂部 1rem */
+  right: 1rem; /* 距離畫面右側 1rem */
+}
+
 
 .portal-page .mode-container {
   display: flex;
@@ -96,21 +105,49 @@
 }
 
 
-.portal-page .portal-next-button {
-  width: 100%;
-  margin-top: 1rem;
+.portal-page .nextt-button {
+  font-size: 16px;
+  position: absolute; /* 讓按鈕能固定在指定位置 */
+  bottom: 1rem; /* 距離畫面底部 1rem */
+  right: 35rem; /* 距離畫面右側 1rem */
   padding: 0.5rem 1.5rem;
   background-color: #44b787;
-  color: white;
+  color: #f4f4f4;
+  border: 2px solid #44b787;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 200px;
+  height: 50px;
+  font-weight: bold;
+}
+
+.nextbutton {
+  font-size: 16px;
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem; 
+  padding: 0.5rem 1.5rem;
+  background-color: #44b787;
+  color: #f4f4f4;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
+  width: 80px;
+  font-weight: bold;
+  height: 50px;
 }
 
-.portal-page .portal-next-button:hover {
+.nextt-button:hover {
   background-color: #3a9c73;
+  color:#ffffff;
 }
+.nextbutton:hover {
+  background-color: #3a9c73;
+
+}
+
 
 /* Responsive styles */
 @media (max-width: 768px) {
@@ -118,3 +155,4 @@
     grid-template-columns: 1fr;
   }
 }
+

@@ -38,7 +38,7 @@ function PortalPage({ username, onSelectService, handleLogout }) {
   return (
     <div className="portal-page">
       <div className="header-container">
-        <button onClick={handleLogout} className="next-button">
+        <button onClick={handleLogout} className="nextbutton">
           登出
         </button>
       </div>
@@ -72,7 +72,7 @@ function PortalPage({ username, onSelectService, handleLogout }) {
                 <p className="mode-description2">{info.description2}</p>
                 <button
                   onClick={() => onSelectService(mode)}
-                  className="next-button"
+                  className="nextt-button"
                 >
                   下一步
                 </button>
