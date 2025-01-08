@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
-import "./SurveyDisplay.css";
 import { jwtDecode } from "jwt-decode";
-import userImg from "./assets/user.jpg";
-import systemImg from "./assets/system.jpeg";
-import close from "./assets/grey close.png";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { v4 as uuidv4 } from "uuid";
+import close from "./assets/grey close.png";
 import loadingImg from "./assets/loading1.gif";
+import systemImg from "./assets/system.jpeg";
+import userImg from "./assets/user.jpg";
+import "./SurveyDisplay.css";
 const survey = [
   {
     category: "Cloud Platform 雲端平台",
@@ -248,6 +248,10 @@ function SurveyDisplay({
     const diagramxml = getCookie("diagramXml");
     return diagramxml ? diagramxml : false;
   });
+
+  // xmlUrl
+  const [xmlUrl, setXmlUrl] = useState("")
+
   // 更新 cookie 的函數
   const updateCookies = () => {
     setCookie("submitted", submitted);
@@ -378,14 +382,32 @@ function SurveyDisplay({
       console.log("傳送格式:\n", SumbitAnswers);
       try {
         let response = "";
-        response = await fetch(url, {
-          method: "POST",
-          headers: {
-            authorizationToken: `Bearer ${idToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(SumbitAnswers),
-        });
+        if(SumbitAnswers.tool === "drawio") {
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              authorizationToken: `Bearer ${idToken}`,
+              "Content-Type": "application/json",
+              "InvocationType": "Event",
+            },
+            body: JSON.stringify(SumbitAnswers),
+          });
+
+          if (response.status === 200) {
+            console.log("response status:", 200)
+            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+          }
+          return;
+        } else {
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              authorizationToken: `Bearer ${idToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(SumbitAnswers),
+          });
+        }
         const responseData = await response.json();
         console.log("responseData :", responseData);
         //確保body裡面是json讀取，後端可能誤傳string
@@ -477,6 +499,38 @@ function SurveyDisplay({
       alert("請回答所有問題後再提交！");
     }
   };
+
+  useEffect(() => {
+    let intervalId;
+
+    if (xmlUrl) {
+      console.log(xmlUrl)
+      intervalId = setInterval(async () => {
+        try {
+          const response = await fetch(xmlUrl);
+          if (response.ok) {
+
+            const xmlContent = await response.text();
+            console.log('XML content:', xmlContent);
+
+            if (xmlContent) {
+              setDiagramXml(xmlContent);
+              clearInterval(intervalId);
+              setApiResponseReceived(true); 
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching XML:', error);
+        }
+      }, 100000);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [xmlUrl])
 
   //將Answers格式轉換，交給後端
   const transformAnswers = (answers) => {
@@ -658,23 +712,44 @@ function SurveyDisplay({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      const consersationRequest = {
+      const conversationRequest = {
         prompt: inputText,
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
         tool: tool,
       };
-      console.log("傳送格式:\n", consersationRequest);
+      console.log("傳送格式:\n", conversationRequest);
+      let response = "";
       try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            authorizationToken: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify(consersationRequest),
-        });
+        if(conversationRequest.tool === "drawio"){
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorizationToken: `Bearer ${idToken}`,
+              "InvocationType": "Event",
+            },
+            body: JSON.stringify(conversationRequest),
+          });
+
+          if (response.status === 200) {
+            console.log("response status:", 200)
+            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+          }
+
+          console.log("end")
+          return;
+        } else {
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorizationToken: `Bearer ${idToken}`,
+            },
+            body: JSON.stringify(conversationRequest),
+          });
+        }
         const responseData = await response.json();
         console.log("responseData :", responseData);
         //確保body裡面是json讀取，後端可能誤傳string
@@ -822,16 +897,37 @@ function SurveyDisplay({
         user_id: user_id,
         tool: tool,
       };
+      let response = "";
       console.log("傳送格式:\n", transformationRequest);
       try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            authorizationToken: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify(transformationRequest),
-        });
+        if(transformationRequest.tool === "drawio"){
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorizationToken: `Bearer ${idToken}`,
+              "InvocationType": "Event",
+            },
+            body: JSON.stringify(transformationRequest),
+          });
+
+          if (response.status === 200) {
+            console.log("response status:", 200)
+            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+          }
+
+          console.log("end")
+          return;
+        } else {
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorizationToken: `Bearer ${idToken}`,
+            },
+            body: JSON.stringify(transformationRequest),
+          });
+        }
         const responseData = await response.json();
         console.log("responseData :", responseData);
         //確保body裡面是json讀取，後端可能誤傳string
@@ -966,6 +1062,7 @@ function SurveyDisplay({
                         id="drawio-frame"
                         src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
                         allowFullScreen
+                        style={{ width: "100%"}}
                       ></iframe>
                     </>
                   ) : imageUrl ? (
