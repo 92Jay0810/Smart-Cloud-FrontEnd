@@ -126,16 +126,20 @@ const TemplateMode = ({
   const workstations = [
     {
       id: 1,
-      caption: "適用情境：website",
+      caption: "適用情境：對外活動網站",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/website/website.png",
       backendAPI: "website",
     },
-    { id: 2, caption: "適用情境：工作站", image: logo },
-    { id: 3, caption: "適用情境：工作站", image: logo },
-    { id: 4, caption: "適用情境：工作站", image: logo },
-    { id: 5, caption: "適用情境：工作站", image: logo },
-    { id: 6, caption: "適用情境：工作站", image: logo },
+    { id: 2, caption: "適用情境：公開資料查詢服務", 
+      image: "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/%E4%BA%A4%E6%98%93%E5%85%AC%E9%96%8B%E8%B3%87%E6%96%99%E6%9F%A5%E8%A9%A2%E6%9C%8D%E5%8B%99.png" },
+    { id: 3, caption: "適用情境：內部員工教育平台", 
+      image: "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png" },
+    { id: 4, caption: "適用情境：資料自動化蒐集平台",
+       image: "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.png" },
+    { id: 5, caption: "適用情境：轉址等小型服務", 
+      image: "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png" },
+    { id: 6, caption: "適用情境：資料彙集處理平台", image: logo },
   ];
 
   const handleStationClick = (station) => {
