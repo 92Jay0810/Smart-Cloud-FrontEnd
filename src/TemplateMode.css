@@ -112,22 +112,98 @@
   width: 100%;
 }
 
-.back-button,
-.Tnext-button {
-  padding: 12px 24px;
-  border-radius: 9999px;
+
+.bback-button{
+  position: absolute; /* 讓按鈕能固定在指定位置 */
+  top: 2rem; 
+  right: 80rem; 
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
   border: none;
   cursor: pointer;
   font-size: 16px;
-  transition: all 0.3s ease;
+  width: 120px;
+  height: 50px;
+  font-weight: bold;
+  transition: all 0.2s ease;
 }
 
-.back-button {
+.backk-button{
+  position: absolute; /* 讓按鈕能固定在指定位置 */
+  top: 2rem; 
+  right: 80rem; 
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  width: 120px;
+  height: 50px;
+  transition: all 0.2s ease;
+  font-weight: bold;
+}
+
+.back-button{
+  position: absolute; /* 讓按鈕能固定在指定位置 */
+  top: 1rem; 
+  right: 80rem; 
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  width: 120px;
+  height: 50px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+
+
+.Tnext-button {
+  font-size: 16px;
+  position: relative;
+  top: 0.2rem;
+  right: 0.1rem; 
+  padding: 0.5rem 1.5rem;
+  background-color: #44b787;
+  color: #f4f4f4;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 120px;
+  height: 50px;
+  font-weight: bold;
+}
+
+.next-button {
+  font-size: 16px;
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem; 
+  padding: 0.5rem 1.5rem;
+  background-color: #44b787;
+  color: #f4f4f4;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 80px;
+  height: 50px;
+}
+
+
+.back-button,.backk-button,.bback-button {
   background-color: #6b7280;
   color: white;
 }
 
-.back-button:hover {
+.back-button:hover,.backk-button:hover{
+  background-color: #4b5563;
+  transform: translateX(-5px);
+}
+.backk-button:hover {
   background-color: #4b5563;
   transform: translateX(-5px);
 }
@@ -142,12 +218,12 @@
   transform: translateX(5px);
 }
 
-.back-button::before {
+.back-button::before,.backk-button::before,.bback-button::before {
   content: "←";
   margin-right: 8px;
 }
-
 .Tnext-button::after {
-  content: "→";
-  margin-left: 8px;
+  content: " →";
+  margin-right: 8px;
+
 }
