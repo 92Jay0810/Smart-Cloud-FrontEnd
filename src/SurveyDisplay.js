@@ -1211,7 +1211,7 @@ function SurveyDisplay({
           上一頁
         </button>
         {currentCategoryIndex < survey.length - 1 ? (
-          <button className="next-button" onClick={handleNext}>
+          <button className="nextt-button" onClick={handleNext}>
             下一頁
           </button>
         ) : (

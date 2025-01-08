@@ -187,7 +187,7 @@ const TemplateMode = ({
       <p className="detail-caption">{selectedStation?.caption}</p>
 
       <div className="Tnavigation-buttons">
-        <button onClick={handleBackToGrid} className="back-button">
+        <button onClick={handleBackToGrid} className="backk-button">
           返回
         </button>
         <button
@@ -745,9 +745,11 @@ const TemplateMode = ({
   return (
     <div className="image-grid-container">
       <div className="header-container">
-        <button onClick={handleBack} className="back-button">
-          返回
-        </button>
+        {view== "grid" && (
+          <button onClick={handleBack} className="bback-button">
+            返回
+          </button>
+        )}
         <button onClick={handleLogout} className="next-button">
           登出
         </button>

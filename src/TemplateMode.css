@@ -112,7 +112,36 @@
   width: 100%;
 }
 
-.back-button {
+
+.bback-button{
+  position: absolute; /* 讓按鈕能固定在指定位置 */
+  top: 2rem; 
+  right: 80rem; 
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  width: 120px;
+  height: 50px;
+  transition: all 0.2s ease;
+}
+
+.backk-button{
+  position: absolute; /* 讓按鈕能固定在指定位置 */
+  top: 2rem; 
+  right: 80rem; 
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  width: 120px;
+  height: 50px;
+  transition: all 0.2s ease;
+}
+
+.back-button{
   position: absolute; /* 讓按鈕能固定在指定位置 */
   top: 1rem; 
   right: 80rem; 
@@ -125,6 +154,8 @@
   height: 50px;
   transition: all 0.2s ease;
 }
+
+
 
 .Tnext-button {
   font-size: 16px;
@@ -159,12 +190,16 @@
 }
 
 
-.back-button {
+.back-button,.backk-button,.bback-button {
   background-color: #6b7280;
   color: white;
 }
 
-.back-button:hover {
+.back-button:hover,.backk-button:hover{
+  background-color: #4b5563;
+  transform: translateX(-5px);
+}
+.backk-button:hover {
   background-color: #4b5563;
   transform: translateX(-5px);
 }
@@ -179,7 +214,9 @@
   transform: translateX(5px);
 }
 
-.back-button::before {
+.back-button::before,.backk-button::before,.bback-button::before {
   content: "←";
   margin-right: 8px;
 }
+
+
