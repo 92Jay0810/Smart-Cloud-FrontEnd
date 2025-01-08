@@ -72,7 +72,7 @@ function PortalPage({ username, onSelectService, handleLogout }) {
                 <p className="mode-description2">{info.description2}</p>
                 <button
                   onClick={() => onSelectService(mode)}
-                  className="nextt-button"
+                  className="nexttt-button"
                 >
                   下一步
                 </button>

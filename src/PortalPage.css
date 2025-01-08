@@ -105,7 +105,7 @@
 }
 
 
-.portal-page .nextt-button {
+.portal-page .nexttt-button {
   font-size: 16px;
   position: absolute; /* 讓按鈕能固定在指定位置 */
   bottom: 1rem; /* 距離畫面底部 1rem */
@@ -139,7 +139,7 @@
   height: 50px;
 }
 
-.nextt-button:hover {
+.nexttt-button:hover {
   background-color: #3a9c73;
   color:#ffffff;
 }
