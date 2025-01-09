@@ -7,6 +7,8 @@ import loadingImg from "./assets/loading1.gif";
 import systemImg from "./assets/system.jpeg";
 import userImg from "./assets/user.jpg";
 import "./SurveyDisplay.css";
+import ProgressBar from "@ramonak/react-progress-bar";
+
 const survey = [
   {
     category: "Cloud Platform 雲端平台",
@@ -1242,8 +1244,8 @@ function SurveyDisplay({
     <div className="survey-container" ref={surveyContainerRef}>
       <h1>Hi {username}! Welcome to Smart Archie!</h1>
       <h2>
-        Please provide the technical requirements below, and we'll design a
-        custom cloud architecture diagram just for you.
+        There are 6 parts of the survey. Please provide the technical requirements below, and we'll design a
+        custom cloud architecture diagram for you.
       </h2>
       <div className="header-container">
         <button onClick={handleBack} className="back-button">
@@ -1342,3 +1344,5 @@ function SurveyDisplay({
 }
 
 export default SurveyDisplay;
+
+

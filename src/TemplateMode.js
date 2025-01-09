@@ -139,7 +139,8 @@ const TemplateMode = ({
        image: "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.png" },
     { id: 5, caption: "適用情境：轉址等小型服務", 
       image: "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png" },
-    { id: 6, caption: "適用情境：資料彙集處理平台", image: logo },
+    { id: 6, caption: "適用情境：串接不同資訊chatbot",
+       image: "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png"},
   ];
 
   const handleStationClick = (station) => {
@@ -603,6 +604,7 @@ const TemplateMode = ({
                   <button onClick={handleModifyPromptClick}>
                     Modify Prompt
                   </button>
+                  
                   <button onClick={handleZoomOut}>🔍 -</button>
                   <button onClick={handleZoomIn}>🔍 +</button>
                   <div className="platform-button-container">
