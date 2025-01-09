@@ -252,7 +252,7 @@ function SurveyDisplay({
   });
 
   // xmlUrl
-  const [xmlUrl, setXmlUrl] = useState("")
+  const [xmlUrl, setXmlUrl] = useState("");
 
   // 更新 cookie 的函數
   const updateCookies = () => {
@@ -384,20 +384,22 @@ function SurveyDisplay({
       console.log("傳送格式:\n", SumbitAnswers);
       try {
         let response = "";
-        if(SumbitAnswers.tool === "drawio") {
+        if (SumbitAnswers.tool === "drawio") {
           response = await fetch(url, {
             method: "POST",
             headers: {
               authorizationToken: `Bearer ${idToken}`,
               "Content-Type": "application/json",
-              "InvocationType": "Event",
+              InvocationType: "Event",
             },
             body: JSON.stringify(SumbitAnswers),
           });
 
           if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+            console.log("response status:", 200);
+            setXmlUrl(
+              baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`
+            );
           }
           return;
         } else {
@@ -411,14 +413,14 @@ function SurveyDisplay({
           });
         }
         const responseData = await response.json();
+        // api gateway的錯誤
         console.log("responseData :", responseData);
-        //確保body裡面是json讀取，後端可能誤傳string
         if (response.status === 504) {
           seterrorMessage(
             `The request to the API Gateway timed out. Please try again later.\nSession: ${session_id}\nResponse Time: ${timestamp}`
           );
           setApiResponseReceived(true);
-          return; // 退出函式，避免進一步處理
+          return;
         }
         let data =
           typeof responseData.body === "string"
@@ -447,20 +449,7 @@ function SurveyDisplay({
           `
           );
         }
-        if (SumbitAnswers.tool === "drawio" && data?.drawio_xml) {
-          setDiagramXml(data.drawio_xml);
-          console.log("drawio_xml received:", data.drawio_xml);
-          setShowDialog(true);
-          setMessages([
-            {
-              sender: "System",
-              text:
-                "Hi " +
-                username +
-                ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
-            },
-          ]);
-        } else if (data?.s3_object_name && data?.s3_python_code) {
+        if (data?.s3_object_name && data?.s3_python_code) {
           console.log("s3_object_name found:", data.s3_object_name);
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
           setsavecode(baseurl + "/diagram/" + data.s3_python_code);
@@ -501,28 +490,75 @@ function SurveyDisplay({
       alert("請回答所有問題後再提交！");
     }
   };
-
+  //抓取xml
   useEffect(() => {
     let intervalId;
 
     if (xmlUrl) {
-      console.log(xmlUrl)
+      console.log(xmlUrl);
       intervalId = setInterval(async () => {
         try {
           const response = await fetch(xmlUrl);
           if (response.ok) {
-
             const xmlContent = await response.text();
-            console.log('XML content:', xmlContent);
-
+            console.log("XML content:", xmlContent);
             if (xmlContent) {
               setDiagramXml(xmlContent);
               clearInterval(intervalId);
-              setApiResponseReceived(true); 
+              // 第一次的xml 收到要歡迎語
+              if (!apiResponseReceived) {
+                setShowDialog(true);
+                setMessages([
+                  {
+                    sender: "System",
+                    text:
+                      "Hi " +
+                      username +
+                      ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
+                  },
+                ]);
+                setApiResponseReceived(true);
+              } else {
+                //此為對話
+                const now = new Date();
+                const timestamp =
+                  now.getFullYear().toString() + // 年份
+                  (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+                  now.getDate().toString().padStart(2, "0") + // 日期
+                  now.getHours().toString().padStart(2, "0") + // 小时
+                  now.getMinutes().toString().padStart(2, "0") + // 分钟
+                  now.getSeconds().toString().padStart(2, "0") + // 秒
+                  now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+                if (response.body?.errorMessage) {
+                  setMessages([
+                    ...messages,
+                    {
+                      sender: "System",
+                      text: `Error occur: ${response.body.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+                    },
+                  ]);
+                  setLoading(false);
+                } else if (response.body?.AIMessage) {
+                  setMessages([
+                    ...messages,
+                    { sender: "System", text: response.body.AIMessage },
+                  ]);
+                } else {
+                  setMessages([
+                    ...messages,
+                    {
+                      sender: "System",
+                      text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+                    },
+                  ]);
+                }
+
+                setLoading(false); //若為對話，AI要停止思考
+              }
             }
           }
         } catch (error) {
-          console.error('Error fetching XML:', error);
+          console.error("Error fetching XML:", error);
         }
       }, 100000);
     }
@@ -532,7 +568,7 @@ function SurveyDisplay({
         clearInterval(intervalId);
       }
     };
-  }, [xmlUrl])
+  }, [xmlUrl]);
 
   //將Answers格式轉換，交給後端
   const transformAnswers = (answers) => {
@@ -610,15 +646,30 @@ function SurveyDisplay({
       action: "load",
       xml: diagramXml,
     };
-    iframeRef.current.contentWindow.postMessage(JSON.stringify(message), "*");
+    iframeRef.current.contentWindow.postMessage(
+      JSON.stringify(message),
+      "https://embed.diagrams.net"
+    );
   };
   //處理draw io
   useEffect(() => {
     const handleMessage = (event) => {
       try {
-        const msg = JSON.parse(event.data);
-        if (msg.event === "init") {
-          loadDiagram();
+        //驗證來源
+        if (
+          event.data.length > 0 &&
+          event.origin === "https://embed.diagrams.net"
+        ) {
+          const msg = JSON.parse(event.data);
+          if (msg.event === "init") {
+            loadDiagram();
+          } else if (msg.event === "export" || msg.event === "save") {
+            console.log("已更新XML");
+            // 更新 XML 数据，但仅当它有变化时
+            if (msg.xml && msg.xml !== diagramXml) {
+              setDiagramXml(msg.xml);
+            }
+          }
         }
       } catch (error) {
         // Ignore non-JSON messages
@@ -689,7 +740,6 @@ function SurveyDisplay({
   }, [messages]);
 
   // HandleConversationSand
-  //對話目前未處裡 XML的回應
   const handleSend = async () => {
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
@@ -724,23 +774,25 @@ function SurveyDisplay({
       console.log("傳送格式:\n", conversationRequest);
       let response = "";
       try {
-        if(conversationRequest.tool === "drawio"){
+        if (conversationRequest.tool === "drawio") {
           response = await fetch(url, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               authorizationToken: `Bearer ${idToken}`,
-              "InvocationType": "Event",
+              InvocationType: "Event",
             },
             body: JSON.stringify(conversationRequest),
           });
 
           if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+            console.log("response status:", 200);
+            setXmlUrl(
+              baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`
+            );
           }
 
-          console.log("end")
+          console.log("end");
           return;
         } else {
           response = await fetch(url, {
@@ -754,7 +806,7 @@ function SurveyDisplay({
         }
         const responseData = await response.json();
         console.log("responseData :", responseData);
-        //確保body裡面是json讀取，後端可能誤傳string
+        //  api gateway的錯誤
         if (response.status === 504) {
           setMessages([
             ...newMessages,
@@ -763,7 +815,8 @@ function SurveyDisplay({
               text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
-          return; // 退出函式，避免進一步處理
+          setLoading(false);
+          return;
         }
         let data =
           typeof responseData.body === "string"
@@ -778,6 +831,7 @@ function SurveyDisplay({
               text: `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
+          setLoading(false);
         } else if (data.errorMessage) {
           setMessages([
             ...newMessages,
@@ -786,16 +840,17 @@ function SurveyDisplay({
               text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
+          setLoading(false);
         } else if (data?.AIMessage) {
           if (data?.s3_object_name && data?.s3_python_code) {
-            setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
+            setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
             setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           }
-
           setMessages([
             ...newMessages,
             { sender: "System", text: data.AIMessage },
           ]);
+          setLoading(false);
         } //如果只有圖片
         else if (data?.s3_object_name && data?.s3_python_code) {
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
@@ -807,6 +862,7 @@ function SurveyDisplay({
               text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
+          setLoading(false);
         } else {
           setMessages([
             ...newMessages,
@@ -815,6 +871,7 @@ function SurveyDisplay({
               text: `Bad response format with internal server\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
+          setLoading(false);
         }
       } catch (error) {
         setMessages([
@@ -825,7 +882,6 @@ function SurveyDisplay({
           },
         ]);
         console.log(error);
-      } finally {
         setLoading(false);
       }
     }
@@ -902,23 +958,25 @@ function SurveyDisplay({
       let response = "";
       console.log("傳送格式:\n", transformationRequest);
       try {
-        if(transformationRequest.tool === "drawio"){
+        if (transformationRequest.tool === "drawio") {
           response = await fetch(url, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               authorizationToken: `Bearer ${idToken}`,
-              "InvocationType": "Event",
+              InvocationType: "Event",
             },
             body: JSON.stringify(transformationRequest),
           });
 
           if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+            console.log("response status:", 200);
+            setXmlUrl(
+              baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`
+            );
           }
 
-          console.log("end")
+          console.log("end");
           return;
         } else {
           response = await fetch(url, {
@@ -932,7 +990,6 @@ function SurveyDisplay({
         }
         const responseData = await response.json();
         console.log("responseData :", responseData);
-        //確保body裡面是json讀取，後端可能誤傳string
         if (response.status === 504) {
           setMessages([
             ...newMessages,
@@ -966,7 +1023,7 @@ function SurveyDisplay({
           ]);
         } else if (data?.AIMessage) {
           if (data?.s3_object_name && data?.s3_python_code) {
-            setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
+            setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
             setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           }
           setMessages([
@@ -1064,7 +1121,7 @@ function SurveyDisplay({
                         id="drawio-frame"
                         src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
                         allowFullScreen
-                        style={{ width: "100%"}}
+                        style={{ width: "100%" }}
                       ></iframe>
                     </>
                   ) : imageUrl ? (
@@ -1244,8 +1301,9 @@ function SurveyDisplay({
     <div className="survey-container" ref={surveyContainerRef}>
       <h1>Hi {username}! Welcome to Smart Archie!</h1>
       <h2>
-        There are 6 parts of the survey. Please provide the technical requirements below, and we'll design a
-        custom cloud architecture diagram for you.
+        There are 6 parts of the survey. Please provide the technical
+        requirements below, and we'll design a custom cloud architecture diagram
+        for you.
       </h2>
       <div className="header-container">
         <button onClick={handleBack} className="back-button">
@@ -1344,5 +1402,3 @@ function SurveyDisplay({
 }
 
 export default SurveyDisplay;
-
-
