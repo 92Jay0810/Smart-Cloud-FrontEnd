@@ -520,39 +520,10 @@ function SurveyDisplay({
                 setApiResponseReceived(true);
               } else {
                 //此為對話
-                const now = new Date();
-                const timestamp =
-                  now.getFullYear().toString() + // 年份
-                  (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-                  now.getDate().toString().padStart(2, "0") + // 日期
-                  now.getHours().toString().padStart(2, "0") + // 小时
-                  now.getMinutes().toString().padStart(2, "0") + // 分钟
-                  now.getSeconds().toString().padStart(2, "0") + // 秒
-                  now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-                if (response.body?.errorMessage) {
-                  setMessages([
-                    ...messages,
-                    {
-                      sender: "System",
-                      text: `Error occur: ${response.body.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-                    },
-                  ]);
-                  setLoading(false);
-                } else if (response.body?.AIMessage) {
-                  setMessages([
-                    ...messages,
-                    { sender: "System", text: response.body.AIMessage },
-                  ]);
-                } else {
-                  setMessages([
-                    ...messages,
-                    {
-                      sender: "System",
-                      text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-                    },
-                  ]);
-                }
-
+                setMessages([
+                  ...messages,
+                  { sender: "System", text: response.body },
+                ]);
                 setLoading(false); //若為對話，AI要停止思考
               }
             }
@@ -639,9 +610,12 @@ function SurveyDisplay({
       );
     });
   };
-  //處理draw io
+  //加載draw io
   const loadDiagram = () => {
-    if (!iframeRef.current || !diagramXml) return;
+    if (!iframeRef.current || !diagramXml) {
+      console.warn("Iframe or diagramXml is not ready.");
+      return;
+    }
     const message = {
       action: "load",
       xml: diagramXml,
@@ -651,36 +625,62 @@ function SurveyDisplay({
       "https://embed.diagrams.net"
     );
   };
-  //處理draw io
+  //監聽init 和xml變化改變圖片
+  // 监听来自 draw io 的iframe 的message訊息
   useEffect(() => {
     const handleMessage = (event) => {
       try {
-        //驗證來源
+        // 驗證來源
         if (
-          event.data.length > 0 &&
-          event.origin === "https://embed.diagrams.net"
+          event.origin === "https://embed.diagrams.net" &&
+          event.data.length > 0
         ) {
           const msg = JSON.parse(event.data);
-          if (msg.event === "init") {
-            loadDiagram();
-          } else if (msg.event === "export" || msg.event === "save") {
-            console.log("已更新XML");
-            // 更新 XML 数据，但仅当它有变化时
-            if (msg.xml && msg.xml !== diagramXml) {
-              setDiagramXml(msg.xml);
-            }
+          console.log("Received message:", msg);
+
+          switch (msg.event) {
+            case "init":
+              loadDiagram();
+              break;
+            case "export":
+            case "save":
+              console.log("已更新XML");
+              if (msg.xml && msg.xml !== diagramXml) {
+                setDiagramXml(msg.xml);
+              }
+              break;
+            default:
+              console.warn("未处理的事件:", msg.event);
           }
         }
       } catch (error) {
-        // Ignore non-JSON messages
+        console.error("Error processing message:", error);
       }
     };
 
     window.addEventListener("message", handleMessage);
+
     return () => {
       window.removeEventListener("message", handleMessage);
     };
   }, [diagramXml]);
+
+  // 若使用者進行對話，則進行PostMessage得到xml
+  const requestExport = () => {
+    if (iframeRef.current) {
+      const message = {
+        action: "export",
+        format: "xmlsvg",
+        xml: true,
+        spin: "Saving...",
+      };
+      iframeRef.current.contentWindow.postMessage(
+        JSON.stringify(message),
+        "https://embed.diagrams.net"
+      );
+      console.log("requestExport sent");
+    }
+  };
 
   const handleSaveFile = () => {
     setShowSaveDialog(true);
@@ -764,17 +764,22 @@ function SurveyDisplay({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+      //更新xml
+      if (tool === "drawio") {
+        requestExport();
+      }
       const conversationRequest = {
         prompt: inputText,
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
         tool: tool,
+        xml: diagramXml,
       };
       console.log("傳送格式:\n", conversationRequest);
       let response = "";
       try {
-        if (conversationRequest.tool === "drawio") {
+        if (tool === "drawio") {
           response = await fetch(url, {
             method: "POST",
             headers: {
@@ -948,17 +953,22 @@ function SurveyDisplay({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+      //更新xml
+      if (tool === "drawio") {
+        requestExport();
+      }
       const transformationRequest = {
         prompt: promptText,
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
         tool: tool,
+        xml: diagramXml,
       };
       let response = "";
       console.log("傳送格式:\n", transformationRequest);
       try {
-        if (transformationRequest.tool === "drawio") {
+        if (tool === "drawio") {
           response = await fetch(url, {
             method: "POST",
             headers: {
@@ -998,6 +1008,7 @@ function SurveyDisplay({
               text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
+          setLoading(false);
           return; // 退出函式，避免進一步處理
         }
         let data =
@@ -1013,6 +1024,7 @@ function SurveyDisplay({
               text: `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
+          setLoading(false);
         } else if (data.errorMessage) {
           setMessages([
             ...newMessages,
@@ -1021,6 +1033,7 @@ function SurveyDisplay({
               text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
+          setLoading(false);
         } else if (data?.AIMessage) {
           if (data?.s3_object_name && data?.s3_python_code) {
             setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
@@ -1030,6 +1043,7 @@ function SurveyDisplay({
             ...newMessages,
             { sender: "System", text: data.AIMessage },
           ]);
+          setLoading(false);
         } //如果只有圖片
         else if (data?.s3_object_name && data?.s3_python_code) {
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
@@ -1041,6 +1055,7 @@ function SurveyDisplay({
               text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
+          setLoading(false);
         } else {
           setMessages([
             ...newMessages,
@@ -1050,6 +1065,7 @@ function SurveyDisplay({
             },
           ]);
         }
+        setLoading(false);
       } catch (error) {
         setMessages([
           ...newMessages,
@@ -1059,7 +1075,6 @@ function SurveyDisplay({
           },
         ]);
         console.log(error);
-      } finally {
         setLoading(false);
       }
     }
@@ -1121,6 +1136,7 @@ function SurveyDisplay({
                         id="drawio-frame"
                         src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
                         allowFullScreen
+                        sandbox="allow-scripts allow-downloads allow-same-origin"
                         style={{ width: "100%" }}
                       ></iframe>
                     </>
