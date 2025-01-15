@@ -806,6 +806,9 @@ const TemplateMode = ({
   return (
     <div className="image-grid-container">
       <div className="header-container">
+        <button onClick={handleBack} className="backk-button">
+          返回
+        </button>
         <button onClick={handleLogout} className="next-button">
           登出
         </button>
