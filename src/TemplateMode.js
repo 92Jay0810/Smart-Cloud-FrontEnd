@@ -127,7 +127,7 @@ const TemplateMode = ({
   // 重置函數
 
   const [selectedStation, setSelectedStation] = useState(null);
-  const [view, setView] = useState("grid"); // 'grid' or 'detail'
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const workstations = [
     {
@@ -182,74 +182,15 @@ const TemplateMode = ({
 
   const handleStationClick = (station) => {
     setSelectedStation(station);
-    setView("detail");
+    setIsModalOpen(true);
   };
 
-  const handleBackToGrid = () => {
-    setView("grid");
+  const handleCloseModal = () => {
     setSelectedStation(null);
+    setIsModalOpen(false);
   };
-
-  // 展示圖片網格
-  const renderGrid = () => (
-    <>
-      <div className="image-grid">
-        {workstations.map((station) => (
-          <div
-            key={station.id}
-            className="station-card"
-            onClick={() => handleStationClick(station)}
-          >
-            <div className="card-content">
-              <div className="image-container">
-                <img
-                  src={station.image}
-                  alt={`Workflow ${station.id}`}
-                  className="station-image"
-                />
-              </div>
-              <p className="station-caption">{station.caption}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-
-  // 展示單張圖片詳情
-  const renderDetail = () => (
-    <div className="detail-view">
-      <div className="detail-image-container">
-        <img
-          src={selectedStation?.image}
-          alt={`Workflow ${selectedStation?.id}`}
-          className="detail-image"
-        />
-      </div>
-      <p className="detail-caption">{selectedStation?.caption}</p>
-
-      <div className="Tnavigation-buttons">
-        <button onClick={handleBackToGrid} className="backk-button">
-          返回
-        </button>
-        <button
-          onClick={() =>
-            handleNextStep(
-              selectedStation?.image,
-              selectedStation?.code,
-              selectedStation?.backendAPI
-            )
-          }
-          className="Tnext-button"
-        >
-          選擇
-        </button>
-      </div>
-    </div>
-  );
 
   const handleNextStep = async (imageUrl, code, template) => {
-    setView("grid");
     setSelectedStation(null);
     setTool("diagrams");
     setImageUrl(imageUrl);
@@ -332,7 +273,6 @@ const TemplateMode = ({
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [fileName, setFileName] = useState("");
 
-  //以下未改
   const handleSaveFile = () => {
     setShowSaveDialog(true);
   };
@@ -866,20 +806,64 @@ const TemplateMode = ({
   return (
     <div className="image-grid-container">
       <div className="header-container">
-        {view == "grid" && (
-          <button onClick={handleBack} className="bback-button">
-            返回
-          </button>
-        )}
         <button onClick={handleLogout} className="next-button">
           登出
         </button>
       </div>
       <h1 className="image-grid-title">
         Hi {username}! Please select the template you want to use
-        {/* {selectedStation.caption} */}
       </h1>
-      {view === "grid" ? renderGrid() : renderDetail()}
+      <div className="image-grid">
+        {workstations.map((station) => (
+          <div
+            key={station.id}
+            className="station-card"
+            onClick={() => handleStationClick(station)}
+          >
+            <div className="card-content">
+              <div className="image-container">
+                <img
+                  src={station.image}
+                  alt={`Workflow ${station.id}`}
+                  className="station-image"
+                />
+              </div>
+              <p className="station-caption">{station.caption}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* 模態框 */}
+      {isModalOpen && selectedStation && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()} // 防止點擊內部關閉模態框
+          >
+            <img
+              src={selectedStation.image}
+              alt={`Workflow ${selectedStation.id}`}
+              className="detail-image"
+            />
+            <p className="detail-caption">{selectedStation.caption}</p>
+            <button
+              className="Tnext-button"
+              onClick={() =>
+                handleNextStep(
+                  selectedStation.image,
+                  selectedStation.code,
+                  selectedStation.backendAPI
+                )
+              }
+            >
+              選擇
+            </button>
+            <button className="backk-button" onClick={handleCloseModal}>
+              X
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
