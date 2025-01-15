@@ -5,9 +5,9 @@ import "./TemplateMode.css";
 import { jwtDecode } from "jwt-decode";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
+import loadingImg from "./assets/loading1.gif";
 import close from "./assets/grey close.png";
 import { v4 as uuidv4 } from "uuid";
-import logo from "./assets/cathay.png";
 
 const TemplateMode = ({
   idToken,
@@ -56,6 +56,7 @@ const TemplateMode = ({
     // 清除相關的 cookie
     setCookie("session_id", newSessionId);
     setCookie("submitted", "", -1);
+    setCookie("apiResponseReceived", "", -1);
     setCookie("imageUrl", "", -1);
     setCookie("savecode", "", -1);
     setCookie("platform", "", -1);
@@ -79,6 +80,10 @@ const TemplateMode = ({
   });
   const [submitted, setSubmitted] = useState(() => {
     const saved = getCookie("submitted");
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [apiResponseReceived, setApiResponseReceived] = useState(() => {
+    const saved = getCookie("apiResponseReceived");
     return saved ? JSON.parse(saved) : false;
   });
   const [imageUrl, setImageUrl] = useState(() => {
@@ -106,6 +111,7 @@ const TemplateMode = ({
   // 更新 cookie 的函數
   const updateCookies = () => {
     setCookie("submitted", submitted);
+    setCookie("apiResponseReceived", apiResponseReceived);
     setCookie("imageUrl", imageUrl);
     setCookie("savecode", savecode);
     setCookie("platform", platform);
@@ -129,18 +135,49 @@ const TemplateMode = ({
       caption: "適用情境：對外活動網站",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/website/website.png",
+      code: "https://d2s0u5536e7dee.cloudfront.net/template/website/website.py",
       backendAPI: "website",
     },
-    { id: 2, caption: "適用情境：公開資料查詢服務", 
-      image: "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/%E4%BA%A4%E6%98%93%E5%85%AC%E9%96%8B%E8%B3%87%E6%96%99%E6%9F%A5%E8%A9%A2%E6%9C%8D%E5%8B%99.png" },
-    { id: 3, caption: "適用情境：內部員工教育平台", 
-      image: "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png" },
-    { id: 4, caption: "適用情境：資料自動化蒐集平台",
-       image: "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.png" },
-    { id: 5, caption: "適用情境：轉址等小型服務", 
-      image: "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png" },
-    { id: 6, caption: "適用情境：串接不同資訊chatbot",
-       image: "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png"},
+    {
+      id: 2,
+      caption: "適用情境：公開資料查詢服務",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/%E4%BA%A4%E6%98%93%E5%85%AC%E9%96%8B%E8%B3%87%E6%96%99%E6%9F%A5%E8%A9%A2%E6%9C%8D%E5%8B%99.png",
+      code: "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/trade_service.py",
+      backendAPI: "open_data_service",
+    },
+    {
+      id: 3,
+      caption: "適用情境：內部員工教育平台",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png",
+      code: "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.py",
+      backendAPI: "education_platform",
+    },
+    {
+      id: 4,
+      caption: "適用情境：資料自動化蒐集平台",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.png",
+      code: "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.py",
+      backendAPI: "collection_system",
+    },
+    {
+      id: 5,
+      caption: "適用情境：轉址等小型服務",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png",
+      code: "https://d2s0u5536e7dee.cloudfront.net/template/short/short.py",
+      backendAPI: "short",
+    },
+    {
+      id: 6,
+      caption: "適用情境：串接不同資訊chatbot",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png",
+      code: "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.py",
+      backendAPI: "chatbot",
+    },
   ];
 
   const handleStationClick = (station) => {
@@ -196,7 +233,13 @@ const TemplateMode = ({
           返回
         </button>
         <button
-          onClick={() => handleNextStep(selectedStation?.image)}
+          onClick={() =>
+            handleNextStep(
+              selectedStation?.image,
+              selectedStation?.code,
+              selectedStation?.backendAPI
+            )
+          }
           className="Tnext-button"
         >
           選擇
@@ -205,13 +248,66 @@ const TemplateMode = ({
     </div>
   );
 
-  const handleNextStep = (imageUrl) => {
+  const handleNextStep = async (imageUrl, code, template) => {
     setView("grid");
     setSelectedStation(null);
     setTool("diagrams");
     setImageUrl(imageUrl);
+    setsavecode(code);
     setPlatform("aws");
     setSubmitted(true);
+    //以下丟API
+    const now = new Date();
+    const timestamp =
+      now.getFullYear().toString() + // 年份
+      (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+      now.getDate().toString().padStart(2, "0") + // 日期
+      now.getHours().toString().padStart(2, "0") + // 小时
+      now.getMinutes().toString().padStart(2, "0") + // 分钟
+      now.getSeconds().toString().padStart(2, "0") + // 秒
+      now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+    const SumbitAnswers = {
+      template: template,
+      timestamp: timestamp,
+      session_id: session_id,
+      user_id: user_id,
+      tool: "diagrams",
+    };
+    console.log("傳送格式:\n", SumbitAnswers);
+    try {
+      let response = "";
+      response = await fetch(url, {
+        method: "POST",
+        headers: {
+          authorizationToken: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(SumbitAnswers),
+      });
+      const responseData = await response.json();
+      if (response.status === 200) {
+        setMessages([
+          {
+            sender: "System",
+            text:
+              "Hi " +
+              username +
+              ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
+          },
+        ]);
+        setApiResponseReceived(true);
+      } else {
+        setMessages([
+          {
+            sender: "System",
+            text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+          },
+        ]);
+        setApiResponseReceived(true);
+      }
+    } catch (error) {
+      console.error("Error submitting survey:", error);
+    }
   };
   const handleBack = useCallback(() => {
     resetSurvey(); // 先執行當前組件的重置
@@ -591,50 +687,69 @@ const TemplateMode = ({
           unmountOnExit
         >
           <div className="survey-result-container">
-            <h1>Nice, {username}! Here is your architecture:</h1>
-            <h2>
-              This architecture diagram is generated based on the technical
-              requirements you provided.
-            </h2>
-            {imageUrl ? (
+            {apiResponseReceived ? (
               <>
-                <div className="button-container">
-                  <button onClick={handleSaveFile}>Save Image</button>
-                  <button onClick={handleSaveCode}>Save Code</button>
-                  <button onClick={handleModifyPromptClick}>
-                    Modify Prompt
-                  </button>
-                  
-                  <button onClick={handleZoomOut}>🔍 -</button>
-                  <button onClick={handleZoomIn}>🔍 +</button>
-                  <div className="platform-button-container">
-                    <button
-                      onClick={() => handleTransform()}
-                      disabled={platform === "aws"}
-                    >
-                      AWS
-                    </button>
-                    <button
-                      onClick={() => handleTransform()}
-                      disabled={platform === "gcp"}
-                    >
-                      GCP
-                    </button>
-                  </div>
-                </div>
-                <div className=".survey-result-content">
-                  <div className="survey-image-container">
-                    <img
-                      src={imageUrl}
-                      alt="Survey Result"
-                      className="survey-image"
-                      style={{ transform: `scale(${scale})` }} // 使用 scale 属性控制缩放
-                    />
-                  </div>
-                </div>
+                <h1>Nice, {username}! Here is your architecture:</h1>
+                <h2>
+                  This architecture diagram is generated based on the technical
+                  requirements you provided.
+                </h2>
+                {imageUrl ? (
+                  <>
+                    <div className="button-container">
+                      <button onClick={handleSaveFile}>Save Image</button>
+                      <button onClick={handleSaveCode}>Save Code</button>
+                      <button onClick={handleModifyPromptClick}>
+                        Modify Prompt
+                      </button>
+
+                      <button onClick={handleZoomOut}>🔍 -</button>
+                      <button onClick={handleZoomIn}>🔍 +</button>
+                      <div className="platform-button-container">
+                        <button
+                          onClick={() => handleTransform()}
+                          disabled={platform === "aws"}
+                        >
+                          AWS
+                        </button>
+                        <button
+                          onClick={() => handleTransform()}
+                          disabled={platform === "gcp"}
+                        >
+                          GCP
+                        </button>
+                      </div>
+                    </div>
+                    <div className=".survey-result-content">
+                      <div className="survey-image-container">
+                        <img
+                          src={imageUrl}
+                          alt="Survey Result"
+                          className="survey-image"
+                          style={{ transform: `scale(${scale})` }} // 使用 scale 属性控制缩放
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <p className="error-message">沒有架構圖回傳，圖片解析失敗</p>
+                )}
               </>
             ) : (
-              <p className="error-message">沒有架構圖回傳，圖片解析失敗</p>
+              <>
+                <h1>Thank you, {username}!</h1>
+                <h2>
+                  We are designing your architecture now, please wait a moment.
+                </h2>
+
+                <div className="loading-container">
+                  <img
+                    src={loadingImg}
+                    alt="Loading..."
+                    className="loading-gif"
+                  />
+                </div>
+              </>
             )}
           </div>
         </CSSTransition>
@@ -751,7 +866,7 @@ const TemplateMode = ({
   return (
     <div className="image-grid-container">
       <div className="header-container">
-        {view== "grid" && (
+        {view == "grid" && (
           <button onClick={handleBack} className="bback-button">
             返回
           </button>

@@ -252,7 +252,7 @@ function SurveyDisplay({
   });
 
   // xmlUrl
-  const [xmlUrl, setXmlUrl] = useState("")
+  const [xmlUrl, setXmlUrl] = useState("");
 
   // 更新 cookie 的函數
   const updateCookies = () => {
@@ -384,20 +384,22 @@ function SurveyDisplay({
       console.log("傳送格式:\n", SumbitAnswers);
       try {
         let response = "";
-        if(SumbitAnswers.tool === "drawio") {
+        if (SumbitAnswers.tool === "drawio") {
           response = await fetch(url, {
             method: "POST",
             headers: {
               authorizationToken: `Bearer ${idToken}`,
               "Content-Type": "application/json",
-              "InvocationType": "Event",
+              InvocationType: "Event",
             },
             body: JSON.stringify(SumbitAnswers),
           });
 
           if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+            console.log("response status:", 200);
+            setXmlUrl(
+              baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`
+            );
           }
           return;
         } else {
@@ -506,23 +508,22 @@ function SurveyDisplay({
     let intervalId;
 
     if (xmlUrl) {
-      console.log(xmlUrl)
+      console.log(xmlUrl);
       intervalId = setInterval(async () => {
         try {
           const response = await fetch(xmlUrl);
           if (response.ok) {
-
             const xmlContent = await response.text();
-            console.log('XML content:', xmlContent);
+            console.log("XML content:", xmlContent);
 
             if (xmlContent) {
               setDiagramXml(xmlContent);
               clearInterval(intervalId);
-              setApiResponseReceived(true); 
+              setApiResponseReceived(true);
             }
           }
         } catch (error) {
-          console.error('Error fetching XML:', error);
+          console.error("Error fetching XML:", error);
         }
       }, 100000);
     }
@@ -532,7 +533,7 @@ function SurveyDisplay({
         clearInterval(intervalId);
       }
     };
-  }, [xmlUrl])
+  }, [xmlUrl]);
 
   //將Answers格式轉換，交給後端
   const transformAnswers = (answers) => {
@@ -724,23 +725,25 @@ function SurveyDisplay({
       console.log("傳送格式:\n", conversationRequest);
       let response = "";
       try {
-        if(conversationRequest.tool === "drawio"){
+        if (conversationRequest.tool === "drawio") {
           response = await fetch(url, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               authorizationToken: `Bearer ${idToken}`,
-              "InvocationType": "Event",
+              InvocationType: "Event",
             },
             body: JSON.stringify(conversationRequest),
           });
 
           if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+            console.log("response status:", 200);
+            setXmlUrl(
+              baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`
+            );
           }
 
-          console.log("end")
+          console.log("end");
           return;
         } else {
           response = await fetch(url, {
@@ -902,23 +905,25 @@ function SurveyDisplay({
       let response = "";
       console.log("傳送格式:\n", transformationRequest);
       try {
-        if(transformationRequest.tool === "drawio"){
+        if (transformationRequest.tool === "drawio") {
           response = await fetch(url, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               authorizationToken: `Bearer ${idToken}`,
-              "InvocationType": "Event",
+              InvocationType: "Event",
             },
             body: JSON.stringify(transformationRequest),
           });
 
           if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
+            console.log("response status:", 200);
+            setXmlUrl(
+              baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`
+            );
           }
 
-          console.log("end")
+          console.log("end");
           return;
         } else {
           response = await fetch(url, {
@@ -1064,7 +1069,7 @@ function SurveyDisplay({
                         id="drawio-frame"
                         src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
                         allowFullScreen
-                        style={{ width: "100%"}}
+                        style={{ width: "100%" }}
                       ></iframe>
                     </>
                   ) : imageUrl ? (
@@ -1240,13 +1245,33 @@ function SurveyDisplay({
   }
 
   const currentCategory = survey[currentCategoryIndex];
+  //算進度條進度
+  const totalQuestions = survey.reduce(
+    (sum, category) => sum + category.questions.length,
+    0
+  );
+  const answeredQuestions = Object.keys(answers).length;
+  // 計算進度百分比
+  const progressPercentage = Math.round(
+    (answeredQuestions / totalQuestions) * 100
+  );
   return (
     <div className="survey-container" ref={surveyContainerRef}>
       <h1>Hi {username}! Welcome to Smart Archie!</h1>
       <h2>
-        There are 6 parts of the survey. Please provide the technical requirements below, and we'll design a
-        custom cloud architecture diagram for you.
+        There are 6 parts of the survey. Please provide the technical
+        requirements below, and we'll design a custom cloud architecture diagram
+        for you.
       </h2>
+      <div className="progress-bar-container">
+        <ProgressBar
+          completed={progressPercentage}
+          bgColor="#10b981"
+          labelColor="#ffffff"
+          height="20px"
+          maxCompleted={100}
+        />
+      </div>
       <div className="header-container">
         <button onClick={handleBack} className="back-button">
           返回
@@ -1344,5 +1369,3 @@ function SurveyDisplay({
 }
 
 export default SurveyDisplay;
-
-
