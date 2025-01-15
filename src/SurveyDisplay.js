@@ -1335,16 +1335,6 @@ function SurveyDisplay({
   }
 
   const currentCategory = survey[currentCategoryIndex];
-  //算進度條進度
-  const totalQuestions = survey.reduce(
-    (sum, category) => sum + category.questions.length,
-    0
-  );
-  const answeredQuestions = Object.keys(answers).length;
-  // 計算進度百分比
-  const progressPercentage = Math.round(
-    (answeredQuestions / totalQuestions) * 100
-  );
   return (
     <div className="survey-container" ref={surveyContainerRef}>
       <h1>Hi {username}! Welcome to Smart Archie!</h1>
@@ -1353,15 +1343,6 @@ function SurveyDisplay({
         requirements below, and we'll design a custom cloud architecture diagram
         for you.
       </h2>
-      <div className="progress-bar-container">
-        <ProgressBar
-          completed={progressPercentage}
-          bgColor="#10b981"
-          labelColor="#ffffff"
-          height="20px"
-          maxCompleted={100}
-        />
-      </div>
       <div className="header-container">
         <button onClick={handleBack} className="back-button">
           返回

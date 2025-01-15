@@ -861,7 +861,7 @@ const TemplateMode = ({
             >
               選擇
             </button>
-            <button className="backk-button" onClick={handleCloseModal}>
+            <button className="exit-button" onClick={handleCloseModal}>
               X
             </button>
           </div>
