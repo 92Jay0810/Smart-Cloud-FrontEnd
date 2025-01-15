@@ -90,7 +90,6 @@ h3 {
 }
 
 .previous-button,
-.next-button,
 .submit-button {
   display: block;
   padding: 12px;
@@ -103,6 +102,19 @@ h3 {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
+.next-button {
+  display: block;
+  padding: 12px;
+  background-color: #f4f4f4;
+  color: #44b787;
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+
 
 .nextt-button{
   top: 2rem;
@@ -119,12 +131,17 @@ h3 {
 }
 
 
+
 .previous-button:hover,
-.next-button:hover,
 .nextt-button:hover,
 .submit-button:hover {
   background-color: #80d6b2;
   transform: translateY(-2px);
+}
+.next-button:hover {
+  background-color: #44b787;
+  transform: translateY(-2px);
+  color: white;
 }
 
 .previous-button:disabled,

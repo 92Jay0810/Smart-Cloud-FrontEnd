@@ -106,8 +106,6 @@ function App() {
     setusername("");
     setuser_id("");
     setidToken("");
-    setSelectedService(null);
-    setCookie("selectedService", "", -1);
   }, []);
   // 更新 cookie 的函數
   const updateCookies = () => {

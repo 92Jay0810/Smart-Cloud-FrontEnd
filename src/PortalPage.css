@@ -11,22 +11,21 @@
 }
 
 .portal-page .portal-title {
+  font-size: 30px;
   margin-bottom: 1rem;
-  font-size: 1.5rem;
 }
 
 .portal-page .portal-subtitle {
   font-size: 20px;
   margin-bottom: 2rem;
-  display: block;
 }
 
+
 .portal-page .mode-grid {
-  max-width: 72rem;
-  margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .header-container {
@@ -39,22 +38,44 @@
 .portal-page .mode-container {
   display: flex;
   flex-direction: column;
-  width: 350px;
-  height: 200px;
+  width: 320px; /* 等寬 */
+  align-items: center;
+  justify-content: space-between;
 }
 
 
 
 .mode-button {
   width: 100%;
-  height: 12rem;
-  padding: 1.5rem;
+  height: auto;
+  padding: 1rem 1.5rem;
   font-size: 1.125rem;
-  border: 2px solid #44b787;
-  border-radius: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.75rem;
   background-color: white;
   color: #44b787;
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.mode-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #f0faf5;
+}
+
+.portal-page .mode-info {
+  padding: 1rem 1.5rem;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.75rem;
+  text-align: left;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  width: 100%;
+  height: 350px;
 }
 
 .portal-page .mode-button:hover {
@@ -75,19 +96,11 @@
   color: #e6e6e6;
 }
 
-.portal-page .mode-info {
-  padding: 1rem;
-  background-color: #f9f9f9;
-  border: 1px solid #e6e6e6;
-  border-radius: 0.5rem;
-  text-align: left;
-  height: 400px;
-}
 
 .portal-page .mode-suitable {
   font-size: 18px;
   margin-bottom: 0.5rem;
-  font-style: bold;
+  font-weight: bold;
 }
 .portal-page .mode-suitable2 {
   font-size: 16px;
@@ -97,7 +110,7 @@
 
 .portal-page .mode-description {
   font-size:18px;
-  font-style: bold;
+  font-weight: bold;
 }
 .portal-page .mode-description2 {
   font-size:16px;
@@ -107,9 +120,8 @@
 
 .portal-page .nexttt-button {
   font-size: 16px;
-  position: absolute; /* 讓按鈕能固定在指定位置 */
-  bottom: 1rem; /* 距離畫面底部 1rem */
-  right: 35rem; /* 距離畫面右側 1rem */
+  position: fixed; /* 固定位置 */
+  bottom: 10%; /* 距離底部 10% */
   padding: 0.5rem 1.5rem;
   background-color: #44b787;
   color: #f4f4f4;
@@ -120,6 +132,9 @@
   width: 200px;
   height: 50px;
   font-weight: bold;
+  display: grid;
+  place-items: center; 
+  margin: 0 auto; /* 水平居中 */
 }
 
 .nextbutton {
@@ -134,7 +149,7 @@
   border-radius: 0.5rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  width: 80px;
+  width: 40px;
   font-weight: bold;
   height: 50px;
 }

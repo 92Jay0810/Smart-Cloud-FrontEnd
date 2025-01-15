@@ -29,7 +29,7 @@ const modes = {
 };
 
 function PortalPage({ username, onSelectService, handleLogout }) {
-  const [selectedMode, setSelectedMode] = useState(null);
+  const [selectedMode, setSelectedMode] = useState("一般模式");
 
   const toggleMode = (mode) => {
     setSelectedMode((prevMode) => (prevMode === mode ? null : mode));
@@ -38,7 +38,7 @@ function PortalPage({ username, onSelectService, handleLogout }) {
   return (
     <div className="portal-page">
       <div className="header-container">
-        <button onClick={handleLogout} className="nextbutton">
+        <button onClick={handleLogout} className="next-button">
           登出
         </button>
       </div>
@@ -70,17 +70,17 @@ function PortalPage({ username, onSelectService, handleLogout }) {
                 <p className="mode-suitable2">{info.suitable2}</p>
                 <p className="mode-description">{info.description}</p>
                 <p className="mode-description2">{info.description2}</p>
-                <button
-                  onClick={() => onSelectService(mode)}
-                  className="nexttt-button"
-                >
-                  下一步
-                </button>
               </div>
             )}
           </div>
         ))}
       </div>
+      <button
+                  onClick={() => onSelectService(selectedMode)}
+                  className="nexttt-button"
+                >
+                  下一步
+              </button>
     </div>
   );
 }

@@ -124,7 +124,7 @@
   font-size: 16px;
   width: 120px;
   height: 50px;
-  font-weight: bold;
+    font-weight: bold;
   transition: all 0.2s ease;
 }
 
@@ -144,7 +144,7 @@
 }
 
 .back-button{
-  position: absolute; /* 讓按鈕能固定在指定位置 */
+  position: relative; /* 讓按鈕能固定在指定位置 */
   top: 1rem; 
   right: 80rem; 
   padding: 0.5rem 1.5rem;
@@ -157,6 +157,7 @@
   font-weight: bold;
   transition: all 0.2s ease;
 }
+
 
 
 
@@ -183,8 +184,9 @@
   top: 1rem;
   right: 1.5rem; 
   padding: 0.5rem 1.5rem;
-  background-color: #44b787;
-  color: #f4f4f4;
+  background-color: #ffffff;
+  color: #44b787;
+  border-color: #44b787;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -226,28 +228,4 @@
   content: " →";
   margin-right: 8px;
 
-}
-.zoom-button {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #44b787;
-  color: white;
-  font-size: 20px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin: 10px;
-}
-
-.zoom-button:hover {
-  background-color: #3a9a6e;
-  transform: scale(1.1);
-}
-
-.zoom-button:active {
-  background-color: #2f7857;
 }
