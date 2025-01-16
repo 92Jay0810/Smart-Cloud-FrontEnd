@@ -287,28 +287,29 @@ function SurveyDisplay({
   //fetch url and show image
 
   //csd-ca-lab
-  // const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
-  const baseurl = "http://localhost:3001";
+  const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
+  //const baseurl = "http://localhost:3001";
   const url = baseurl + "/api/diagram-as-code";
   //const url = "http://localhost:3001";
-  const WEBSOCKET_API = "wss://ops0k8xtuk.execute-api.ap-northeast-1.amazonaws.com/production/";
+  const WEBSOCKET_API =
+    "wss://ops0k8xtuk.execute-api.ap-northeast-1.amazonaws.com/production/";
   let web_socket;
 
   function connectWebSocket() {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(WEBSOCKET_API)
+      const ws = new WebSocket(WEBSOCKET_API);
 
       ws.onopen = () => {
-        web_socket = ws
+        web_socket = ws;
         console.log("WebSocket connection established!");
         resolve();
-      }
+      };
 
       ws.onerror = (error) => {
         console.error("WebSocket error:", error);
         reject(error);
-      }
-    })
+      };
+    });
   }
 
   async function setupWebSocket() {
@@ -322,26 +323,26 @@ function SurveyDisplay({
           // trigger when websocket received message
           if (evt.data && typeof evt.data != Object) {
             const data = JSON.parse(evt.data);
-            console.log('Received:', data)
-            if(data.body) {
-              setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name)
+            console.log("Received:", data);
+            if (data.body) {
+              setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name);
             }
           }
-        }
+        };
 
         web_socket.onclose = () => {
           // trigger when connection get closed
           web_socket = null;
           // 可以在這裡處理重連邏輯
-          console.log('Connection closed');
-        }
+          console.log("Connection closed");
+        };
 
         web_socket.onerror = (error) => {
-          console.error('WebSocket error:', error);
-        }
+          console.error("WebSocket error:", error);
+        };
       })
-      .catch(error => {
-        console.error('Failed to connect:', error);
+      .catch((error) => {
+        console.error("Failed to connect:", error);
       });
   }
 
@@ -439,8 +440,10 @@ function SurveyDisplay({
       try {
         let response = "";
         if (SubmitAnswers.tool === "drawio") {
-          await setupWebSocket()
-          web_socket.send(JSON.stringify({action: "message", ...SubmitAnswers}))
+          await setupWebSocket();
+          web_socket.send(
+            JSON.stringify({ action: "message", ...SubmitAnswers })
+          );
           return;
         } else {
           response = await fetch(url, {
@@ -593,10 +596,10 @@ function SurveyDisplay({
     };
 
     if (xmlUrl) {
-      console.log(xmlUrl)
+      console.log(xmlUrl);
       fetchXml();
     }
-  }, [xmlUrl])
+  }, [xmlUrl]);
 
   //將Answers格式轉換，交給後端
   const transformAnswers = (answers) => {
@@ -674,8 +677,11 @@ function SurveyDisplay({
       action: "load",
       xml: diagramXml,
     };
-    iframeRef.current.contentWindow.postMessage(JSON.stringify(message), "https://embed.diagrams.net");
-}, [diagramXml]);
+    iframeRef.current.contentWindow.postMessage(
+      JSON.stringify(message),
+      "https://embed.diagrams.net"
+    );
+  }, [diagramXml]);
   //處理draw io
   useEffect(() => {
     const handleMessage = (event) => {
@@ -715,9 +721,9 @@ function SurveyDisplay({
 
   useEffect(() => {
     if (diagramXml) {
-        loadDiagram();
+      loadDiagram();
     }
-}, [diagramXml, loadDiagram]);
+  }, [diagramXml, loadDiagram]);
 
   // 若使用者進行對話，則進行PostMessage得到xml
   const requestExport = () => {
@@ -834,8 +840,10 @@ function SurveyDisplay({
       let response = "";
       try {
         if (conversationRequest.tool === "drawio") {
-          await setupWebSocket()
-          web_socket.send(JSON.stringify({action: "message", ...conversationRequest}))
+          await setupWebSocket();
+          web_socket.send(
+            JSON.stringify({ action: "message", ...conversationRequest })
+          );
           return;
         } else {
           response = await fetch(url, {
@@ -1008,8 +1016,10 @@ function SurveyDisplay({
       console.log("傳送格式:\n", transformationRequest);
       try {
         if (transformationRequest.tool === "drawio") {
-          await setupWebSocket()
-          web_socket.send(JSON.stringify({action: "message", ...transformationRequest}))
+          await setupWebSocket();
+          web_socket.send(
+            JSON.stringify({ action: "message", ...transformationRequest })
+          );
           return;
         } else {
           response = await fetch(url, {
@@ -1264,14 +1274,16 @@ function SurveyDisplay({
                 {messages.map((msg, index) => (
                   <div
                     key={index}
-                    className={`dialog-message ${msg.sender === "System" ? "system" : "user"
-                      }`}
+                    className={`dialog-message ${
+                      msg.sender === "System" ? "system" : "user"
+                    }`}
                   >
                     <div className="avatar-container">
                       <img
                         src={msg.sender === "System" ? systemImg : userImg}
-                        alt={`${msg.sender === "System" ? "System" : "User"
-                          }Img`}
+                        alt={`${
+                          msg.sender === "System" ? "System" : "User"
+                        }Img`}
                         className="avatar"
                       />
                     </div>
@@ -1394,11 +1406,12 @@ function SurveyDisplay({
                   {question.options.map((option, optionIndex) => (
                     <button
                       key={optionIndex}
-                      className={`option-button ${answers[`${currentCategoryIndex}-${questionIndex}`] ===
+                      className={`option-button ${
+                        answers[`${currentCategoryIndex}-${questionIndex}`] ===
                         optionIndex
-                        ? "selected"
-                        : ""
-                        }`}
+                          ? "selected"
+                          : ""
+                      }`}
                       onClick={() =>
                         handleOptionSelect(
                           currentCategoryIndex,
