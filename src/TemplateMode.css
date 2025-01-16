@@ -88,24 +88,26 @@
   z-index: 1000;
 }
 
+
 .modal-content {
   background: white;
-  padding: 24px;
+  padding: 18px;
   border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
+  width: 80vw; /* 增大寬度 */
+  max-width: 1200px; /* 最大寬度調整更大 */
+  height: 80vh; /* 自動調整高度 */
+  overflow: auto; 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
   position: relative;
 }
 
 .detail-image {
-  width: 100%;
-  max-height: 300px;
-  object-fit: contain;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  width: auto; /* 讓圖片依原始比例放大 */
+  max-width: 100%; /* 防止圖片超過容器寬度 */
+  border-radius: 12px;
 }
+
 
 .detail-caption {
   font-size: 18px;

@@ -837,12 +837,14 @@ const TemplateMode = ({
         ))}
       </div>
       {/* 模態框 */}
+      
       {isModalOpen && selectedStation && (
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div
             className="modal-content"
             onClick={(e) => e.stopPropagation()} // 防止點擊內部關閉模態框
           >
+            
             <img
               src={selectedStation.image}
               alt={`Workflow ${selectedStation.id}`}
