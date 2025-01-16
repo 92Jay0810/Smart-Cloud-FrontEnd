@@ -7,7 +7,6 @@ import loadingImg from "./assets/loading1.gif";
 import systemImg from "./assets/system.jpeg";
 import userImg from "./assets/user.jpg";
 import "./SurveyDisplay.css";
-import ProgressBar from "@ramonak/react-progress-bar";
 
 const survey = [
   {
@@ -287,9 +286,63 @@ function SurveyDisplay({
   //fetch url and show image
 
   //csd-ca-lab
-  const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
+  // const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
+  const baseurl = "http://localhost:3001";
   const url = baseurl + "/api/diagram-as-code";
   //const url = "http://localhost:3001";
+  const WEBSOCKET_API = "wss://ops0k8xtuk.execute-api.ap-northeast-1.amazonaws.com/production/";
+  let web_socket;
+
+  function connectWebSocket() {
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket(WEBSOCKET_API)
+
+      ws.onopen = () => {
+        web_socket = ws
+        console.log("WebSocket connection established!");
+        resolve();
+      }
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        reject(error);
+      }
+    })
+  }
+
+  async function setupWebSocket() {
+    if (web_socket) {
+      return;
+    }
+
+    await connectWebSocket()
+      .then(() => {
+        web_socket.onmessage = (evt) => {
+          // trigger when websocket received message
+          if (evt.data && typeof evt.data != Object) {
+            const data = JSON.parse(evt.data);
+            console.log('Received:', data)
+            if(data.body) {
+              setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name)
+            }
+          }
+        }
+
+        web_socket.onclose = () => {
+          // trigger when connection get closed
+          web_socket = null;
+          // 可以在這裡處理重連邏輯
+          console.log('Connection closed');
+        }
+
+        web_socket.onerror = (error) => {
+          console.error('WebSocket error:', error);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to connect:', error);
+      });
+  }
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
@@ -372,33 +425,21 @@ function SurveyDisplay({
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
 
       let TransformAsnwers = transformAnswers(answers);
-      const SumbitAnswers = {
+      const SubmitAnswers = {
         query: TransformAsnwers,
         timestamp: timestamp,
         session_id: session_id,
         user_id: user_id,
         tool: TransformAsnwers["5-0"],
       };
-      setPlatform(SumbitAnswers.query["0-0"]);
-      setTool(SumbitAnswers.tool);
-      console.log("傳送格式:\n", SumbitAnswers);
+      setPlatform(SubmitAnswers.query["0-0"]);
+      setTool(SubmitAnswers.tool);
+      console.log("傳送格式:\n", SubmitAnswers);
       try {
         let response = "";
-        if(SumbitAnswers.tool === "drawio") {
-          response = await fetch(url, {
-            method: "POST",
-            headers: {
-              authorizationToken: `Bearer ${idToken}`,
-              "Content-Type": "application/json",
-              "InvocationType": "Event",
-            },
-            body: JSON.stringify(SumbitAnswers),
-          });
-
-          if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
-          }
+        if (SubmitAnswers.tool === "drawio") {
+          await setupWebSocket()
+          web_socket.send(JSON.stringify({action: "message", ...SubmitAnswers}))
           return;
         } else {
           response = await fetch(url, {
@@ -407,7 +448,7 @@ function SurveyDisplay({
               authorizationToken: `Bearer ${idToken}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(SumbitAnswers),
+            body: JSON.stringify(SubmitAnswers),
           });
         }
         const responseData = await response.json();
@@ -447,7 +488,7 @@ function SurveyDisplay({
           `
           );
         }
-        if (SumbitAnswers.tool === "drawio" && data?.drawio_xml) {
+        if (SubmitAnswers.tool === "drawio" && data?.drawio_xml) {
           setDiagramXml(data.drawio_xml);
           console.log("drawio_xml received:", data.drawio_xml);
           setShowDialog(true);
@@ -503,35 +544,25 @@ function SurveyDisplay({
   };
 
   useEffect(() => {
-    let intervalId;
+    const fetchXml = async () => {
+      try {
+        const response = await fetch(xmlUrl);
+        if (response.ok) {
+          const xmlContent = await response.text();
+          setDiagramXml(xmlContent);
+          setApiResponseReceived(true);
+        } else {
+          console.error("HTTP error:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching XML:", error);
+      }
+    };
 
     if (xmlUrl) {
       console.log(xmlUrl)
-      intervalId = setInterval(async () => {
-        try {
-          const response = await fetch(xmlUrl);
-          if (response.ok) {
-
-            const xmlContent = await response.text();
-            console.log('XML content:', xmlContent);
-
-            if (xmlContent) {
-              setDiagramXml(xmlContent);
-              clearInterval(intervalId);
-              setApiResponseReceived(true); 
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching XML:', error);
-        }
-      }, 100000);
+      fetchXml();
     }
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
   }, [xmlUrl])
 
   //將Answers格式轉換，交給後端
@@ -604,14 +635,14 @@ function SurveyDisplay({
     });
   };
   //處理draw io
-  const loadDiagram = () => {
+  const loadDiagram = useCallback(() => {
     if (!iframeRef.current || !diagramXml) return;
     const message = {
       action: "load",
       xml: diagramXml,
     };
     iframeRef.current.contentWindow.postMessage(JSON.stringify(message), "*");
-  };
+}, [diagramXml]);
   //處理draw io
   useEffect(() => {
     const handleMessage = (event) => {
@@ -629,7 +660,13 @@ function SurveyDisplay({
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [diagramXml]);
+  }, [loadDiagram]);
+
+  useEffect(() => {
+    if (diagramXml) {
+        loadDiagram();
+    }
+}, [diagramXml, loadDiagram]);
 
   const handleSaveFile = () => {
     setShowSaveDialog(true);
@@ -724,23 +761,9 @@ function SurveyDisplay({
       console.log("傳送格式:\n", conversationRequest);
       let response = "";
       try {
-        if(conversationRequest.tool === "drawio"){
-          response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              authorizationToken: `Bearer ${idToken}`,
-              "InvocationType": "Event",
-            },
-            body: JSON.stringify(conversationRequest),
-          });
-
-          if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
-          }
-
-          console.log("end")
+        if (conversationRequest.tool === "drawio") {
+          await setupWebSocket()
+          web_socket.send(JSON.stringify({action: "message", ...conversationRequest}))
           return;
         } else {
           response = await fetch(url, {
@@ -902,23 +925,9 @@ function SurveyDisplay({
       let response = "";
       console.log("傳送格式:\n", transformationRequest);
       try {
-        if(transformationRequest.tool === "drawio"){
-          response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              authorizationToken: `Bearer ${idToken}`,
-              "InvocationType": "Event",
-            },
-            body: JSON.stringify(transformationRequest),
-          });
-
-          if (response.status === 200) {
-            console.log("response status:", 200)
-            setXmlUrl(baseurl + "/diagram/" + `${user_id}/file/${timestamp}.xml`)
-          }
-
-          console.log("end")
+        if (transformationRequest.tool === "drawio") {
+          await setupWebSocket()
+          web_socket.send(JSON.stringify({action: "message", ...transformationRequest}))
           return;
         } else {
           response = await fetch(url, {
@@ -1064,7 +1073,7 @@ function SurveyDisplay({
                         id="drawio-frame"
                         src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
                         allowFullScreen
-                        style={{ width: "100%"}}
+                        style={{ width: "100%" }}
                       ></iframe>
                     </>
                   ) : imageUrl ? (
@@ -1167,16 +1176,14 @@ function SurveyDisplay({
                 {messages.map((msg, index) => (
                   <div
                     key={index}
-                    className={`dialog-message ${
-                      msg.sender === "System" ? "system" : "user"
-                    }`}
+                    className={`dialog-message ${msg.sender === "System" ? "system" : "user"
+                      }`}
                   >
                     <div className="avatar-container">
                       <img
                         src={msg.sender === "System" ? systemImg : userImg}
-                        alt={`${
-                          msg.sender === "System" ? "System" : "User"
-                        }Img`}
+                        alt={`${msg.sender === "System" ? "System" : "User"
+                          }Img`}
                         className="avatar"
                       />
                     </div>
@@ -1278,12 +1285,11 @@ function SurveyDisplay({
                   {question.options.map((option, optionIndex) => (
                     <button
                       key={optionIndex}
-                      className={`option-button ${
-                        answers[`${currentCategoryIndex}-${questionIndex}`] ===
+                      className={`option-button ${answers[`${currentCategoryIndex}-${questionIndex}`] ===
                         optionIndex
-                          ? "selected"
-                          : ""
-                      }`}
+                        ? "selected"
+                        : ""
+                        }`}
                       onClick={() =>
                         handleOptionSelect(
                           currentCategoryIndex,
