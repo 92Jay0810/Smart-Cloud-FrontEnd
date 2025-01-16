@@ -871,7 +871,7 @@ const TemplateMode = ({
                     )
                   }
                 >
-                  選擇
+                  選擇模板
                 </button>
                 <button className="exit-button" onClick={handleCloseModal}>
                   X

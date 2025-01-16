@@ -1358,7 +1358,8 @@ function SurveyDisplay({
           completed={progressPercentage}
           bgColor="#10b981"
           labelColor="#ffffff"
-          height="20px"
+          height="10px"
+          labelSize="12px"
           maxCompleted={100}
         />
       </div>

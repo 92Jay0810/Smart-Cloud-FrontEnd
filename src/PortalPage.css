@@ -121,7 +121,7 @@
 .portal-page .nexttt-button {
   font-size: 16px;
   position: fixed; /* 固定位置 */
-  bottom: 10%; /* 距離底部 10% */
+  bottom: 5%; /* 距離底部 10% */
   padding: 0.5rem 1.5rem;
   background-color: #44b787;
   color: #f4f4f4;

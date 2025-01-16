@@ -1,4 +1,4 @@
-/* TemplateMode.css */
+backk/* TemplateMode.css */
 .image-grid-container {
   width: 80%;
   margin: 0 auto;
@@ -144,7 +144,7 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
-  background-color: #10b981;
+  background-color: #caebdf;
 }
 
 .detail-image {
@@ -178,7 +178,7 @@
 
 .backk-button{
   position: absolute; /* 讓按鈕能固定在指定位置 */
-  top: 2rem; 
+  top: 1rem; 
   right: 80rem; 
   padding: 0.5rem 1.5rem;
   border-radius: 0.5rem;
@@ -192,19 +192,29 @@
 }
 .exit-button {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.5rem;
+  top: 0.65rem;
+  right: 0.65rem;
+  width: 40px; /* 按鈕的寬度 */
+  height: 40px; /* 按鈕的高度 */
+  border-radius: 50%; /* 圓形 */
+  background-color: #c9c7c6; /* 按鈕背景顏色 */
+  color: white; /* 叉叉顏色 */
+  display: flex;
+  justify-content: center; /* 垂直居中 */
+  align-items: center; /* 水平居中 */
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px; /* 叉叉的字體大小 */
   transition: all 0.2s ease;
   font-weight: bold;
 }
 
+.exit-button:hover {
+  background-color: #919491; /* 當鼠標懸停時變化顏色 */
+}
+
 .back-button{
-  position: relative; /* 讓按鈕能固定在指定位置 */
+  position: absolute; /* 讓按鈕能固定在指定位置 */
   top: 1rem; 
   right: 80rem; 
   padding: 0.5rem 1.5rem;
@@ -221,23 +231,23 @@
 .Tnext-button {
   font-size: 16px;
   position: relative;
-  bottom: -50px;
+  bottom: -100px;
+  left: 25px;
   padding: 0.5rem 1.5rem;
-  background-color: #44b787;
+  background-color: #ffffff;
   color: #f4f4f4;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.3rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  width: 120px;
+  width: 200px;
   height: 50px;
-  font-weight: bold;
 }
 
 .next-button {
   font-size: 16px;
   position: absolute;
-  top: 1rem;
+  top: 1rem; 
   right: 1.5rem; 
   padding: 0.5rem 1.5rem;
   background-color: #ffffff;
@@ -253,16 +263,16 @@
 
 
 .back-button,.backk-button,.bback-button {
-  background-color: #6b7280;
+  background-color: #aaaeb6;
   color: white;
 }
 
 .back-button:hover,.backk-button:hover{
-  background-color: #4b5563;
+  background-color: #959eab;
   transform: translateX(-5px);
 }
 .backk-button:hover {
-  background-color: #4b5563;
+  background-color: #8e96a2;
   transform: translateX(-5px);
 }
 
@@ -279,9 +289,4 @@
 .back-button::before,.backk-button::before,.bback-button::before {
   content: "←";
   margin-right: 8px;
-}
-.Tnext-button::after {
-  content: " →";
-  margin-right: 8px;
-
 }
