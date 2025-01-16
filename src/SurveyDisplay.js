@@ -695,7 +695,11 @@ function SurveyDisplay({
           console.log("Received message:", msg);
           switch (msg.event) {
             case "init":
-              loadDiagram();
+              if (diagramXml) {
+                loadDiagram();
+              } else {
+                console.warn("diagramXml 尚未設置，無法載入圖表");
+              }
               break;
             case "export":
             case "save":
@@ -717,12 +721,6 @@ function SurveyDisplay({
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [loadDiagram]);
-
-  useEffect(() => {
-    if (diagramXml) {
-      loadDiagram();
-    }
   }, [diagramXml, loadDiagram]);
 
   // 若使用者進行對話，則進行PostMessage得到xml
