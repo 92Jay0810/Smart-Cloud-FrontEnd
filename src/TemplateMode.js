@@ -133,6 +133,8 @@ const TemplateMode = ({
     {
       id: 1,
       caption: "適用情境：對外活動網站",
+      content:
+        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.Ei scripta propriae periculis mei,",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/website/website.png",
       code: "https://d2s0u5536e7dee.cloudfront.net/template/website/website.py",
@@ -141,6 +143,8 @@ const TemplateMode = ({
     {
       id: 2,
       caption: "適用情境：公開資料查詢服務",
+      content:
+        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/%E4%BA%A4%E6%98%93%E5%85%AC%E9%96%8B%E8%B3%87%E6%96%99%E6%9F%A5%E8%A9%A2%E6%9C%8D%E5%8B%99.png",
       code: "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/trade_service.py",
@@ -149,6 +153,8 @@ const TemplateMode = ({
     {
       id: 3,
       caption: "適用情境：內部員工教育平台",
+      content:
+        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png",
       code: "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.py",
@@ -157,6 +163,8 @@ const TemplateMode = ({
     {
       id: 4,
       caption: "適用情境：資料自動化蒐集平台",
+      content:
+        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.png",
       code: "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.py",
@@ -165,6 +173,8 @@ const TemplateMode = ({
     {
       id: 5,
       caption: "適用情境：轉址等小型服務",
+      content:
+        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png",
       code: "https://d2s0u5536e7dee.cloudfront.net/template/short/short.py",
@@ -173,6 +183,8 @@ const TemplateMode = ({
     {
       id: 6,
       caption: "適用情境：串接不同資訊chatbot",
+      content:
+        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png",
       code: "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.py",
@@ -837,35 +849,44 @@ const TemplateMode = ({
         ))}
       </div>
       {/* 模態框 */}
-      
+
       {isModalOpen && selectedStation && (
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div
             className="modal-content"
             onClick={(e) => e.stopPropagation()} // 防止點擊內部關閉模態框
           >
-            
-            <img
-              src={selectedStation.image}
-              alt={`Workflow ${selectedStation.id}`}
-              className="detail-image"
-            />
-            <p className="detail-caption">{selectedStation.caption}</p>
-            <button
-              className="Tnext-button"
-              onClick={() =>
-                handleNextStep(
-                  selectedStation.image,
-                  selectedStation.code,
-                  selectedStation.backendAPI
-                )
-              }
-            >
-              選擇
-            </button>
-            <button className="exit-button" onClick={handleCloseModal}>
-              X
-            </button>
+            <div className="modal-layout">
+              {/* 左邊側邊欄和資訊 */}
+              <div className="modal-sidebar">
+                <h1 className="detail-caption">{selectedStation.caption}</h1>
+                <p className="detail-caption">{selectedStation.content}</p>
+                <button
+                  className="Tnext-button"
+                  onClick={() =>
+                    handleNextStep(
+                      selectedStation.image,
+                      selectedStation.code,
+                      selectedStation.backendAPI
+                    )
+                  }
+                >
+                  選擇
+                </button>
+                <button className="exit-button" onClick={handleCloseModal}>
+                  X
+                </button>
+              </div>
+
+              {/* 右邊圖片 */}
+              <div className="modal-image-container">
+                <img
+                  src={selectedStation.image}
+                  alt={`Workflow ${selectedStation.id}`}
+                  className="detail-image"
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
