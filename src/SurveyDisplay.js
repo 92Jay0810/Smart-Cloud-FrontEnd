@@ -123,10 +123,6 @@ function SurveyDisplay({
   onRefreshTokenCheck,
   handleLogout,
 }) {
-  const handleRefreshTokenCheck = () => {
-    console.log("Refreshcall in SurveyDisplay");
-    onRefreshTokenCheck();
-  };
   // 讀取 cookie 的函數
   const getCookie = (name) => {
     const nameEQ = name + "=";
@@ -183,11 +179,25 @@ function SurveyDisplay({
     setFileName("");
   }, []);
 
+  //token過期呼叫
+  const handleRefreshTokenCheck = () => {
+    // 先執行當前組件的重置
+    resetSurvey();
+    console.log("Refreshcall in SurveyDisplay");
+    onRefreshTokenCheck();
+  };
+
   //返回按鈕
   const handleBack = useCallback(() => {
     resetSurvey(); // 先執行當前組件的重置
     handleBackPrortalPage(); // 返回服務選擇頁面
   }, [resetSurvey, handleBackPrortalPage]);
+
+  const handleLogoutButton = () => {
+    // 先執行當前組件的重置
+    resetSurvey();
+    handleLogout();
+  };
 
   //service
   const [answers, setAnswers] = useState(() => {
@@ -1374,7 +1384,7 @@ function SurveyDisplay({
         />
       </div>
       <div className="header-container">
-        <button onClick={handleBack} className="back-button">
+        <button onClick={handleLogoutButton} className="back-button">
           返回
         </button>
         <button onClick={handleLogout} className="next-button">
