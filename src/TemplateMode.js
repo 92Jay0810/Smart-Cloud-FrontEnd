@@ -17,10 +17,6 @@ const TemplateMode = ({
   handleBackPrortalPage,
   handleLogout,
 }) => {
-  const handleRefreshTokenCheck = () => {
-    console.log("Refreshcall in SurveyDisplay");
-    onRefreshTokenCheck();
-  };
   // 讀取 cookie 的函數
   const getCookie = (name) => {
     const nameEQ = name + "=";
@@ -67,6 +63,12 @@ const TemplateMode = ({
     setInputText("");
     setFileName("");
   }, []);
+  const handleRefreshTokenCheck = () => {
+    // 先執行當前組件的重置
+    resetSurvey();
+    console.log("Refreshcall in SurveyDisplay");
+    onRefreshTokenCheck();
+  };
   // need store in cookie and read
   const [session_id, setSession_id] = useState(() => {
     const saved = getCookie("session_id");
@@ -262,10 +264,18 @@ const TemplateMode = ({
       console.error("Error submitting survey:", error);
     }
   };
+  //返回按鈕
   const handleBack = useCallback(() => {
     resetSurvey(); // 先執行當前組件的重置
     handleBackPrortalPage(); // 返回服務選擇頁面
   }, [resetSurvey, handleBackPrortalPage]);
+
+  //登出按鈕
+  const handleLogoutButton = () => {
+    // 先執行當前組件的重置
+    resetSurvey();
+    handleLogout();
+  };
 
   //csd-ca-lab
   const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
@@ -628,7 +638,7 @@ const TemplateMode = ({
           <button onClick={handleBack} className="back-button">
             返回
           </button>
-          <button onClick={handleLogout} className="next-button">
+          <button onClick={handleLogoutButton} className="next-button">
             登出
           </button>
         </div>
@@ -821,7 +831,7 @@ const TemplateMode = ({
         <button onClick={handleBack} className="backk-button">
           返回
         </button>
-        <button onClick={handleLogout} className="next-button">
+        <button onClick={handleLogoutButton} className="next-button">
           登出
         </button>
       </div>

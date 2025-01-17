@@ -193,6 +193,7 @@ function SurveyDisplay({
     handleBackPrortalPage(); // 返回服務選擇頁面
   }, [resetSurvey, handleBackPrortalPage]);
 
+  //登出按鈕
   const handleLogoutButton = () => {
     // 先執行當前組件的重置
     resetSurvey();
@@ -1129,7 +1130,7 @@ function SurveyDisplay({
           <button onClick={handleBack} className="back-button">
             返回
           </button>
-          <button onClick={handleLogout} className="next-button">
+          <button onClick={handleLogoutButton} className="next-button">
             登出
           </button>
         </div>
@@ -1384,10 +1385,10 @@ function SurveyDisplay({
         />
       </div>
       <div className="header-container">
-        <button onClick={handleLogoutButton} className="back-button">
+        <button onClick={handleBack} className="back-button">
           返回
         </button>
-        <button onClick={handleLogout} className="next-button">
+        <button onClick={handleLogoutButton} className="next-button">
           登出
         </button>
       </div>
