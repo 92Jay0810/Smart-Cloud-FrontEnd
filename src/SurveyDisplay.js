@@ -1379,10 +1379,12 @@ function SurveyDisplay({
           completed={progressPercentage}
           bgColor="#10b981"
           labelColor="#ffffff"
-          height="10px"
+          height="8px"
           labelSize="12px"
           maxCompleted={100}
+          labelClassName="hidden-label"
         />
+        <span className="progress-percentage">{progressPercentage}%</span>
       </div>
       <div className="header-container">
         <button onClick={handleBack} className="back-button">

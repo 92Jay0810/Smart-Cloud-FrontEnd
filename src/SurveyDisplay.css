@@ -788,3 +788,18 @@ input:checked + .toggle-slider:before {
   transform: scale(1.1); /* Slightly enlarge the image on hover */
   transition: transform 0.2s ease, opacity 0.2s ease; /* Smooth transition for hover effect */
 }
+.progress-bar-container {
+  align-items: center; /* 垂直對齊 */
+  justify-content: space-between; /* 進度條與文字兩端對齊 */
+  width: 50%; /* 確保進度條與文字可以根據容器寬度排列 */
+}
+
+.progress-percentage {
+  margin-left: 10px; /* 與進度條保持間距 */
+  font-size: 12px;
+  font-weight: bold;
+  color: #10b981; /* 進度條主色調 */
+}
+.hidden-label {
+  display: none;
+}
