@@ -1380,6 +1380,7 @@ function SurveyDisplay({
           bgColor="#10b981"
           labelColor="#ffffff"
           height="8px"
+          width="100%" // 确保进度条使用容器的宽度
           labelSize="12px"
           maxCompleted={100}
           labelClassName="hidden-label"

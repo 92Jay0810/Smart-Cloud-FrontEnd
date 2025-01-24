@@ -789,16 +789,21 @@ input:checked + .toggle-slider:before {
   transition: transform 0.2s ease, opacity 0.2s ease; /* Smooth transition for hover effect */
 }
 .progress-bar-container {
-  align-items: center; /* 垂直對齊 */
-  justify-content: space-between; /* 進度條與文字兩端對齊 */
-  width: 50%; /* 確保進度條與文字可以根據容器寬度排列 */
+  display: flex; /* 使用 Flexbox 排列進度條與百分比 */
+  align-items: center; /* 垂直居中 */
+  justify-content: flex-start; /* 從左到右排列 */
+  width: 50%; /* 确保容器有足够的宽度 */
+  max-width: 100%; /* 防止超出父级宽度 */
 }
 
 .progress-percentage {
-  margin-left: 10px; /* 與進度條保持間距 */
+  margin-left: 10px; /* 與進度條保持適當的水平間距 */
   font-size: 12px;
   font-weight: bold;
-  color: #10b981; /* 進度條主色調 */
+  color: #10b981; /* 配合進度條主色調 */
+}  
+.progress-bar-container > div {
+  flex-grow: 1; /* 让进度条占据剩余空间 */
 }
 .hidden-label {
   display: none;

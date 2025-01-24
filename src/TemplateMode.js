@@ -186,7 +186,7 @@ const TemplateMode = ({
     },
     {
       id: 6,
-      caption: "串接不同資訊chatbot",
+      caption: "串接不同資訊Chatbot",
       subtitle: "平台：AWS",
       subtitle2: "作者：Smart Archie",
       content:
@@ -840,7 +840,7 @@ const TemplateMode = ({
         </button>
       </div>
       <h1 className="image-grid-title">
-        Hi {username}! Please select the template you want to use
+        嗨 {username}! 請選擇您想使用的模板
       </h1>
       <div className="image-grid">
         {workstations.map((station) => (
