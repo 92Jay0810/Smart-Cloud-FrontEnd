@@ -134,12 +134,14 @@ const TemplateMode = ({
   const workstations = [
     {
       id: 1,
-      caption: "適用情境：對外活動網站",
+      caption: "現代化 WEB 站台架構",
+      subtitle: "平台：GCP",
+      subtitle2: "作者：Frankie",
       content:
-        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.Ei scripta propriae periculis mei,",
+        "這個架構圖適用於動態模板渲染、高流量網站，支持用戶通過 DNS Provider 訪問，請求先進入 External HTTPS Load Balancer，負責分發 API 請求至 Cloud Run 服務，並提供對多模板靜態資源的支持（存於 Cloud Storage）， 整合 Observability進行全方位運維監控，Artifact Registry 管理容器模板，Key Management Service 確保加密安全性，支持高效開發和運營。",
       image:
-        "https://d2s0u5536e7dee.cloudfront.net/template/website/website.png",
-      code: "https://d2s0u5536e7dee.cloudfront.net/template/website/website.py",
+        "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/template.drawio.png",
+      code: "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/Template_1.xml",
       backendAPI: "website",
     },
     {
@@ -184,11 +186,13 @@ const TemplateMode = ({
     },
     {
       id: 6,
-      caption: "適用情境：串接不同資訊chatbot",
+      caption: "串接不同資訊chatbot",
+      subtitle: "平台：AWS",
+      subtitle2: "作者：Smart Archie",
       content:
-        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
+        "這個架構圖適用於需要整合各類雲端服務的聊天機器人系統，尤其是針對使用 AWS 進行部署和運行的場景。架構圖包含了多個重要的 AWS 元件，如 VPC、EKS (Elastic Kubernetes Service)、RDS MySQL、S3、Route 53 等，適合建立一個高可用性、可擴展且安全的聊天機器人後端基礎設施。此架構有助於將不同的資訊源（例如資料庫、API 服務和聊天服務）整合到一個統一的系統中，提供快速、穩定的互動體驗。",
       image:
-        "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png",
+        "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.drawio%20(1).png",
       code: "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.py",
       backendAPI: "chatbot",
     },
@@ -870,7 +874,10 @@ const TemplateMode = ({
               {/* 左邊側邊欄和資訊 */}
               <div className="modal-sidebar">
                 <h1 className="detail-caption">{selectedStation.caption}</h1>
-                <p className="detail-caption">{selectedStation.content}</p>
+                <h4 className="detail-subtitle">{selectedStation.subtitle}</h4>
+                <h4 className="detail-subtitle2">{selectedStation.subtitle2}</h4>
+                <p className="detail-content">{selectedStation.content}</p>
+
                 <button
                   className="Tnext-button"
                   onClick={() =>
@@ -884,7 +891,11 @@ const TemplateMode = ({
                   選擇模板
                 </button>
                 <button className="exit-button" onClick={handleCloseModal}>
-                  X
+                  <img
+                    src={close}
+                    style={{ width: "24px", height: "24px" }}
+                    alt="Close"
+                  />
                 </button>
               </div>
 

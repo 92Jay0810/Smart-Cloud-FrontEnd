@@ -1,7 +1,7 @@
 backk/* TemplateMode.css */
 .image-grid-container {
   width: 80%;
-  margin: 24px;
+  margin: 0 auto;
   padding: 30px;
 }
 
@@ -90,7 +90,6 @@ backk/* TemplateMode.css */
 
 .modal-content {
   background: white;
-  padding: 18px;
   border-radius: 8px;
   width: 80vw;
   max-width: 1200px;
@@ -107,25 +106,40 @@ backk/* TemplateMode.css */
   display: flex;
   flex-direction: row;
   height: 100%;
+  
+  
 }
 
 /* 左邊側邊欄樣式 */
 .modal-sidebar {
   flex: 1; /* 左側占用比例 */
-  padding: 20px;
+  padding: 35px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #f9f9f9;
+  background-color: #e9f5f0;
   border-right: 1px solid #ddd;
 }
 
 .detail-caption {
-  font-size: 18px;
-  color: #374151;
-  margin-bottom: 20px;
+  font-size: 20px;
+  color: #44b787;
+  margin-bottom: 10px;
 }
 
+.detail-subtitle, .detail-subtitle2 {
+  font-size: 14px;
+  color: #908f8f;
+  margin-bottom: 0px;
+}
+.detail-subtitle2 {
+  margin-top: -1px; /* 向上移動一些，縮小距離 */
+}
+.detail-content {
+  font-size: 14px;
+  color: #838181;
+  margin-bottom: 10px;
+}
 
 
 /* 右邊圖片樣式 */
@@ -134,8 +148,8 @@ backk/* TemplateMode.css */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
-  background-color: #caebdf;
+  padding: 30px;
+  background-color: #ffffff;
 }
 
 .detail-image {
@@ -183,26 +197,26 @@ backk/* TemplateMode.css */
 }
 .exit-button {
   position: absolute;
-  top: 0.65rem;
-  right: 0.65rem;
-  width: 40px; /* 按鈕的寬度 */
-  height: 40px; /* 按鈕的高度 */
+  top: 0.95rem;
+  right: 0.95rem;
+  width: 30px; /* 按鈕的寬度 */
+  height: 30px; /* 按鈕的高度 */
   border-radius: 50%; /* 圓形 */
-  background-color: #c9c7c6; /* 按鈕背景顏色 */
-  color: white; /* 叉叉顏色 */
   display: flex;
+  background-color: #ffffff; /* 當鼠標懸停時變化顏色 */
   justify-content: center; /* 垂直居中 */
   align-items: center; /* 水平居中 */
   border: none;
-  cursor: pointer;
-  font-size: 20px; /* 叉叉的字體大小 */
   transition: all 0.2s ease;
-  font-weight: bold;
 }
 
 .exit-button:hover {
-  background-color: #919491; /* 當鼠標懸停時變化顏色 */
+  transform: scale(1.08); /* 放大按鈕 */
+  opacity: 0.8;         /* 改變透明度 */
+  cursor: pointer;      /* 顯示手型游標 */
+  
 }
+
 
 .back-button{
   position: absolute; /* 讓按鈕能固定在指定位置 */
@@ -221,8 +235,8 @@ backk/* TemplateMode.css */
 
 .Tnext-button {
   font-size: 16px;
-  position: absolute;
-  bottom: -100px;
+  position:relative;
+  bottom: -30px;
   left: 25px;
   padding: 0.5rem 1.5rem;
   background-color: #ffffff;
@@ -233,10 +247,11 @@ backk/* TemplateMode.css */
   transition: background-color 0.2s ease;
   width: 200px;
   height: 50px;
+  font-weight: bold;
 }
 
 .Tnextt-button {
-  background-color: #4caf50;
+  background-color: #44b787;
   color: white;
   border: none;
   border-radius: 4px;
