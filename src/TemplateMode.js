@@ -41,11 +41,11 @@ const TemplateMode = ({
   };
   const resetSurvey = useCallback(() => {
     setSubmitted(false);
-    setImageUrl("");
     setsavecode("");
     setPlatform("");
     setTool("");
     setMessages([]);
+    setDiagramXml("");
     const newSessionId = uuidv4();
     console.log("New Session ID generated:", newSessionId);
     setSession_id(newSessionId);
@@ -53,15 +53,15 @@ const TemplateMode = ({
     setCookie("session_id", newSessionId);
     setCookie("submitted", "", -1);
     setCookie("apiResponseReceived", "", -1);
-    setCookie("imageUrl", "", -1);
     setCookie("savecode", "", -1);
     setCookie("platform", "", -1);
     setCookie("tool", "", -1);
     setCookie("messages", "", -1);
+    setCookie("diagramXml", "", -1);
     // 重置其他相關狀態
     setShowDialog(false);
     setInputText("");
-    setFileName("");
+    setXmlUrl("");
   }, []);
   const handleRefreshTokenCheck = () => {
     // 先執行當前組件的重置
@@ -88,9 +88,6 @@ const TemplateMode = ({
     const saved = getCookie("apiResponseReceived");
     return saved ? JSON.parse(saved) : false;
   });
-  const [imageUrl, setImageUrl] = useState(() => {
-    return getCookie("imageUrl") || "";
-  });
   const [savecode, setsavecode] = useState(() => {
     return getCookie("savecode") || false;
   });
@@ -109,23 +106,30 @@ const TemplateMode = ({
       return [];
     }
   });
+  const [diagramXml, setDiagramXml] = useState(() => {
+    const diagramxml = getCookie("diagramXml");
+    return diagramxml ? diagramxml : false;
+  });
+
+  // xmlUrl
+  const [xmlUrl, setXmlUrl] = useState("");
 
   // 更新 cookie 的函數
   const updateCookies = () => {
     setCookie("submitted", submitted);
     setCookie("apiResponseReceived", apiResponseReceived);
-    setCookie("imageUrl", imageUrl);
     setCookie("savecode", savecode);
     setCookie("platform", platform);
     setCookie("tool", tool);
     setCookie("messages", JSON.stringify(messages));
     setCookie("session_id", session_id);
+    setCookie("diagramXml", diagramXml);
   };
 
   // 在狀態更新時更新 cookie
   useEffect(() => {
     updateCookies();
-  }, [submitted, imageUrl, savecode, platform, tool, messages, session_id]);
+  }, [submitted, savecode, platform, tool, messages, session_id, diagramXml]);
   // 重置函數
 
   const [selectedStation, setSelectedStation] = useState(null);
@@ -210,8 +214,7 @@ const TemplateMode = ({
 
   const handleNextStep = async (imageUrl, code, template) => {
     setSelectedStation(null);
-    setTool("diagrams");
-    setImageUrl(imageUrl);
+    setTool("drawio");
     setsavecode(code);
     setPlatform("aws");
     setSubmitted(true);
@@ -225,49 +228,146 @@ const TemplateMode = ({
       now.getMinutes().toString().padStart(2, "0") + // 分钟
       now.getSeconds().toString().padStart(2, "0") + // 秒
       now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-    const SumbitAnswers = {
+    const SubmitAnswers = {
       template: template,
       timestamp: timestamp,
       session_id: session_id,
       user_id: user_id,
-      tool: "diagrams",
+      tool: "drawio",
     };
-    console.log("傳送格式:\n", SumbitAnswers);
+    console.log("傳送格式:\n", SubmitAnswers);
     try {
-      let response = "";
-      response = await fetch(url, {
-        method: "POST",
-        headers: {
-          authorizationToken: `Bearer ${idToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(SumbitAnswers),
-      });
-      const responseData = await response.json();
-      if (response.status === 200) {
-        setMessages([
-          {
-            sender: "System",
-            text:
-              "Hi " +
-              username +
-              ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
-          },
-        ]);
-        setApiResponseReceived(true);
-      } else {
-        setMessages([
-          {
-            sender: "System",
-            text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-          },
-        ]);
-        setApiResponseReceived(true);
-      }
+      await setupWebSocket();
+      web_socket.send(JSON.stringify({ action: "message", ...SubmitAnswers }));
+      return;
     } catch (error) {
       console.error("Error submitting survey:", error);
     }
   };
+  //當xmlUrl獲取成功時，會往s3獲取xml
+  useEffect(() => {
+    const fetchXml = async () => {
+      try {
+        const response = await fetch(xmlUrl);
+        if (response.ok) {
+          const xmlContent = await response.text();
+          setDiagramXml(xmlContent);
+          // 第一次的xml 收到要歡迎語
+          if (!apiResponseReceived) {
+            setShowDialog(true);
+            setMessages([
+              {
+                sender: "System",
+                text:
+                  "Hi " +
+                  username +
+                  ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
+              },
+            ]);
+            setApiResponseReceived(true);
+          } else {
+            //此為對話
+            const now = new Date();
+            const timestamp =
+              now.getFullYear().toString() + // 年份
+              (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+              now.getDate().toString().padStart(2, "0") + // 日期
+              now.getHours().toString().padStart(2, "0") + // 小时
+              now.getMinutes().toString().padStart(2, "0") + // 分钟
+              now.getSeconds().toString().padStart(2, "0") + // 秒
+              now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+            setMessages([
+              ...messages,
+              {
+                sender: "System",
+                text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              },
+            ]);
+            setLoading(false); //若為對話，AI要停止思考
+          }
+        } else {
+          console.error("HTTP error:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching XML:", error);
+      }
+    };
+
+    if (xmlUrl) {
+      console.log(xmlUrl);
+      fetchXml();
+    }
+  }, [xmlUrl]);
+
+  //處理draw io
+  useEffect(() => {
+    const loadDiagram = () => {
+      if (!iframeRef.current || !diagramXml) return;
+      const message = {
+        action: "load",
+        xml: diagramXml,
+      };
+      iframeRef.current.contentWindow.postMessage(
+        JSON.stringify(message),
+        "https://embed.diagrams.net"
+      );
+    };
+    const handleMessage = (event) => {
+      try {
+        //驗證來源
+        if (
+          event.data.length > 0 &&
+          event.origin === "https://embed.diagrams.net"
+        ) {
+          const msg = JSON.parse(event.data);
+          console.log("Received message:", msg);
+          switch (msg.event) {
+            case "init":
+              if (diagramXml) {
+                loadDiagram();
+              } else {
+                console.warn("diagramXml 尚未設置，無法載入圖表");
+              }
+              break;
+            case "export":
+            case "save":
+              console.log("已更新XML");
+              if (msg.xml && msg.xml !== diagramXml) {
+                setDiagramXml(msg.xml);
+              }
+              break;
+            default:
+              console.warn("未处理的事件:", msg.event);
+          }
+        }
+      } catch (error) {
+        console.error("Error processing message:", error);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [diagramXml]);
+
+  // 若使用者進行對話，則進行PostMessage得到xml
+  const requestExport = () => {
+    if (iframeRef.current) {
+      const message = {
+        action: "export",
+        format: "xmlsvg",
+        xml: true,
+        spin: "Saving...",
+      };
+      iframeRef.current.contentWindow.postMessage(
+        JSON.stringify(message),
+        "https://embed.diagrams.net"
+      );
+      console.log("requestExport sent");
+    }
+  };
+
   //返回按鈕
   const handleBack = useCallback(() => {
     resetSurvey(); // 先執行當前組件的重置
@@ -285,71 +385,73 @@ const TemplateMode = ({
   const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
   const url = baseurl + "/api/diagram-as-code";
   //const url = "http://localhost:3001";
+  const WEBSOCKET_API =
+    "wss://ops0k8xtuk.execute-api.ap-northeast-1.amazonaws.com/production/";
+  let web_socket;
 
-  // Zoom in/out
-  const [scale, setScale] = useState(1); // 初始縮放比例
+  //websocket
+  function connectWebSocket() {
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket(WEBSOCKET_API);
+
+      ws.onopen = () => {
+        web_socket = ws;
+        console.log("WebSocket connection established!");
+        resolve();
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        reject(error);
+      };
+    });
+  }
+
+  async function setupWebSocket() {
+    if (web_socket) {
+      return;
+    }
+
+    await connectWebSocket()
+      .then(() => {
+        web_socket.onmessage = (evt) => {
+          // trigger when websocket received message
+          if (evt.data && typeof evt.data != Object) {
+            const data = JSON.parse(evt.data);
+            console.log("Received:", data);
+            if (data.body) {
+              setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name);
+            }
+          }
+        };
+
+        web_socket.onclose = () => {
+          // trigger when connection get closed
+          web_socket = null;
+          // 可以在這裡處理重連邏輯
+          console.log("Connection closed");
+        };
+
+        web_socket.onerror = (error) => {
+          console.error("WebSocket error:", error);
+        };
+      })
+      .catch((error) => {
+        console.error("Failed to connect:", error);
+      });
+  }
 
   //ConversationDialog
   const [showDialog, setShowDialog] = useState(false);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const iframeRef = useRef(null);
 
   //saveDialog
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [fileName, setFileName] = useState("");
 
-  const handleSaveFile = () => {
-    setShowSaveDialog(true);
-  };
-
-  const saveFile = async () => {
-    if (imageUrl) {
-      try {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const temp_url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.style.display = "none";
-        link.href = temp_url;
-        const fileNameWithExtension = fileName.endsWith(".png")
-          ? fileName
-          : `${fileName}.png`;
-        link.download = fileNameWithExtension;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(temp_url);
-        setShowSaveDialog(false);
-      } catch (error) {
-        console.error("Error downloading the file:", error);
-        setShowSaveDialog(false);
-      }
-    }
-  };
-
-  const handleSaveCode = async () => {
-    if (savecode) {
-      try {
-        const response = await fetch(savecode);
-        const blob = await response.blob();
-        const temp_url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.style.display = "none";
-        link.href = temp_url;
-        const fileNameWithExtension = "diagram.py";
-        link.download = fileNameWithExtension;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(temp_url);
-        setShowSaveDialog(false);
-      } catch (error) {
-        console.error("Error downloading the file:", error);
-        setShowSaveDialog(false);
-      }
-    }
-  };
   // 當message改變滑動到指定參考位置
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -379,87 +481,23 @@ const TemplateMode = ({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-      const consersationRequest = {
+      //更新xml
+      requestExport();
+      const conversationRequest = {
         prompt: inputText,
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
         tool: tool,
+        xml: diagramXml,
       };
-      console.log("傳送格式:\n", consersationRequest);
+      console.log("傳送格式:\n", conversationRequest);
       try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            authorizationToken: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify(consersationRequest),
-        });
-        const responseData = await response.json();
-        console.log("responseData :", responseData);
-        //確保body裡面是json讀取，後端可能誤傳string
-        if (response.status === 504) {
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-          return; // 退出函式，避免進一步處理
-        }
-        let data =
-          typeof responseData.body === "string"
-            ? JSON.parse(responseData.body)
-            : responseData.body;
-        console.log("responseData 的body：", data);
-        if (typeof data === "undefined") {
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-        } else if (data.errorMessage) {
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-        } else if (data?.AIMessage) {
-          if (data?.s3_object_name && data?.s3_python_code) {
-            setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
-            setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-          }
-
-          setMessages([
-            ...newMessages,
-            { sender: "System", text: data.AIMessage },
-          ]);
-        } //如果只有圖片
-        else if (data?.s3_object_name && data?.s3_python_code) {
-          setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
-          setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-        } else {
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `Bad response format with internal server\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-        }
+        await setupWebSocket();
+        web_socket.send(
+          JSON.stringify({ action: "message", ...conversationRequest })
+        );
+        return;
       } catch (error) {
         setMessages([
           ...newMessages,
@@ -469,8 +507,6 @@ const TemplateMode = ({
           },
         ]);
         console.log(error);
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -501,7 +537,7 @@ const TemplateMode = ({
   const generatePrompt = (platform) => {
     return CustomPromptTemplate.replace("{platform}", platform);
   };
-  //未改
+  //按下轉換按鈕
   const handleTransform = async () => {
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
@@ -534,86 +570,23 @@ const TemplateMode = ({
         now.getMinutes().toString().padStart(2, "0") + // 分钟
         now.getSeconds().toString().padStart(2, "0") + // 秒
         now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+      //更新xml
+      requestExport();
       const transformationRequest = {
         prompt: promptText,
         session_id: session_id,
         timestamp: timestamp,
         user_id: user_id,
         tool: tool,
+        xml: diagramXml,
       };
       console.log("傳送格式:\n", transformationRequest);
       try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            authorizationToken: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify(transformationRequest),
-        });
-        const responseData = await response.json();
-        console.log("responseData :", responseData);
-        //確保body裡面是json讀取，後端可能誤傳string
-        if (response.status === 504) {
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-          return; // 退出函式，避免進一步處理
-        }
-        let data =
-          typeof responseData.body === "string"
-            ? JSON.parse(responseData.body)
-            : responseData.body;
-        console.log("responseData 的body：", data);
-        if (typeof data === "undefined") {
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-        } else if (data.errorMessage) {
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-        } else if (data?.AIMessage) {
-          if (data?.s3_object_name && data?.s3_python_code) {
-            setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
-            setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-          }
-          setMessages([
-            ...newMessages,
-            { sender: "System", text: data.AIMessage },
-          ]);
-        } //如果只有圖片
-        else if (data?.s3_object_name && data?.s3_python_code) {
-          setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
-          setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-        } else {
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `Bad response format with internal server\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-        }
+        await setupWebSocket();
+        web_socket.send(
+          JSON.stringify({ action: "message", ...transformationRequest })
+        );
+        return;
       } catch (error) {
         setMessages([
           ...newMessages,
@@ -623,18 +596,10 @@ const TemplateMode = ({
           },
         ]);
         console.log(error);
-      } finally {
-        setLoading(false);
       }
     }
   };
-  const handleZoomIn = () => {
-    setScale((prevScale) => Math.min(prevScale + 0.1, 1.8)); // 最大缩放2倍
-  };
 
-  const handleZoomOut = () => {
-    setScale((prevScale) => Math.max(prevScale - 0.1, 0.5)); // 最小缩放0.5倍
-  };
   if (submitted) {
     return (
       <div className="App">
@@ -660,17 +625,12 @@ const TemplateMode = ({
                   This architecture diagram is generated based on the technical
                   requirements you provided.
                 </h2>
-                {imageUrl ? (
+                {diagramXml ? (
                   <>
                     <div className="button-container">
-                      <button onClick={handleSaveFile}>Save Image</button>
-                      <button onClick={handleSaveCode}>Save Code</button>
                       <button onClick={handleModifyPromptClick}>
                         Modify Prompt
                       </button>
-
-                      <button onClick={handleZoomOut}>🔍 -</button>
-                      <button onClick={handleZoomIn}>🔍 +</button>
                       <div className="platform-button-container">
                         <button
                           onClick={() => handleTransform()}
@@ -686,16 +646,14 @@ const TemplateMode = ({
                         </button>
                       </div>
                     </div>
-                    <div className=".survey-result-content">
-                      <div className="survey-image-container">
-                        <img
-                          src={imageUrl}
-                          alt="Survey Result"
-                          className="survey-image"
-                          style={{ transform: `scale(${scale})` }} // 使用 scale 属性控制缩放
-                        />
-                      </div>
-                    </div>
+                    <iframe
+                      ref={iframeRef}
+                      id="drawio-frame"
+                      src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
+                      allowFullScreen
+                      sandbox="allow-scripts allow-downloads allow-same-origin"
+                      style={{ width: "100%" }}
+                    ></iframe>
                   </>
                 ) : (
                   <p className="error-message">沒有架構圖回傳，圖片解析失敗</p>
@@ -719,22 +677,6 @@ const TemplateMode = ({
             )}
           </div>
         </CSSTransition>
-        {showSaveDialog && (
-          <div className="save-dialog">
-            <div className="save-dialog-content">
-              <h3>Save Image</h3>
-              <input
-                type="text"
-                onChange={(e) => setFileName(e.target.value)}
-                placeholder="Enter image name"
-              />
-              <div className="save-dialog-buttons">
-                <button onClick={saveFile}>Save</button>
-                <button onClick={() => setShowSaveDialog(false)}>Cancel</button>
-              </div>
-            </div>
-          </div>
-        )}
         {showDialog && (
           <div className="dialog-container">
             <div className="dialog-topic">
@@ -839,9 +781,7 @@ const TemplateMode = ({
           登出
         </button>
       </div>
-      <h1 className="image-grid-title">
-        嗨 {username}! 請選擇您想使用的模板
-      </h1>
+      <h1 className="image-grid-title">嗨 {username}! 請選擇您想使用的模板</h1>
       <div className="image-grid">
         {workstations.map((station) => (
           <div
@@ -875,7 +815,9 @@ const TemplateMode = ({
               <div className="modal-sidebar">
                 <h1 className="detail-caption">{selectedStation.caption}</h1>
                 <h4 className="detail-subtitle">{selectedStation.subtitle}</h4>
-                <h4 className="detail-subtitle2">{selectedStation.subtitle2}</h4>
+                <h4 className="detail-subtitle2">
+                  {selectedStation.subtitle2}
+                </h4>
                 <p className="detail-content">{selectedStation.content}</p>
 
                 <button

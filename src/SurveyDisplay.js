@@ -155,6 +155,7 @@ function SurveyDisplay({
     setPlatform("");
     setTool("");
     setMessages([]);
+    setDiagramXml("");
     const newSessionId = uuidv4();
     console.log("New Session ID generated:", newSessionId);
     setSession_id(newSessionId);
@@ -169,6 +170,7 @@ function SurveyDisplay({
     setCookie("tool", "", -1);
     setCookie("messages", "", -1);
     setCookie("surveyAnswers", "", -1);
+    setCookie("diagramXml", "", -1);
     // 重置其他相關狀態
     setAnswers({});
     setCurrentCategoryIndex(0);
@@ -177,6 +179,7 @@ function SurveyDisplay({
     setLoading(false);
     setShowDialog(false);
     setFileName("");
+    setXmlUrl("");
   }, []);
 
   //token過期呼叫
@@ -306,6 +309,7 @@ function SurveyDisplay({
     "wss://ops0k8xtuk.execute-api.ap-northeast-1.amazonaws.com/production/";
   let web_socket;
 
+  //websocket
   function connectWebSocket() {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(WEBSOCKET_API);
@@ -557,7 +561,7 @@ function SurveyDisplay({
       alert("請回答所有問題後再提交！");
     }
   };
-
+  //當xmlUrl獲取成功時，會往s3獲取xml
   useEffect(() => {
     const fetchXml = async () => {
       try {
@@ -682,19 +686,19 @@ function SurveyDisplay({
     });
   };
   //處理draw io
-  const loadDiagram = useCallback(() => {
-    if (!iframeRef.current || !diagramXml) return;
-    const message = {
-      action: "load",
-      xml: diagramXml,
-    };
-    iframeRef.current.contentWindow.postMessage(
-      JSON.stringify(message),
-      "https://embed.diagrams.net"
-    );
-  }, [diagramXml]);
-  //處理draw io
   useEffect(() => {
+    const loadDiagram = () => {
+      if (!iframeRef.current || !diagramXml) return;
+      const message = {
+        action: "load",
+        xml: diagramXml,
+      };
+      iframeRef.current.contentWindow.postMessage(
+        JSON.stringify(message),
+        "https://embed.diagrams.net"
+      );
+    };
+
     const handleMessage = (event) => {
       try {
         //驗證來源
@@ -732,7 +736,7 @@ function SurveyDisplay({
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [diagramXml, loadDiagram]);
+  }, [diagramXml]);
 
   // 若使用者進行對話，則進行PostMessage得到xml
   const requestExport = () => {
@@ -808,7 +812,6 @@ function SurveyDisplay({
   }, [messages]);
 
   // HandleConversationSand
-  //對話目前未處裡 XML的回應
   const handleSend = async () => {
     const accessToken = localStorage.getItem("accessToken");
     const decodedToken = jwtDecode(accessToken);
