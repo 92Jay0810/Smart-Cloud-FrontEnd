@@ -145,8 +145,7 @@ const TemplateMode = ({
         "這個架構圖適用於動態模板渲染、高流量網站，支持用戶通過 DNS Provider 訪問，請求先進入 External HTTPS Load Balancer，負責分發 API 請求至 Cloud Run 服務，並提供對多模板靜態資源的支持（存於 Cloud Storage）， 整合 Observability進行全方位運維監控，Artifact Registry 管理容器模板，Key Management Service 確保加密安全性，支持高效開發和運營。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/template.drawio.png",
-      code: "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/Template_1.xml",
-      backendAPI: "website",
+      backendAPI: "WEBAPI",
     },
     {
       id: 2,
@@ -154,8 +153,7 @@ const TemplateMode = ({
       content:
         "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
-        "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/%E4%BA%A4%E6%98%93%E5%85%AC%E9%96%8B%E8%B3%87%E6%96%99%E6%9F%A5%E8%A9%A2%E6%9C%8D%E5%8B%99.png",
-      code: "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/trade_service.py",
+        "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/open_data_service.png",
       backendAPI: "open_data_service",
     },
     {
@@ -165,7 +163,6 @@ const TemplateMode = ({
         "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png",
-      code: "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.py",
       backendAPI: "education_platform",
     },
     {
@@ -175,7 +172,6 @@ const TemplateMode = ({
         "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.png",
-      code: "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.py",
       backendAPI: "collection_system",
     },
     {
@@ -185,8 +181,7 @@ const TemplateMode = ({
         "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png",
-      code: "https://d2s0u5536e7dee.cloudfront.net/template/short/short.py",
-      backendAPI: "short",
+      backendAPI: "short_link",
     },
     {
       id: 6,
@@ -196,8 +191,7 @@ const TemplateMode = ({
       content:
         "這個架構圖適用於需要整合各類雲端服務的聊天機器人系統，尤其是針對使用 AWS 進行部署和運行的場景。架構圖包含了多個重要的 AWS 元件，如 VPC、EKS (Elastic Kubernetes Service)、RDS MySQL、S3、Route 53 等，適合建立一個高可用性、可擴展且安全的聊天機器人後端基礎設施。此架構有助於將不同的資訊源（例如資料庫、API 服務和聊天服務）整合到一個統一的系統中，提供快速、穩定的互動體驗。",
       image:
-        "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.drawio%20(1).png",
-      code: "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.py",
+        "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png",
       backendAPI: "chatbot",
     },
   ];
@@ -447,10 +441,6 @@ const TemplateMode = ({
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const iframeRef = useRef(null);
-
-  //saveDialog
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [fileName, setFileName] = useState("");
 
   // 當message改變滑動到指定參考位置
   useEffect(() => {
