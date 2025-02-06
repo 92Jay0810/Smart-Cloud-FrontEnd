@@ -19,16 +19,26 @@
   backdrop-filter: blur(8px);
 }
 
+.login-container h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-size: 30px; 
+  color: #44b787; 
+} 
+
 .login-container h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   font-size: 28px; 
   color: #333; 
 }
 
 .login-container p {
   color: #777;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   text-align: center; 
 }
 

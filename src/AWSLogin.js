@@ -72,23 +72,23 @@ const AWSLogin = ({ onLogin }) => {
   return (
     <div className="login-container">
       <form onSubmit={signIn}>
-        <h1>AWS Cognito Login</h1>
-        <p>Please create user in Cognito user pool before login</p>
-        <h3>Choose a Login identifier</h3>
+        <h1>歡迎來到 Smart Archie </h1>
+        <p>請使用 AWS Cognito 登入，登入前請在 Cognito 中建立用戶</p>
+        <h3>請選擇登入方式</h3>
         <div className="button-group">
           <button
             type="button"
             className={!isEmailLogin ? "active" : ""}
             onClick={() => setIsEmailLogin(false)}
           >
-            Username
+            用戶名稱
           </button>
           <button
             type="button"
             className={isEmailLogin ? "active" : ""}
             onClick={() => setIsEmailLogin(true)}
           >
-            Email
+            Email地址
           </button>
         </div>
         <input
@@ -105,7 +105,7 @@ const AWSLogin = ({ onLogin }) => {
           placeholder="Password"
           required
         />
-        <button type="submit">Sign In</button>
+        <button type="submit">登入</button>
       </form>
       
     </div>
