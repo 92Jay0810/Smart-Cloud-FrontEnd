@@ -305,8 +305,7 @@ function SurveyDisplay({
   //const baseurl = "http://localhost:3001";
   const url = baseurl + "/api/diagram-as-code";
   //const url = "http://localhost:3001";
-  const WEBSOCKET_API =
-    "wss://ops0k8xtuk.execute-api.ap-northeast-1.amazonaws.com/production/";
+  const WEBSOCKET_API = "wss://d2s0u5536e7dee.cloudfront.net/production/";
   let web_socket;
 
   //websocket
