@@ -18,16 +18,23 @@
 .portal-page .portal-subtitle {
   font-size: 20px;
   margin-bottom: 2rem;
-  color: #787878;
+  color: #585858;
 }
 
 
 .portal-page .mode-grid {
   display: grid;
+  grid-template-columns: 1fr 1fr; /* 兩欄等寬 */
+  gap: 1.5rem;
+  width: 100%;
+  justify-items: center; /* 讓 grid item 在 cell 內水平置中 */
+}
+/* .portal-page .mode-grid {
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
   width: 100%;
-}
+} */
 
 .header-container {
   position: absolute;
@@ -45,9 +52,22 @@
 }
 
 
+/* .mode-button {
+  width: 100%;
+  height: auto;
+  padding: 1rem 1.5rem;
+  font-size: 1.125rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.75rem;
+  background-color: white;
+  color: #44b787;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+} */
 
 .mode-button {
-  width: 100%;
+  width: 400px;
   height: auto;
   padding: 1rem 1.5rem;
   font-size: 1.125rem;
