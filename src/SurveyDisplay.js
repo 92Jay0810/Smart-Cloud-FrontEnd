@@ -1153,8 +1153,7 @@ function SurveyDisplay({
                 <>
                   <h1>Nice, {username}! Here is your architecture:</h1>
                   <h2>
-                    This architecture diagram is generated based on the
-                    technical requirements you provided.
+                  此架構圖是基於您提供的技術要求。
                   </h2>
                   {diagramXml ? (
                     <>
@@ -1371,11 +1370,10 @@ function SurveyDisplay({
   );
   return (
     <div className="survey-container" ref={surveyContainerRef}>
-      <h1>Hi {username}! Welcome to Smart Archie!</h1>
+      <h1>Hi {username}! 歡迎使用 Smart Archie!</h1>
       <h2>
-        There are 6 parts of the survey. Please provide the technical
-        requirements below, and we'll design a custom cloud architecture diagram
-        for you.
+      以下問卷內容將分為 6 個部分，雲端平台、網路、運算、資料庫、儲存、繪圖工具。<br/>
+      請依照指示完成要求，我們將為您設計客製化的雲端架構圖。
       </h2>
       <div className="progress-bar-container">
         <ProgressBar

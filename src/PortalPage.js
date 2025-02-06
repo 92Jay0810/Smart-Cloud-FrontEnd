@@ -42,9 +42,9 @@ function PortalPage({ username, onSelectService, handleLogout }) {
           登出
         </button>
       </div>
-      <h1 className="portal-title">Hi {username}! Welcome to Smart Archie!</h1>
+      <h1 className="portal-title"> {username} ，歡迎來到 Smart Archie！</h1>
       <strong className="portal-subtitle">
-        Please select the mode you want to use
+        請選擇你想要的模板模式
       </strong>
       <div className="mode-grid">
         {Object.entries(modes).map(([mode, info]) => (

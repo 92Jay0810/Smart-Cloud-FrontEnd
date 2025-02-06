@@ -149,7 +149,7 @@ const TemplateMode = ({
     },
     {
       id: 2,
-      caption: "適用情境：公開資料查詢服務",
+      caption: "公開資料查詢服務",
       content:
         "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
@@ -158,7 +158,7 @@ const TemplateMode = ({
     },
     {
       id: 3,
-      caption: "適用情境：內部員工教育平台",
+      caption: "內部員工教育平台",
       content:
         "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
@@ -167,7 +167,7 @@ const TemplateMode = ({
     },
     {
       id: 4,
-      caption: "適用情境：資料自動化蒐集平台",
+      caption: "資料自動化蒐集平台",
       content:
         "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
       image:
@@ -176,9 +176,11 @@ const TemplateMode = ({
     },
     {
       id: 5,
-      caption: "適用情境：轉址等小型服務",
+      caption: "轉址等小型服務",
+      subtitle: "平台：AWS",
+      subtitle2: "作者：Smart Archie",
       content:
-        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
+        "此架構適用於小型服務，如轉址或資訊整合，設計強調高效、安全與可擴展性。使用 Route 53 進行 DNS 解析，搭配 CloudFront 提供全球內容分發和快速響應，並透過 WAF 加強應用層安全性。EKS 提供容器化管理，Lambda 處理事件驅動的邏輯，S3 負責靜態資源存儲，DynamoDB 與 ElastiCache 支援高效資料存取。整個系統運行於 VPC 中，確保資源隔離與安全性，並以 CloudWatch 進行即時監控，適合需要穩定運行與快速部署的小型服務需求。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png",
       backendAPI: "short_link",
@@ -771,7 +773,7 @@ const TemplateMode = ({
           登出
         </button>
       </div>
-      <h1 className="image-grid-title">嗨 {username}! 請選擇您想使用的模板</h1>
+      <h1 className="image-grid-title"> 歡迎使用快速模式，請選擇您想使用的架構圖模板！</h1>
       <div className="image-grid">
         {workstations.map((station) => (
           <div
