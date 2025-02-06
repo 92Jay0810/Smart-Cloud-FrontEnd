@@ -1,11 +1,11 @@
 // TemplateMode.jsz
+import ProgressBar from "@ramonak/react-progress-bar";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
 import "./TemplateMode.css";
 import { jwtDecode } from "jwt-decode";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";
-import loadingImg from "./assets/loading1.gif";
 import close from "./assets/grey close.png";
 import { v4 as uuidv4 } from "uuid";
 
@@ -62,6 +62,8 @@ const TemplateMode = ({
     setShowDialog(false);
     setInputText("");
     setXmlUrl("");
+    setProgress(0);
+    clearInterval(progressRef);
   }, []);
   const handleRefreshTokenCheck = () => {
     // 先執行當前組件的重置
@@ -246,6 +248,26 @@ const TemplateMode = ({
       console.error("Error submitting survey:", error);
     }
   };
+  //生成圖片進度條
+  const [progress, setProgress] = useState(0);
+  const progressRef = useRef(null);
+  const progress_text = [
+    "",
+    "正在確認您選擇的服務",
+    "圖片生成架構中",
+    "架構圖排版美化中",
+    "檔案較大圖片還在繪製中",
+    "架構圖接近完成，AI正在確認最後的細節！",
+    "正在檢查錯誤",
+    "您的圖正在生成請稍候",
+  ];
+  useEffect(() => {
+    progressRef.current = setInterval(() => {
+      setProgress((prev) => (prev < 7 ? prev + 1 : prev));
+    }, 1000);
+
+    return () => clearInterval(progressRef.current);
+  }, []);
   //當xmlUrl獲取成功時，會往s3獲取xml
   useEffect(() => {
     const fetchXml = async () => {
@@ -254,6 +276,7 @@ const TemplateMode = ({
         if (response.ok) {
           const xmlContent = await response.text();
           setDiagramXml(xmlContent);
+          clearInterval(progressRef);
           // 第一次的xml 收到要歡迎語
           if (!apiResponseReceived) {
             setShowDialog(true);
@@ -662,14 +685,22 @@ const TemplateMode = ({
                 <h2>
                   We are designing your architecture now, please wait a moment.
                 </h2>
-
-                <div className="loading-container">
-                  <img
-                    src={loadingImg}
-                    alt="Loading..."
-                    className="loading-gif"
-                  />
-                </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <ProgressBar
+                  completed={progress}
+                  bgColor="#10b981"
+                  labelColor="#ffffff"
+                  height="200px"
+                  width="100%" // 确保进度条使用容器的宽度
+                  labelSize="20px"
+                  maxCompleted={7}
+                  customLabel={progress_text[progress]}
+                />
               </>
             )}
           </div>

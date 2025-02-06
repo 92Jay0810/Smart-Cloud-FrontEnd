@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { v4 as uuidv4 } from "uuid";
 import close from "./assets/grey close.png";
-import loadingImg from "./assets/loading1.gif";
 import systemImg from "./assets/system.jpeg";
 import userImg from "./assets/user.jpg";
 import "./SurveyDisplay.css";
@@ -180,6 +179,8 @@ function SurveyDisplay({
     setShowDialog(false);
     setFileName("");
     setXmlUrl("");
+    setProgress(0);
+    clearInterval(progressRef);
   }, []);
 
   //token過期呼叫
@@ -477,6 +478,7 @@ function SurveyDisplay({
             `The request to the API Gateway timed out. Please try again later.\nSession: ${session_id}\nResponse Time: ${timestamp}`
           );
           setApiResponseReceived(true);
+          clearInterval(progressRef);
           return; // 退出函式，避免進一步處理
         }
         let data =
@@ -485,7 +487,7 @@ function SurveyDisplay({
             : responseData.body;
         console.log("responseData 的body：", data);
         setApiResponseReceived(true);
-
+        clearInterval(progressRef);
         if (typeof data === "undefined") {
           seterrorMessage(
             `
@@ -494,8 +496,7 @@ function SurveyDisplay({
           Response Time: ${timestamp}
           `
           );
-
-          setApiResponseReceived(true);
+          return;
         }
         if (data?.error_message) {
           seterrorMessage(
@@ -543,6 +544,7 @@ function SurveyDisplay({
       } catch (error) {
         console.error("Error submitting survey:", error);
         setApiResponseReceived(true);
+        clearInterval(progressRef);
         if (error.message.includes("504")) {
           seterrorMessage(`
           The request to the API Gateway timed out. Please try again later.
@@ -560,6 +562,26 @@ function SurveyDisplay({
       alert("請回答所有問題後再提交！");
     }
   };
+  //生成圖片進度條
+  const [progress, setProgress] = useState(0);
+  const progressRef = useRef(null);
+  const progress_text = [
+    "正在確認您選擇的服務",
+    "圖片生成架構中",
+    "架構圖排版美化中",
+    "檔案較大圖片還在繪製中",
+    "架構圖接近完成，AI正在確認最後的細節！",
+    "正在檢查錯誤",
+    "您的圖正在生成請稍候",
+    "您的圖正在生成請稍候",
+  ];
+  useEffect(() => {
+    progressRef.current = setInterval(() => {
+      setProgress((prev) => (prev < 280 ? prev + 1 : prev));
+    }, 1000);
+
+    return () => clearInterval(progressRef.current);
+  }, []);
   //當xmlUrl獲取成功時，會往s3獲取xml
   useEffect(() => {
     const fetchXml = async () => {
@@ -581,6 +603,7 @@ function SurveyDisplay({
               },
             ]);
             setApiResponseReceived(true);
+            clearInterval(progressRef);
           } else {
             //此為對話
             const now = new Date();
@@ -1231,14 +1254,22 @@ function SurveyDisplay({
                 <h2>
                   We are designing your architecture now, please wait a moment.
                 </h2>
-
-                <div className="loading-container">
-                  <img
-                    src={loadingImg}
-                    alt="Loading..."
-                    className="loading-gif"
-                  />
-                </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <ProgressBar
+                  completed={progress}
+                  bgColor="#10b981"
+                  labelColor="#ffffff"
+                  height="200px"
+                  width="100%" // 确保进度条使用容器的宽度
+                  labelSize="20px"
+                  maxCompleted={280}
+                  customLabel={progress_text[Math.floor(progress / 40)]}
+                />
               </>
             )}
           </div>
