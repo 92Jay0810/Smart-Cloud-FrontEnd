@@ -150,8 +150,10 @@ const TemplateMode = ({
     {
       id: 2,
       caption: "公開資料查詢服務",
+      subtitle: "平台：AWS",
+      subtitle2: "作者：Smart Archie",
       content:
-        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
+        "這個架構圖適用於公開資料查詢服務。使用共享 VPC，並部署 EKS 作為容器化應用程式的運行平台。利用 CloudFront 作為 CDN 加速資料傳輸，並使用 WAF 提供安全防護。Route 53 負責 DNS 解析，ELB 在多個 EKS 實例之間分配流量。CloudWatch 監控系統效能，X-Ray 追蹤請求，EFS 提供共享檔案儲存，ElastiCache 進行記憶體快取，RDS 儲存結構化資料。Security Hub 和 Macie 提供安全管理和敏感資料保護。此架構具有高可用性、可擴展性、安全性和高效性。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/open_data_service.png",
       backendAPI: "open_data_service",
@@ -159,8 +161,10 @@ const TemplateMode = ({
     {
       id: 3,
       caption: "內部員工教育平台",
+      subtitle: "平台：AWS",
+      subtitle2: "作者：Smart Archie",
       content:
-        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
+        "這個架構圖適用於內部員工教育平台等系統。採用 ELB 進行流量分發，確保網站能夠應對高流量訪問。透過 CloudFront 加速員工隨時隨地都能流暢學習。WAF 防護確保平台安全，ELB 維持高可用性。課程資料安全儲存於 EFS，搭配 ElastiCache 加速存取，升級學習體驗。RDS用於管理員工教育資訊與課程進度，CloudWatch 監控系統狀態，X-Ray 輔助問題排查。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png",
       backendAPI: "education_platform",
@@ -168,8 +172,10 @@ const TemplateMode = ({
     {
       id: 4,
       caption: "資料自動化蒐集平台",
+      subtitle: "平台：AWS",
+      subtitle2: "作者：Smart Archie",
       content:
-        "Lorem ipsum dolor sit amet, an utinam vidisse insolens sea, ei putant audiam necessitatibus qui. Vel ocurreret conceptam ut, probo altera perpetua cum cu, te dictas laboramus expetendis mel. Qui viris eloquentiam reprehendunt te. Tempor interesset cum eu. Cum nemore splendide moderatius ei, quot lorem has ad, in mel dico expetenda liberavisse.",
+        "這個架構圖適用於資料自動化蒐集平台。透過 CloudFront 加速資料傳輸，確保各地用戶皆可快速存取。WAF 防護提升平台安全性，ELB 維持系統穩定性。蒐集之資料儲存於 S3 物件儲存，搭配 ElastiCache 提升資料處理效率。RDS 管理平台metadata及使用者資訊，CloudWatch 監控系統運行狀況，X-Ray 協助開發人員追蹤問題。支援多種資料來源，可彈性設定蒐集任務，大幅降低人力成本，提升資料處理效率，實現資料蒐集的全面自動化",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.png",
       backendAPI: "collection_system",
