@@ -71,7 +71,7 @@ when error happen the response json need contain `errorCode`：
   },
   "body": {
     "body": {
-      "errorMessage": "Error Content "
+      "error_message": "Error Content "
     }
   }
 }
@@ -84,7 +84,7 @@ with tool draw io
 ```json
 {
   "body": {
-    "errorMessage": "",
+    "error_message": "",
     "drawio_xml": ""
   }
 }
@@ -96,7 +96,7 @@ with tool diagrams
 {
   "body": {
     "s3_object_name": "xxx.png",
-    "errorMessage": "",
+    "error_message": "",
     "s3_python_code": ".."
   }
 }
@@ -131,7 +131,7 @@ with tool diagrams
     "s3_object_name": "xxx.png",
     "errorMessage": "errorMessage",
     "s3_python_code": "..",
-    "AIMessage": "AIMessage for user"
+    "ai_message": "AIMessage for user"
   }
 }
 ```
@@ -142,7 +142,7 @@ with tool draw io
 {
   "body": {
     "errorMessage": "errorMessage",
-    "AIMessage": "AIMessage for user"
+    "ai_message": "AIMessage for user"
   }
 }
 ```
@@ -175,7 +175,7 @@ with tool draw io
     "s3_object_name": "xxx.png",
     "errorMessage": "errorMessage",
     "s3_python_code": "..",
-    "AIMessage": "AIMessage for user"
+    "ai_message": "AIMessage for user"
   }
 }
 ```

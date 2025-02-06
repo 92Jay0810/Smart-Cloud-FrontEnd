@@ -498,10 +498,10 @@ function SurveyDisplay({
 
           setApiResponseReceived(true);
         }
-        if (data?.errorMessage) {
+        if (data?.error_message) {
           seterrorMessage(
             `
-          Error: ${data.errorMessage}
+          Error: ${data.error_message}
           Session: ${session_id}
           Response Time: ${timestamp}
           `
@@ -895,16 +895,16 @@ function SurveyDisplay({
             },
           ]);
           setLoading(false);
-        } else if (data.errorMessage) {
+        } else if (data.error_message) {
           setMessages([
             ...newMessages,
             {
               sender: "System",
-              text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `Error occur: ${data.error_message}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
-        } else if (data?.AIMessage) {
+        } else if (data?.ai_message) {
           if (data?.s3_object_name && data?.s3_python_code) {
             setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
             setsavecode(baseurl + "/diagram/" + data.s3_python_code);
@@ -912,7 +912,7 @@ function SurveyDisplay({
 
           setMessages([
             ...newMessages,
-            { sender: "System", text: data.AIMessage },
+            { sender: "System", text: data.ai_message },
           ]);
           setLoading(false);
         } //如果只有圖片
@@ -1071,23 +1071,23 @@ function SurveyDisplay({
             },
           ]);
           setLoading(false);
-        } else if (data.errorMessage) {
+        } else if (data.error_message) {
           setMessages([
             ...newMessages,
             {
               sender: "System",
-              text: `Error occur: ${data.errorMessage}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `Error occur: ${data.error_message}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
-        } else if (data?.AIMessage) {
+        } else if (data?.ai_message) {
           if (data?.s3_object_name && data?.s3_python_code) {
             setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
             setsavecode(baseurl + "/diagram/" + data.s3_python_code);
           }
           setMessages([
             ...newMessages,
-            { sender: "System", text: data.AIMessage },
+            { sender: "System", text: data.ai_message },
           ]);
           setLoading(false);
         } //如果只有圖片
@@ -1152,9 +1152,7 @@ function SurveyDisplay({
               ) : (
                 <>
                   <h1>Nice, {username}! Here is your architecture:</h1>
-                  <h2>
-                  此架構圖是基於您提供的技術要求。
-                  </h2>
+                  <h2>此架構圖是基於您提供的技術要求。</h2>
                   {diagramXml ? (
                     <>
                       <div className="button-container">
@@ -1372,8 +1370,10 @@ function SurveyDisplay({
     <div className="survey-container" ref={surveyContainerRef}>
       <h1>Hi {username}! 歡迎使用 Smart Archie!</h1>
       <h2>
-      以下問卷內容將分為 6 個部分，雲端平台、網路、運算、資料庫、儲存、繪圖工具。<br/>
-      請依照指示完成要求，我們將為您設計客製化的雲端架構圖。
+        以下問卷內容將分為 6
+        個部分，雲端平台、網路、運算、資料庫、儲存、繪圖工具。
+        <br />
+        請依照指示完成要求，我們將為您設計客製化的雲端架構圖。
       </h2>
       <div className="progress-bar-container">
         <ProgressBar

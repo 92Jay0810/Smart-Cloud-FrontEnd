@@ -147,7 +147,7 @@ const TemplateMode = ({
         "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/template.drawio.png",
       backendAPI: "WEBAPI",
     },
-    {
+    /*{
       id: 2,
       caption: "公開資料查詢服務",
       subtitle: "平台：AWS",
@@ -157,7 +157,7 @@ const TemplateMode = ({
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/open_data_service.png",
       backendAPI: "open_data_service",
-    },
+    },*/
     {
       id: 3,
       caption: "內部員工教育平台",
@@ -169,7 +169,7 @@ const TemplateMode = ({
         "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png",
       backendAPI: "education_platform",
     },
-    {
+    /*{
       id: 4,
       caption: "資料自動化蒐集平台",
       subtitle: "平台：AWS",
@@ -190,7 +190,7 @@ const TemplateMode = ({
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png",
       backendAPI: "short_link",
-    },
+    },*/
     {
       id: 6,
       caption: "串接不同資訊Chatbot",
@@ -779,7 +779,10 @@ const TemplateMode = ({
           登出
         </button>
       </div>
-      <h1 className="image-grid-title"> 歡迎使用快速模式，請選擇您想使用的架構圖模板！</h1>
+      <h1 className="image-grid-title">
+        {" "}
+        歡迎使用快速模式，請選擇您想使用的架構圖模板！
+      </h1>
       <div className="image-grid">
         {workstations.map((station) => (
           <div
