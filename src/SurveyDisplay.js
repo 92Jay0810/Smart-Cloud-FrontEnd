@@ -169,7 +169,7 @@ function SurveyDisplay({
     setCookie("tool", "", -1);
     setCookie("messages", "", -1);
     setCookie("surveyAnswers", "", -1);
-    setCookie("diagramXml", "", -1);
+    localStorage.removeItem("diagramXml");
     // 重置其他相關狀態
     setAnswers({});
     setCurrentCategoryIndex(0);
@@ -262,8 +262,8 @@ function SurveyDisplay({
     }
   });
   const [diagramXml, setDiagramXml] = useState(() => {
-    const diagramxml = getCookie("diagramXml");
-    return diagramxml ? diagramxml : false;
+    const savedDiagram = localStorage.getItem("diagramXml");
+    return savedDiagram || false;
   });
 
   // xmlUrl
@@ -280,7 +280,10 @@ function SurveyDisplay({
     setCookie("tool", tool);
     setCookie("messages", JSON.stringify(messages));
     setCookie("session_id", session_id);
-    setCookie("diagramXml", diagramXml);
+    // 特别处理 diagramXml，因为它可能很大
+    if (diagramXml) {
+      localStorage.setItem("diagramXml", diagramXml);
+    }
   };
 
   // 在狀態更新時更新 cookie
