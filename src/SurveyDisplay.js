@@ -331,7 +331,8 @@ function SurveyDisplay({
   }
 
   async function setupWebSocket() {
-    if (web_socket) {
+    if (web_socket && web_socket.readyState === WebSocket.OPEN) {
+      console.log("WebSocket 已經連線，不重複建立");
       return;
     }
 
@@ -348,11 +349,12 @@ function SurveyDisplay({
           }
         };
 
-        web_socket.onclose = () => {
-          // trigger when connection get closed
+        web_socket.onclose = (event) => {
+          console.warn(`WebSocket 連線中斷 (${event.code})，將嘗試重新連線`);
           web_socket = null;
-          // 可以在這裡處理重連邏輯
-          console.log("Connection closed");
+          setTimeout(() => {
+            setupWebSocket();
+          }, 3000); // 3 秒後重新連線
         };
 
         web_socket.onerror = (error) => {
@@ -589,10 +591,12 @@ function SurveyDisplay({
   useEffect(() => {
     const fetchXml = async () => {
       try {
+        console.log("fetch XmlUrl");
         const response = await fetch(xmlUrl);
         if (response.ok) {
           const xmlContent = await response.text();
           setDiagramXml(xmlContent);
+          console.log("fetch XmlUrl success");
           // 第一次的xml 收到要歡迎語
           if (!apiResponseReceived) {
             setShowDialog(true);
