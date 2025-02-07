@@ -64,6 +64,7 @@ const TemplateMode = ({
     setXmlUrl("");
     setProgress(0);
     clearInterval(progressRef);
+    iframeInitialized.current = false;
   }, []);
   const handleRefreshTokenCheck = () => {
     // 先執行當前組件的重置
@@ -281,6 +282,17 @@ const TemplateMode = ({
           const xmlContent = await response.text();
           setDiagramXml(xmlContent);
           console.log("fetch XmlUrl success");
+          // 如果 iframe 已初始化，直接發送 load (對話)
+          // 如果還沒初始化，就等待init事件後發送
+          if (iframeInitialized.current && iframeRef.current) {
+            iframeRef.current.contentWindow.postMessage(
+              JSON.stringify({
+                action: "load",
+                xml: xmlContent,
+              }),
+              "https://embed.diagrams.net"
+            );
+          }
           // 第一次的xml 收到要歡迎語
           if (!apiResponseReceived) {
             clearInterval(progressRef);
@@ -354,6 +366,7 @@ const TemplateMode = ({
           switch (msg.event) {
             case "init":
               if (diagramXml) {
+                iframeInitialized.current = true;
                 loadDiagram();
               } else {
                 console.warn("diagramXml 尚未設置，無法載入圖表");
@@ -374,7 +387,6 @@ const TemplateMode = ({
         console.error("Error processing message:", error);
       }
     };
-
     window.addEventListener("message", handleMessage);
     return () => {
       window.removeEventListener("message", handleMessage);
@@ -478,6 +490,7 @@ const TemplateMode = ({
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const iframeRef = useRef(null);
+  const iframeInitialized = useRef(false);
 
   // 當message改變滑動到指定參考位置
   useEffect(() => {

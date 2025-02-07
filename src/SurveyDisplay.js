@@ -181,6 +181,7 @@ function SurveyDisplay({
     setXmlUrl("");
     setProgress(0);
     clearInterval(progressRef);
+    iframeInitialized.current = false;
   }, []);
 
   //token過期呼叫
@@ -372,6 +373,7 @@ function SurveyDisplay({
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const iframeRef = useRef(null);
+  const iframeInitialized = useRef(false);
 
   //saveDialog
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -596,6 +598,17 @@ function SurveyDisplay({
         if (response.ok) {
           const xmlContent = await response.text();
           setDiagramXml(xmlContent);
+          // 如果 iframe 已初始化，直接發送 load (對話)
+          // 如果還沒初始化，就等待init事件後發送
+          if (iframeInitialized.current && iframeRef.current) {
+            iframeRef.current.contentWindow.postMessage(
+              JSON.stringify({
+                action: "load",
+                xml: xmlContent,
+              }),
+              "https://embed.diagrams.net"
+            );
+          }
           console.log("fetch XmlUrl success");
           // 第一次的xml 收到要歡迎語
           if (!apiResponseReceived) {
@@ -740,6 +753,7 @@ function SurveyDisplay({
           switch (msg.event) {
             case "init":
               if (diagramXml) {
+                iframeInitialized.current = true;
                 loadDiagram();
               } else {
                 console.warn("diagramXml 尚未設置，無法載入圖表");
@@ -760,7 +774,6 @@ function SurveyDisplay({
         console.error("Error processing message:", error);
       }
     };
-
     window.addEventListener("message", handleMessage);
     return () => {
       window.removeEventListener("message", handleMessage);
