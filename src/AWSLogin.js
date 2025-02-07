@@ -73,7 +73,8 @@ const AWSLogin = ({ onLogin }) => {
     <div className="login-container">
       <form onSubmit={signIn}>
         <h1>歡迎來到 Smart Archie </h1>
-        <p>請使用 AWS Cognito 登入，登入前請在 Cognito 中建立用戶</p>
+        <p>若無Cognito 帳號，請聯繫smart archie客服團隊</p>
+        {/* <p>請使用 AWS Cognito 登入，登入前請在 Cognito 中建立用戶</p> */}
         <h3>請選擇登入方式</h3>
         <div className="button-group">
           <button

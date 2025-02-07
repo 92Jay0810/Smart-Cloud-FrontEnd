@@ -573,13 +573,13 @@ function SurveyDisplay({
   const [progress, setProgress] = useState(0);
   const progressRef = useRef(null);
   const progress_text = [
+    "請稍候",
     "正在確認您選擇的服務",
     "圖片生成架構中",
     "架構圖排版美化中",
     "檔案較大圖片還在繪製中",
-    "架構圖接近完成，AI正在確認最後的細節！",
-    "正在檢查錯誤",
-    "您的圖正在生成請稍候",
+    "正在確認架構圖最後的細節！",
+    "Smart Archie正在檢查錯誤",
     "您的圖正在生成請稍候",
   ];
   useEffect(() => {
@@ -1272,7 +1272,7 @@ function SurveyDisplay({
               <>
                 <h1>Thank you, {username}!</h1>
                 <h2>
-                  We are designing your architecture now, please wait a moment.
+                 我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
                 </h2>
                 <br />
                 <br />
@@ -1280,16 +1280,26 @@ function SurveyDisplay({
                 <br />
                 <br />
                 <br />
-                <ProgressBar
-                  completed={progress}
-                  bgColor="#10b981"
-                  labelColor="#ffffff"
-                  height="200px"
-                  width="100%" // 确保进度条使用容器的宽度
-                  labelSize="20px"
-                  maxCompleted={280}
-                  customLabel={progress_text[Math.floor(progress / 40)]}
-                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "55%", // 控制進度條的位置向下移
+                    left: "50%",
+                    transform: "translate(-50%, -50%)", // 確保進度條居中
+                    width: "50%", // 控制進度條的寬度
+                  }}
+                >
+                  <ProgressBar
+                    completed={progress}
+                    bgColor="#10b981"
+                    labelColor="#ffffff"
+                    height="30px"
+                    width="100%" // 确保进度条使用容器的宽度
+                    labelSize="18px"
+                    maxCompleted={280}
+                    customLabel={progress_text[Math.floor(progress / 40)]}
+                  />
+                </div>
               </>
             )}
           </div>
