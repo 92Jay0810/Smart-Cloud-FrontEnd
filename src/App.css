@@ -27,7 +27,7 @@ body {
   flex: 1;
   padding:  40px;
   background-color: #f4f4f4;
-  height: 90vh;
+  height: auto;
   overflow-y: auto;
 }
 /* 遮罩相關 */

@@ -148,7 +148,7 @@ const TemplateMode = ({
       subtitle: "平台：GCP",
       subtitle2: "作者：Frankie",
       content:
-        "這個架構圖適用於動態模板渲染、高流量網站，支持用戶通過 DNS Provider 訪問，請求先進入 External HTTPS Load Balancer，負責分發 API 請求至 Cloud Run 服務，並提供對多模板靜態資源的支持（存於 Cloud Storage）， 整合 Observability進行全方位運維監控，Artifact Registry 管理容器模板，Key Management Service 確保加密安全性，支持高效開發和運營。",
+        "簡介：這個架構圖適用於高流量的動態網站，使用External HTTPS Load Balancing結合Cloud Armor，比傳統的單一負載均衡器提供更完整的流量控制和安全防護。並透過 Cloud Run 部署 API 服務，相較於傳統VM或容器部署，具備自動擴縮容能力且更符合成本效益。。透過Cloud Storage管理靜態資源，Cloud SQL處理資料存儲，比起全部存放在應用服務器更有效率。Artifact Registry 管理容器映像。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/template.drawio.png",
       backendAPI: "WEBAPI",
@@ -158,7 +158,7 @@ const TemplateMode = ({
       caption: "無伺服器WEB應用架構",
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
-      content: "",
+      content: "簡介：這個架構圖呈現無伺服器 Web 應用架構。流量透過 External Application Load Balancer 進入，並由 Cloud Armor 提供 WAF 保護。前端和後端 API 皆使用 Cloud Run 無伺服器運行，內部透過 IAM Permissions 進行權限管理。使用 Firestore 取代關聯式資料庫 (如 Cloud SQL)，提供更適合無伺服器應用的 NoSQL 結構，減少維護成本。敏感資訊則交由 Secret Manager 管理。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/serverless_web_application/serverless_web_application.png",
       backendAPI: "serverless_web_application",
@@ -168,7 +168,7 @@ const TemplateMode = ({
       caption: "事件驅動架構ETL",
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
-      content: "",
+      content: "簡介：這個架構圖以事件驅動為核心，當用戶上傳檔案到Cloud Storage後，會觸發事件通知到Pub/Sub系統，再根據需求分流到批次處理(Batch Processing)或串流處理(Stream Data Processing)。最終數據會存入Data Warehouse。整體架構具備完整的營運管理功能，包含日誌系統、監控指標和追蹤系統，並對敏感資料進行特別管理。這種設計實現了自動化、可擴展的資料處理流程。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/event_driven_ETL/event_driven_ETL.png",
       backendAPI: "event_driven_ETL",
@@ -178,7 +178,7 @@ const TemplateMode = ({
       caption: "資料庫架構CDC",
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
-      content: "",
+      content: "簡介：這個架構圖使用 Database Migration Service 進行CDC串流處理，能即時捕獲源資料庫的變更，相比傳統的批次同步，可更快保持資料一致性。透過 Cloud VPN 和 VPN Gateway 建立加密通道，確保地端到雲端的資料傳輸安全。Cloud SQL 作為資料庫，具自動擴展和備份功能，比自建資料庫更容易管理和維護。且此架構圖明確區分本地端和雲端，通過嚴格的網路隔離和存取控制，確保資料安全性和合規性。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/database_CDC/database_CDC.png",
       backendAPI: "database_CDC",
@@ -189,7 +189,7 @@ const TemplateMode = ({
       subtitle: "平台：AWS",
       subtitle2: "作者：Smart Archie",
       content:
-        "這個架構圖適用於內部員工教育平台等系統。採用 ELB 進行流量分發，確保網站能夠應對高流量訪問。透過 CloudFront 加速員工隨時隨地都能流暢學習。WAF 防護確保平台安全，ELB 維持高可用性。課程資料安全儲存於 EFS，搭配 ElastiCache 加速存取，升級學習體驗。RDS用於管理員工教育資訊與課程進度，CloudWatch 監控系統狀態，X-Ray 輔助問題排查。",
+        "簡介：這個架構圖適用於內部員工教育平台等系統。採用 ELB 進行流量分發，確保網站能夠應對高流量訪問。透過 CloudFront 加速員工隨時隨地都能流暢學習。WAF 防護確保平台安全，ELB 維持高可用性。課程資料安全儲存於 EFS，搭配 ElastiCache 加速存取，升級學習體驗。RDS用於管理員工教育資訊與課程進度，CloudWatch 監控系統狀態，X-Ray 輔助問題排查。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png",
       backendAPI: "education_platform",
@@ -200,7 +200,7 @@ const TemplateMode = ({
       subtitle: "平台：AWS",
       subtitle2: "作者：Smart Archie",
       content:
-        "這個架構圖適用於需要整合各類雲端服務的聊天機器人系統，尤其是針對使用 AWS 進行部署和運行的場景。架構圖包含了多個重要的 AWS 元件，如 VPC、EKS (Elastic Kubernetes Service)、RDS MySQL、S3、Route 53 等，適合建立一個高可用性、可擴展且安全的聊天機器人後端基礎設施。此架構有助於將不同的資訊源（例如資料庫、API 服務和聊天服務）整合到一個統一的系統中，提供快速、穩定的互動體驗。",
+        "簡介：這個架構圖適用於需整合各類雲端服務的聊天機器人系統，透過Route 53處理用戶請求，經由公開和私有子網路的分層設計提升安全性。系統使用NAT Gateway管理網路流量，並運用ElastiCache提供快取服務相較於直接存取資料庫，顯著提升響應速度和減輕資料庫負載。後端採用RDS MySQL儲存資料，提供自動備份和擴展功能。整合完整的營運監控(CloudWatch)和安全管理(IAM、WAF)機制。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png",
       backendAPI: "chatbot",
