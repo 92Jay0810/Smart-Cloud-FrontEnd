@@ -153,19 +153,38 @@ const TemplateMode = ({
         "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/template.drawio.png",
       backendAPI: "WEBAPI",
     },
-    /*{
+    {
       id: 2,
-      caption: "公開資料查詢服務",
-      subtitle: "平台：AWS",
-      subtitle2: "作者：Smart Archie",
-      content:
-        "這個架構圖適用於公開資料查詢服務。使用共享 VPC，並部署 EKS 作為容器化應用程式的運行平台。利用 CloudFront 作為 CDN 加速資料傳輸，並使用 WAF 提供安全防護。Route 53 負責 DNS 解析，ELB 在多個 EKS 實例之間分配流量。CloudWatch 監控系統效能，X-Ray 追蹤請求，EFS 提供共享檔案儲存，ElastiCache 進行記憶體快取，RDS 儲存結構化資料。Security Hub 和 Macie 提供安全管理和敏感資料保護。此架構具有高可用性、可擴展性、安全性和高效性。",
+      caption: "無伺服器WEB應用架構",
+      subtitle: "平台：GCP",
+      subtitle2: "作者：Rich",
+      content: "",
       image:
-        "https://d2s0u5536e7dee.cloudfront.net/template/open_data_service/open_data_service.png",
-      backendAPI: "open_data_service",
-    },*/
+        "https://d2s0u5536e7dee.cloudfront.net/template/serverless_web_application/serverless_web_application.png",
+      backendAPI: "serverless_web_application",
+    },
     {
       id: 3,
+      caption: "事件驅動架構ETL",
+      subtitle: "平台：GCP",
+      subtitle2: "作者：Rich",
+      content: "",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/event_driven_ETL/event_driven_ETL.png",
+      backendAPI: "event_driven_ETL",
+    },
+    {
+      id: 4,
+      caption: "資料庫架構CDC",
+      subtitle: "平台：GCP",
+      subtitle2: "作者：Rich",
+      content: "",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/database_CDC/database_CDC.png",
+      backendAPI: "database_CDC",
+    },
+    {
+      id: 5,
       caption: "內部員工教育平台",
       subtitle: "平台：AWS",
       subtitle2: "作者：Smart Archie",
@@ -175,28 +194,6 @@ const TemplateMode = ({
         "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png",
       backendAPI: "education_platform",
     },
-    /*{
-      id: 4,
-      caption: "資料自動化蒐集平台",
-      subtitle: "平台：AWS",
-      subtitle2: "作者：Smart Archie",
-      content:
-        "這個架構圖適用於資料自動化蒐集平台。透過 CloudFront 加速資料傳輸，確保各地用戶皆可快速存取。WAF 防護提升平台安全性，ELB 維持系統穩定性。蒐集之資料儲存於 S3 物件儲存，搭配 ElastiCache 提升資料處理效率。RDS 管理平台metadata及使用者資訊，CloudWatch 監控系統運行狀況，X-Ray 協助開發人員追蹤問題。支援多種資料來源，可彈性設定蒐集任務，大幅降低人力成本，提升資料處理效率，實現資料蒐集的全面自動化",
-      image:
-        "https://d2s0u5536e7dee.cloudfront.net/template/collection_system/collection_system.png",
-      backendAPI: "collection_system",
-    },
-    {
-      id: 5,
-      caption: "轉址等小型服務",
-      subtitle: "平台：AWS",
-      subtitle2: "作者：Smart Archie",
-      content:
-        "此架構適用於小型服務，如轉址或資訊整合，設計強調高效、安全與可擴展性。使用 Route 53 進行 DNS 解析，搭配 CloudFront 提供全球內容分發和快速響應，並透過 WAF 加強應用層安全性。EKS 提供容器化管理，Lambda 處理事件驅動的邏輯，S3 負責靜態資源存儲，DynamoDB 與 ElastiCache 支援高效資料存取。整個系統運行於 VPC 中，確保資源隔離與安全性，並以 CloudWatch 進行即時監控，適合需要穩定運行與快速部署的小型服務需求。",
-      image:
-        "https://d2s0u5536e7dee.cloudfront.net/template/short_link/short_link.png",
-      backendAPI: "short_link",
-    },*/
     {
       id: 6,
       caption: "串接不同資訊Chatbot",
