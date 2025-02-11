@@ -318,16 +318,16 @@ const TemplateMode = ({
               ...messages,
               {
                 sender: "System",
-                text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+                text: `AI無反應但回傳圖片\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
               },
             ]);
             setLoading(false); //若為對話，AI要停止思考
           }
         } else {
-          console.error("HTTP error:", response.status);
+          console.error("HTTP 錯誤：", response.status);
         }
       } catch (error) {
-        console.error("Error fetching XML:", error);
+        console.error("取得 XML 時發生錯誤：", error);
       }
     };
 
@@ -376,7 +376,7 @@ const TemplateMode = ({
               }
               break;
             default:
-              console.warn("未处理的事件:", msg.event);
+              console.warn("未處理的事件:", msg.event);
           }
         }
       } catch (error) {
@@ -539,7 +539,7 @@ const TemplateMode = ({
           ...newMessages,
           {
             sender: "System",
-            text: `Error: Failed to fetch response.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            text: `錯誤：無法取得回應\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
           },
         ]);
         console.log(error);
@@ -592,7 +592,7 @@ const TemplateMode = ({
       console.log(promptText);
       const newMessages = [
         ...messages,
-        { sender: username, text: `transforming to ${newPlatform}...` },
+        { sender: username, text: `轉換至 ${newPlatform}...` },
       ];
       setMessages(newMessages);
       setInputText("");
@@ -628,7 +628,7 @@ const TemplateMode = ({
           ...newMessages,
           {
             sender: "System",
-            text: `Error: Failed to fetch response.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            text: `錯誤：無法取得回應.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
           },
         ]);
         console.log(error);
@@ -658,14 +658,13 @@ const TemplateMode = ({
               <>
                 <h1>{username}! 這是您的架構圖:</h1>
                 <h2>
-                  This architecture diagram is generated based on the technical
-                  requirements you provided.
+                此架構圖是根據模板選擇產生的。
                 </h2>
                 {diagramXml ? (
                   <>
                     <div className="button-container">
                       <button onClick={handleModifyPromptClick}>
-                        Modify Prompt
+                        修改prompt
                       </button>
                       <div className="platform-button-container">
                         <button
@@ -817,8 +816,7 @@ const TemplateMode = ({
                 </button>
               </div>
               <p className="warning">
-                AI may make errors. Please try multiple times and review the
-                results carefully.
+                AI 可能會犯錯。請多次嘗試並仔細檢查結果。
               </p>
             </div>
           </div>

@@ -182,7 +182,7 @@ function App() {
               handleLogout={handleLogout}
             />
           ) : (
-            <div>Selected Service: {selectedService}</div> // 其他服務之後再加入
+            <div>選擇服務： {selectedService}</div> // 其他服務之後再加入
           )
         ) : (
           <AWSLogin onLogin={handleLogin} />
@@ -196,7 +196,7 @@ function App() {
             <div className="modal_content">
               <p>The session token has expired, please try to login again.</p>
               <button className="buttons" onClick={closeModal}>
-                Close
+                關閉
               </button>
             </div>
           </div>

@@ -573,11 +573,11 @@ function SurveyDisplay({
   const [progress, setProgress] = useState(0);
   const progressRef = useRef(null);
   const progress_text = [
+    " ",
     "請稍候",
     "正在確認您選擇的服務",
     "圖片生成架構中",
-    "架構圖排版美化中",
-    "檔案較大圖片還在繪製中",
+    "架構圖排版繪製中",
     "正在確認架構圖最後的細節！",
     "Smart Archie正在檢查錯誤",
     "您的圖正在生成請稍候",
@@ -617,9 +617,9 @@ function SurveyDisplay({
               {
                 sender: "System",
                 text:
-                  "Hi " +
+                  "嗨 " +
                   username +
-                  ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
+                  ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
               },
             ]);
             setApiResponseReceived(true);
@@ -639,16 +639,16 @@ function SurveyDisplay({
               ...messages,
               {
                 sender: "System",
-                text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+                text: `AI 無反應但回傳圖片\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
               },
             ]);
             setLoading(false); //若為對話，AI要停止思考
           }
         } else {
-          console.error("HTTP error:", response.status);
+          console.error("HTTP 錯誤:", response.status);
         }
       } catch (error) {
-        console.error("Error fetching XML:", error);
+        console.error("取得 XML 時發生錯誤：", error);
       }
     };
 
@@ -767,11 +767,11 @@ function SurveyDisplay({
               }
               break;
             default:
-              console.warn("未处理的事件:", msg.event);
+              console.warn("未處理的事件:", msg.event);
           }
         }
       } catch (error) {
-        console.error("Error processing message:", error);
+        console.error("處理訊息時發生錯誤：", error);
       }
     };
     window.addEventListener("message", handleMessage);
@@ -819,7 +819,7 @@ function SurveyDisplay({
         window.URL.revokeObjectURL(temp_url);
         setShowSaveDialog(false);
       } catch (error) {
-        console.error("Error downloading the file:", error);
+        console.error("下載檔案時發生錯誤：", error);
         setShowSaveDialog(false);
       }
     }
@@ -842,7 +842,7 @@ function SurveyDisplay({
         window.URL.revokeObjectURL(temp_url);
         setShowSaveDialog(false);
       } catch (error) {
-        console.error("Error downloading the file:", error);
+        console.error("下載檔案時發生錯誤：", error);
         setShowSaveDialog(false);
       }
     }
@@ -1193,13 +1193,13 @@ function SurveyDisplay({
                 </>
               ) : (
                 <>
-                  <h1>Nice, {username}! Here is your architecture:</h1>
+                  <h1> {username}!這裡是您的架構圖！</h1>
                   <h2>此架構圖是基於您提供的技術要求。</h2>
                   {diagramXml ? (
                     <>
                       <div className="button-container">
                         <button onClick={handleModifyPromptClick}>
-                          Modify Prompt
+                          修改Prompt
                         </button>
                         <div className="platform-button-container">
                           <button
@@ -1228,10 +1228,10 @@ function SurveyDisplay({
                   ) : imageUrl ? (
                     <>
                       <div className="button-container">
-                        <button onClick={handleSaveFile}>Save Image</button>
-                        <button onClick={handleSaveCode}>Save Code</button>
+                        <button onClick={handleSaveFile}>儲存圖片</button>
+                        <button onClick={handleSaveCode}>儲存程式碼</button>
                         <button onClick={handleModifyPromptClick}>
-                          Modify Prompt
+                          修改 Prompt
                         </button>
                         <button onClick={handleZoomOut}>🔍 -</button>
                         <button onClick={handleZoomIn}>🔍 +</button>
@@ -1270,7 +1270,7 @@ function SurveyDisplay({
               )
             ) : (
               <>
-                <h1>Thank you, {username}!</h1>
+                <h1>謝謝！ {username}!</h1>
                 <h2>
                  我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
                 </h2>
@@ -1307,15 +1307,15 @@ function SurveyDisplay({
         {showSaveDialog && (
           <div className="save-dialog">
             <div className="save-dialog-content">
-              <h3>Save Image</h3>
+              <h3>儲存圖片</h3>
               <input
                 type="text"
                 onChange={(e) => setFileName(e.target.value)}
                 placeholder="Enter image name"
               />
               <div className="save-dialog-buttons">
-                <button onClick={saveFile}>Save</button>
-                <button onClick={() => setShowSaveDialog(false)}>Cancel</button>
+                <button onClick={saveFile}>存擋</button>
+                <button onClick={() => setShowSaveDialog(false)}>取消</button>
               </div>
             </div>
           </div>
@@ -1405,8 +1405,7 @@ function SurveyDisplay({
                 </button>
               </div>
               <p className="warning">
-                AI may make errors. Please try multiple times and review the
-                results carefully.
+                AI可能會犯錯。請多次嘗試並仔細查看結果。
               </p>
             </div>
           </div>
