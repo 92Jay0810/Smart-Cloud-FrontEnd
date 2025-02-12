@@ -267,7 +267,7 @@ h3 {
 .survey-result-container {
   scroll-behavior: smooth;
   width: 60%;
-  height:  80vh;
+  height:  auto;
   max-height: 130vh;
   margin: 30px auto;
   padding: 30px;
@@ -768,6 +768,7 @@ input:checked + .toggle-slider:before {
   display: flex;
   justify-content: space-between; /* 將文字與按鈕分開佈局 */
   align-items: center; /* 垂直居中 */
+  font-weight: bold;
 }
 
 /* Button Styles - Apply className for better control */

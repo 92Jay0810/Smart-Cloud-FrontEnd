@@ -4,6 +4,7 @@ body {
 }
 .app {
   display: flex;
+  height: auto;
 }
 
 .buttons {

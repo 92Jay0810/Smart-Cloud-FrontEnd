@@ -5,12 +5,15 @@ backk/* TemplateMode.css */
   padding: 30px;
 }
 
+
 .image-grid-title {
   font-size: 30px;
   font-weight: bold;
   color: #10b981;
-  margin-bottom: 32px;
+  margin: 0;  /* 移除底部間距 */
+  flex-grow: 1;  /* 讓標題佔據中間空間 */
   text-align: center;
+  margin-bottom: 48px; 
 }
 
 .image-grid {
@@ -27,8 +30,10 @@ backk/* TemplateMode.css */
 }
 .header-container {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
+  width: 100%;
   margin-bottom: 20px;
 }
 

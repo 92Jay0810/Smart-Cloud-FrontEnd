@@ -1193,7 +1193,7 @@ function SurveyDisplay({
                 </>
               ) : (
                 <>
-                  <h1> {username}!這裡是您的架構圖！</h1>
+                  <h1> {username}，這裡是您的架構圖！</h1>
                   <h2>此架構圖是基於您提供的技術要求。</h2>
                   {diagramXml ? (
                     <>
@@ -1270,7 +1270,7 @@ function SurveyDisplay({
               )
             ) : (
               <>
-                <h1>謝謝！ {username}!</h1>
+                <h1>Thank you！ {username}!</h1>
                 <h2>
                  我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
                 </h2>
@@ -1289,16 +1289,22 @@ function SurveyDisplay({
                     width: "50%", // 控制進度條的寬度
                   }}
                 >
-                  <ProgressBar
-                    completed={progress}
-                    bgColor="#10b981"
-                    labelColor="#ffffff"
-                    height="30px"
-                    width="100%" // 确保进度条使用容器的宽度
-                    labelSize="16px"
-                    maxCompleted={280}
-                    customLabel={progress_text[Math.floor(progress / 40)]}
-                  />
+                <ProgressBar
+                  completed={progress}
+                  bgColor="#10b981"
+                  height="30px"
+                  width="100%"
+                  labelSize="16px"
+                  maxCompleted={280}
+                  customLabel={progress_text[Math.floor(progress / 40)]}
+                  labelColor={progress > 50 ? "#ffffff" : "#10b981"} // 進度過半時變白色
+                  customLabelStyles={{
+                    position: "absolute",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    fontWeight: "bold",
+                  }}
+                />
                 </div>
               </>
             )}
