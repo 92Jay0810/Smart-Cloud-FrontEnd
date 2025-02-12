@@ -438,20 +438,9 @@ function SurveyDisplay({
     if (Object.keys(answers).length === totalQuestions) {
       setSubmitted(true);
       console.log("提交的答案：", answers);
-      const now = new Date();
-      const timestamp =
-        now.getFullYear().toString() + // 年份
-        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-        now.getDate().toString().padStart(2, "0") + // 日期
-        now.getHours().toString().padStart(2, "0") + // 小时
-        now.getMinutes().toString().padStart(2, "0") + // 分钟
-        now.getSeconds().toString().padStart(2, "0") + // 秒
-        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-
       let TransformAsnwers = transformAnswers(answers);
       const SubmitAnswers = {
         query: TransformAsnwers,
-        timestamp: timestamp,
         session_id: session_id,
         user_id: user_id,
         tool: TransformAsnwers["5-0"],
@@ -478,6 +467,15 @@ function SurveyDisplay({
           });
         }
         const responseData = await response.json();
+        const now = new Date();
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
         console.log("responseData :", responseData);
         //確保body裡面是json讀取，後端可能誤傳string
         if (response.status === 504) {
@@ -552,6 +550,15 @@ function SurveyDisplay({
         console.error("Error submitting survey:", error);
         setApiResponseReceived(true);
         clearInterval(progressRef);
+        const now = new Date();
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
         if (error.message.includes("504")) {
           seterrorMessage(`
           The request to the API Gateway timed out. Please try again later.
@@ -869,15 +876,7 @@ function SurveyDisplay({
       setMessages(newMessages);
       setInputText("");
       setLoading(true);
-      const now = new Date();
-      const timestamp =
-        now.getFullYear().toString() + // 年份
-        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-        now.getDate().toString().padStart(2, "0") + // 日期
-        now.getHours().toString().padStart(2, "0") + // 小时
-        now.getMinutes().toString().padStart(2, "0") + // 分钟
-        now.getSeconds().toString().padStart(2, "0") + // 秒
-        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+
       //更新xml
       if (tool === "drawio") {
         requestExport();
@@ -885,7 +884,6 @@ function SurveyDisplay({
       const conversationRequest = {
         prompt: inputText,
         session_id: session_id,
-        timestamp: timestamp,
         user_id: user_id,
         tool: tool,
         xml: diagramXml,
@@ -910,6 +908,15 @@ function SurveyDisplay({
           });
         }
         const responseData = await response.json();
+        const now = new Date();
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
         console.log("responseData :", responseData);
         //  api gateway的錯誤
         if (response.status === 504) {
@@ -980,6 +987,15 @@ function SurveyDisplay({
           setLoading(false);
         }
       } catch (error) {
+        const now = new Date();
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
         setMessages([
           ...newMessages,
           {
@@ -1045,15 +1061,6 @@ function SurveyDisplay({
       setMessages(newMessages);
       setInputText("");
       setLoading(true);
-      const now = new Date();
-      const timestamp =
-        now.getFullYear().toString() + // 年份
-        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-        now.getDate().toString().padStart(2, "0") + // 日期
-        now.getHours().toString().padStart(2, "0") + // 小时
-        now.getMinutes().toString().padStart(2, "0") + // 分钟
-        now.getSeconds().toString().padStart(2, "0") + // 秒
-        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
       //更新xml
       if (tool === "drawio") {
         requestExport();
@@ -1061,7 +1068,6 @@ function SurveyDisplay({
       const transformationRequest = {
         prompt: promptText,
         session_id: session_id,
-        timestamp: timestamp,
         user_id: user_id,
         tool: tool,
         xml: diagramXml,
@@ -1086,6 +1092,15 @@ function SurveyDisplay({
           });
         }
         const responseData = await response.json();
+        const now = new Date();
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
         console.log("responseData :", responseData);
         //確保body裡面是json讀取，後端可能誤傳string
         if (response.status === 504) {
@@ -1155,6 +1170,15 @@ function SurveyDisplay({
         }
         setLoading(false);
       } catch (error) {
+        const now = new Date();
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
         setMessages([
           ...newMessages,
           {
@@ -1272,7 +1296,7 @@ function SurveyDisplay({
               <>
                 <h1>Thank you！ {username}!</h1>
                 <h2>
-                 我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
+                  我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
                 </h2>
                 <br />
                 <br />
@@ -1289,22 +1313,22 @@ function SurveyDisplay({
                     width: "50%", // 控制進度條的寬度
                   }}
                 >
-                <ProgressBar
-                  completed={progress}
-                  bgColor="#10b981"
-                  height="30px"
-                  width="100%"
-                  labelSize="16px"
-                  maxCompleted={280}
-                  customLabel={progress_text[Math.floor(progress / 40)]}
-                  labelColor={progress > 50 ? "#ffffff" : "#10b981"} // 進度過半時變白色
-                  customLabelStyles={{
-                    position: "absolute",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    fontWeight: "bold",
-                  }}
-                />
+                  <ProgressBar
+                    completed={progress}
+                    bgColor="#10b981"
+                    height="30px"
+                    width="100%"
+                    labelSize="16px"
+                    maxCompleted={280}
+                    customLabel={progress_text[Math.floor(progress / 40)]}
+                    labelColor={progress > 50 ? "#ffffff" : "#10b981"} // 進度過半時變白色
+                    customLabelStyles={{
+                      position: "absolute",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      fontWeight: "bold",
+                    }}
+                  />
                 </div>
               </>
             )}

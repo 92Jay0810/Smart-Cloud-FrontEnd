@@ -158,7 +158,8 @@ const TemplateMode = ({
       caption: "無伺服器WEB應用架構",
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
-      content: "簡介：這個架構圖呈現無伺服器 Web 應用架構。流量透過 External Application Load Balancer 進入，並由 Cloud Armor 提供 WAF 保護。前端和後端 API 皆使用 Cloud Run 無伺服器運行，內部透過 IAM Permissions 進行權限管理。使用 Firestore 取代關聯式資料庫 (如 Cloud SQL)，提供更適合無伺服器應用的 NoSQL 結構，減少維護成本。敏感資訊則交由 Secret Manager 管理。",
+      content:
+        "簡介：這個架構圖呈現無伺服器 Web 應用架構。流量透過 External Application Load Balancer 進入，並由 Cloud Armor 提供 WAF 保護。前端和後端 API 皆使用 Cloud Run 無伺服器運行，內部透過 IAM Permissions 進行權限管理。使用 Firestore 取代關聯式資料庫 (如 Cloud SQL)，提供更適合無伺服器應用的 NoSQL 結構，減少維護成本。敏感資訊則交由 Secret Manager 管理。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/serverless_web_application/serverless_web_application.png",
       backendAPI: "serverless_web_application",
@@ -168,7 +169,8 @@ const TemplateMode = ({
       caption: "事件驅動架構ETL",
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
-      content: "簡介：這個架構圖以事件驅動為核心，當用戶上傳檔案到Cloud Storage後，會觸發事件通知到Pub/Sub系統，再根據需求分流到批次處理(Batch Processing)或串流處理(Stream Data Processing)。最終數據會存入Data Warehouse。整體架構具備完整的營運管理功能，包含日誌系統、監控指標和追蹤系統，並對敏感資料進行特別管理。",
+      content:
+        "簡介：這個架構圖以事件驅動為核心，當用戶上傳檔案到Cloud Storage後，會觸發事件通知到Pub/Sub系統，再根據需求分流到批次處理(Batch Processing)或串流處理(Stream Data Processing)。最終數據會存入Data Warehouse。整體架構具備完整的營運管理功能，包含日誌系統、監控指標和追蹤系統，並對敏感資料進行特別管理。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/event_driven_ETL/event_driven_ETL.png",
       backendAPI: "event_driven_ETL",
@@ -178,7 +180,8 @@ const TemplateMode = ({
       caption: "資料庫架構CDC",
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
-      content: "簡介：這個架構圖使用 Database Migration Service 進行CDC串流處理，能即時捕獲源資料庫的變更，相比傳統的批次同步，可更快保持資料一致性。透過 Cloud VPN 和 VPN Gateway 建立加密通道，確保地端到雲端的資料傳輸安全。Cloud SQL 作為資料庫，具自動擴展和備份功能，比自建資料庫更容易管理和維護。且此架構圖明確區分本地端和雲端，通過嚴格的網路隔離和存取控制，確保資料安全性和合規性。",
+      content:
+        "簡介：這個架構圖使用 Database Migration Service 進行CDC串流處理，能即時捕獲源資料庫的變更，相比傳統的批次同步，可更快保持資料一致性。透過 Cloud VPN 和 VPN Gateway 建立加密通道，確保地端到雲端的資料傳輸安全。Cloud SQL 作為資料庫，具自動擴展和備份功能，比自建資料庫更容易管理和維護。且此架構圖明確區分本地端和雲端，通過嚴格的網路隔離和存取控制，確保資料安全性和合規性。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/database_CDC/database_CDC.png",
       backendAPI: "database_CDC",
@@ -224,29 +227,58 @@ const TemplateMode = ({
     setPlatform("aws");
     setSubmitted(true);
     //以下丟API
-    const now = new Date();
-    const timestamp =
-      now.getFullYear().toString() + // 年份
-      (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-      now.getDate().toString().padStart(2, "0") + // 日期
-      now.getHours().toString().padStart(2, "0") + // 小时
-      now.getMinutes().toString().padStart(2, "0") + // 分钟
-      now.getSeconds().toString().padStart(2, "0") + // 秒
-      now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
     const SubmitAnswers = {
       template: template,
-      timestamp: timestamp,
       session_id: session_id,
       user_id: user_id,
       tool: "drawio",
     };
     console.log("傳送格式:\n", SubmitAnswers);
     try {
-      await setupWebSocket();
-      web_socket.send(JSON.stringify({ action: "message", ...SubmitAnswers }));
-      return;
+      let response = "";
+      response = await fetch(url, {
+        method: "POST",
+        headers: {
+          authorizationToken: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(SubmitAnswers),
+      });
+      const responseData = await response.json();
+      console.log("responseData :", responseData);
+      const now = new Date();
+      const timestamp =
+        now.getFullYear().toString() + // 年份
+        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+        now.getDate().toString().padStart(2, "0") + // 日期
+        now.getHours().toString().padStart(2, "0") + // 小时
+        now.getMinutes().toString().padStart(2, "0") + // 分钟
+        now.getSeconds().toString().padStart(2, "0") + // 秒
+        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+      if (response.status === 504) {
+        window.alert(
+          `The request to the API Gateway timed out. Please try again later.\nSession: ${session_id}\nResponse Time: ${timestamp}`
+        );
+        return; // 退出函式，避免進一步處理
+      }
+      if (responseData.body) {
+        setXmlUrl(baseurl + "/diagram/" + responseData.body.s3_object_name);
+        return; // 退出函式，避免進一步處理
+      }
     } catch (error) {
+      const now = new Date();
+      const timestamp =
+        now.getFullYear().toString() + // 年份
+        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+        now.getDate().toString().padStart(2, "0") + // 日期
+        now.getHours().toString().padStart(2, "0") + // 小时
+        now.getMinutes().toString().padStart(2, "0") + // 分钟
+        now.getSeconds().toString().padStart(2, "0") + // 秒
+        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
       console.error("Error submitting survey:", error);
+      window.alert(
+        `The request has error：${error}.\nSession: ${session_id}\nResponse Time: ${timestamp}`
+      );
     }
   };
   //生成圖片進度條
@@ -509,25 +541,17 @@ const TemplateMode = ({
       setInputText("");
       setLoading(true);
       const now = new Date();
-      const timestamp =
-        now.getFullYear().toString() + // 年份
-        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-        now.getDate().toString().padStart(2, "0") + // 日期
-        now.getHours().toString().padStart(2, "0") + // 小时
-        now.getMinutes().toString().padStart(2, "0") + // 分钟
-        now.getSeconds().toString().padStart(2, "0") + // 秒
-        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
       //更新xml
       requestExport();
       const conversationRequest = {
         prompt: inputText,
         session_id: session_id,
-        timestamp: timestamp,
         user_id: user_id,
         tool: tool,
         xml: diagramXml,
       };
       console.log("傳送格式:\n", conversationRequest);
+
       try {
         await setupWebSocket();
         web_socket.send(
@@ -535,6 +559,14 @@ const TemplateMode = ({
         );
         return;
       } catch (error) {
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
         setMessages([
           ...newMessages,
           {
@@ -598,25 +630,17 @@ const TemplateMode = ({
       setInputText("");
       setLoading(true);
       const now = new Date();
-      const timestamp =
-        now.getFullYear().toString() + // 年份
-        (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-        now.getDate().toString().padStart(2, "0") + // 日期
-        now.getHours().toString().padStart(2, "0") + // 小时
-        now.getMinutes().toString().padStart(2, "0") + // 分钟
-        now.getSeconds().toString().padStart(2, "0") + // 秒
-        now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
       //更新xml
       requestExport();
       const transformationRequest = {
         prompt: promptText,
         session_id: session_id,
-        timestamp: timestamp,
         user_id: user_id,
         tool: tool,
         xml: diagramXml,
       };
       console.log("傳送格式:\n", transformationRequest);
+
       try {
         await setupWebSocket();
         web_socket.send(
@@ -624,6 +648,14 @@ const TemplateMode = ({
         );
         return;
       } catch (error) {
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
         setMessages([
           ...newMessages,
           {
@@ -657,9 +689,7 @@ const TemplateMode = ({
             {apiResponseReceived ? (
               <>
                 <h1>{username}! 這是您的架構圖:</h1>
-                <h2>
-                此架構圖是根據模板選擇產生的。
-                </h2>
+                <h2>此架構圖是根據模板選擇產生的。</h2>
                 {diagramXml ? (
                   <>
                     <div className="button-container">
