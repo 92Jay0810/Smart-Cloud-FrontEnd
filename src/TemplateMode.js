@@ -148,7 +148,7 @@ const TemplateMode = ({
       subtitle: "平台：GCP",
       subtitle2: "作者：Frankie",
       content:
-        "簡介：這個架構圖適用於高流量的動態網站，使用External HTTPS Load Balancing結合Cloud Armor，比傳統的單一負載均衡器提供更完整的流量控制和安全防護。並透過 Cloud Run 部署 API 服務，相較於傳統VM或容器部署，具備自動擴縮容能力且更符合成本效益。。透過Cloud Storage管理靜態資源，Cloud SQL處理資料存儲，比起全部存放在應用服務器更有效率。Artifact Registry 管理容器映像。",
+        "簡介：這個架構圖適用於高流量的動態網站，使用External HTTPS Load Balancing結合Cloud Armor，比傳統的單一負載均衡器提供更完整的流量控制和安全防護。並透過 Cloud Run 部署 API 服務，相較於傳統VM或容器部署，具備自動擴縮容能力且更符合成本效益。透過Cloud Storage管理靜態資源，Cloud SQL處理資料存儲，比起全部存放在應用服務器更有效率。Artifact Registry 管理容器映像。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/template.drawio.png",
       backendAPI: "WEBAPI",
@@ -168,7 +168,7 @@ const TemplateMode = ({
       caption: "事件驅動架構ETL",
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
-      content: "簡介：這個架構圖以事件驅動為核心，當用戶上傳檔案到Cloud Storage後，會觸發事件通知到Pub/Sub系統，再根據需求分流到批次處理(Batch Processing)或串流處理(Stream Data Processing)。最終數據會存入Data Warehouse。整體架構具備完整的營運管理功能，包含日誌系統、監控指標和追蹤系統，並對敏感資料進行特別管理。這種設計實現了自動化、可擴展的資料處理流程。",
+      content: "簡介：這個架構圖以事件驅動為核心，當用戶上傳檔案到Cloud Storage後，會觸發事件通知到Pub/Sub系統，再根據需求分流到批次處理(Batch Processing)或串流處理(Stream Data Processing)。最終數據會存入Data Warehouse。整體架構具備完整的營運管理功能，包含日誌系統、監控指標和追蹤系統，並對敏感資料進行特別管理。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/event_driven_ETL/event_driven_ETL.png",
       backendAPI: "event_driven_ETL",
@@ -189,7 +189,7 @@ const TemplateMode = ({
       subtitle: "平台：AWS",
       subtitle2: "作者：Smart Archie",
       content:
-        "簡介：這個架構圖適用於內部員工教育平台等系統。採用 ELB 進行流量分發，確保網站能夠應對高流量訪問。透過 CloudFront 加速員工隨時隨地都能流暢學習。WAF 防護確保平台安全，ELB 維持高可用性。課程資料安全儲存於 EFS，搭配 ElastiCache 加速存取，升級學習體驗。RDS用於管理員工教育資訊與課程進度，CloudWatch 監控系統狀態，X-Ray 輔助問題排查。",
+        "簡介：這個架構圖適用於內部員工教育平台等系統。後端採用EKS管理容器化服務，並使用EFS和ElastiCache存儲課程資源和快取，使用CloudFront和ELB處理內容分發，相比傳統單一伺服器部署，提供更快速和穩定的課程存取體驗。並搭配使用CloudWatch 監控系統狀態，X-Ray 輔助問題排查。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/education_platform/education_platform.png",
       backendAPI: "education_platform",
@@ -721,7 +721,7 @@ const TemplateMode = ({
                     labelColor="#ffffff"
                     height="30px"
                     width="100%" // 确保进度条使用容器的宽度
-                    labelSize="18px"
+                    labelSize="16px"
                     maxCompleted={7}
                     customLabel={progress_text[progress]}
                     labelAlignment="center" // 使文字居中对齐

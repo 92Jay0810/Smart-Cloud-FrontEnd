@@ -917,7 +917,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `向 API Gateway 請求逾時。請稍後重試.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
@@ -933,7 +933,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `回覆格式不正確\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
@@ -965,7 +965,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `AI無反應但回傳影像\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
@@ -974,7 +974,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `Bad response format with internal server\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `內部伺服器的回應格式錯誤\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
@@ -984,7 +984,7 @@ function SurveyDisplay({
           ...newMessages,
           {
             sender: "System",
-            text: `Error: Failed to fetch response.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            text: `錯誤：無法取得回應。\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
           },
         ]);
         console.log(error);
@@ -1093,7 +1093,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `The request to the API Gateway timed out. Please try again later.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `向 API Gateway 請求逾時。請稍後重試.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
@@ -1109,7 +1109,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `The format of response is incorrect\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `回覆格式不正確\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
@@ -1118,7 +1118,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `Error occur: ${data.error_message}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `出現錯誤： ${data.error_message}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
@@ -1140,7 +1140,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `AI no response but return image\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `AI無反應但回傳圖片\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
           setLoading(false);
@@ -1149,7 +1149,7 @@ function SurveyDisplay({
             ...newMessages,
             {
               sender: "System",
-              text: `Bad response format with internal server\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `內部伺服器的回應格式錯誤\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
         }
@@ -1159,7 +1159,7 @@ function SurveyDisplay({
           ...newMessages,
           {
             sender: "System",
-            text: `Error: Failed to fetch response.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            text: `錯誤：無法取得回應 \nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
           },
         ]);
         setLoading(false);
@@ -1295,7 +1295,7 @@ function SurveyDisplay({
                     labelColor="#ffffff"
                     height="30px"
                     width="100%" // 确保进度条使用容器的宽度
-                    labelSize="18px"
+                    labelSize="16px"
                     maxCompleted={280}
                     customLabel={progress_text[Math.floor(progress / 40)]}
                   />
