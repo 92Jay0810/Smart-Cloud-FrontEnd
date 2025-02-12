@@ -148,7 +148,7 @@ const TemplateMode = ({
       subtitle: "平台：GCP",
       subtitle2: "作者：Frankie",
       content:
-        "簡介：這個架構圖適用於高流量的動態網站，使用External HTTPS Load Balancing結合Cloud Armor，比傳統的單一負載均衡器提供更完整的流量控制和安全防護。並透過 Cloud Run 部署 API 服務，相較於傳統VM或容器部署，具備自動擴縮容能力且更符合成本效益。透過Cloud Storage管理靜態資源，Cloud SQL處理資料存儲，比起全部存放在應用服務器更有效率。Artifact Registry 管理容器映像。",
+        "簡介：這個架構圖適用於高流量的動態網站，使用External HTTPS Load Balancing結合Cloud Armor，比傳統的單一負載均衡器提供更完整的流量控制和安全防護。並透過 Cloud Run 部署 API 服務，具備自動擴縮容能力且更符合成本效益。且透過Cloud Storage管理靜態資源，Cloud SQL處理資料存儲，比起全部存放在應用服務器更有效率。Artifact Registry 管理容器影像。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/WEBAPI/template.drawio.png",
       backendAPI: "WEBAPI",
@@ -159,7 +159,7 @@ const TemplateMode = ({
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
       content:
-        "簡介：這個架構圖呈現無伺服器 Web 應用架構。流量透過 External Application Load Balancer 進入，並由 Cloud Armor 提供 WAF 保護。前端和後端 API 皆使用 Cloud Run 無伺服器運行，內部透過 IAM Permissions 進行權限管理。使用 Firestore 取代關聯式資料庫 (如 Cloud SQL)，提供更適合無伺服器應用的 NoSQL 結構，減少維護成本。敏感資訊則交由 Secret Manager 管理。",
+        "簡介：這個架構圖呈現無伺服器 Web 應用架構。流量透過 External Application Load Balancer 進入，並由 Cloud Armor 提供 WAF 保護。前端和後端 API 皆使用 Cloud Run 無伺服器運行，內部透過 IAM Permissions 進行權限管理。使用 Firestore 取代關聯式資料庫 (如 Cloud SQL)，提供更適合無伺服器應用的 NoSQL 結構，減少維護成本。敏感資訊則由 Secret Manager 管理。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/serverless_web_application/serverless_web_application.png",
       backendAPI: "serverless_web_application",
@@ -170,7 +170,7 @@ const TemplateMode = ({
       subtitle: "平台：GCP",
       subtitle2: "作者：Rich",
       content:
-        "簡介：這個架構圖以事件驅動為核心，當用戶上傳檔案到Cloud Storage後，會觸發事件通知到Pub/Sub系統，再根據需求分流到批次處理(Batch Processing)或串流處理(Stream Data Processing)。最終數據會存入Data Warehouse。整體架構具備完整的營運管理功能，包含日誌系統、監控指標和追蹤系統，並對敏感資料進行特別管理。",
+        "簡介：這個架構圖以事件驅動為核心，當用戶上傳檔案到Cloud Storage後，會觸發事件通知到Pub/Sub系統，再根據需求分流到批次處理(Batch Processing)或串流處理(Stream Data Processing)。最終數據會存入Data Warehouse。整體架構具備完整的營運管理功能，並對敏感資料進行特別管理。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/event_driven_ETL/event_driven_ETL.png",
       backendAPI: "event_driven_ETL",
@@ -203,7 +203,7 @@ const TemplateMode = ({
       subtitle: "平台：AWS",
       subtitle2: "作者：Smart Archie",
       content:
-        "簡介：這個架構圖適用於需整合各類雲端服務的聊天機器人系統，透過Route 53處理用戶請求，經由公開和私有子網路的分層設計提升安全性。系統使用NAT Gateway管理網路流量，並運用ElastiCache提供快取服務相較於直接存取資料庫，顯著提升響應速度和減輕資料庫負載。後端採用RDS MySQL儲存資料，提供自動備份和擴展功能。整合完整的營運監控(CloudWatch)和安全管理(IAM、WAF)機制。",
+        "簡介：這個架構圖適用於需整合各類服務的聊天機器人系統，透過Route 53處理用戶請求，經由公開和私有子網路的分層設計提升安全性。系統使用NAT Gateway管理網路流量，並運用ElastiCache提供快取服務，相較於直接存取資料庫顯著提升響應速度和減輕資料庫負載。後端採用RDS MySQL儲存資料，提供自動備份和擴展功能。最後整合CloudWatch 監控系統狀態和安全管理(IAM、WAF)機制，確保安全性。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png",
       backendAPI: "chatbot",
@@ -755,6 +755,12 @@ const TemplateMode = ({
                     maxCompleted={7}
                     customLabel={progress_text[progress]}
                     labelAlignment="center" // 使文字居中对齐
+                    customLabelStyles={{
+                      position: "absolute",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      fontWeight: "bold",
+                    }}
                   />
                 </div>
               </>

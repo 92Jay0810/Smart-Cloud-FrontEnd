@@ -266,8 +266,8 @@ h3 {
 
 .survey-result-container {
   scroll-behavior: smooth;
-  width: 60%;
-  height:  auto;
+  width: 80%;
+  height:  110vh;
   max-height: 130vh;
   margin: 30px auto;
   padding: 30px;

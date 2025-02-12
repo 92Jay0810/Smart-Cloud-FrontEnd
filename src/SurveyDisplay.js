@@ -1209,240 +1209,244 @@ function SurveyDisplay({
           classNames="fade"
           unmountOnExit
         >
-          <div className="survey-result-container">
-            {apiResponseReceived ? (
-              errorMessage ? (
-                <>
-                  <p className="error-message">{errorMessage}</p>
-                </>
+            <div className="survey-result-container">
+              {apiResponseReceived ? (
+                errorMessage ? (
+                  <>
+                    <p className="error-message">{errorMessage}</p>
+                  </>
+                ) : (
+                  <>
+                    <h1> {username}，這裡是您的架構圖！</h1>
+                    <h2>此架構圖是基於您提供的技術要求。</h2>
+                    {diagramXml ? (
+                      <>
+                        <div className="button-container">
+                          <button onClick={handleModifyPromptClick}>
+                            修改Prompt
+                          </button>
+                          <div className="platform-button-container">
+                            <button
+                              onClick={() => handleTransform()}
+                              disabled={platform === "aws"}
+                            >
+                              AWS
+                            </button>
+                            <button
+                              onClick={() => handleTransform()}
+                              disabled={platform === "gcp"}
+                            >
+                              GCP
+                            </button>
+                          </div>
+                        </div>
+                        <iframe
+                          ref={iframeRef}
+                          id="drawio-frame"
+                          src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
+                          allowFullScreen
+                          sandbox="allow-scripts allow-downloads allow-same-origin"
+                          style={{ width: "100%" }}
+                        ></iframe>
+                      </>
+                    ) : imageUrl ? (
+                      <>
+                        <div className="button-container">
+                          <button onClick={handleSaveFile}>儲存圖片</button>
+                          <button onClick={handleSaveCode}>儲存程式碼</button>
+                          <button onClick={handleModifyPromptClick}>
+                            修改 Prompt
+                          </button>
+                          <button onClick={handleZoomOut}>🔍 -</button>
+                          <button onClick={handleZoomIn}>🔍 +</button>
+                          <div className="platform-button-container">
+                            <button
+                              onClick={() => handleTransform()}
+                              disabled={platform === "aws"}
+                            >
+                              AWS
+                            </button>
+                            <button
+                              onClick={() => handleTransform()}
+                              disabled={platform === "gcp"}
+                            >
+                              GCP
+                            </button>
+                          </div>
+                        </div>
+                        <div className=".survey-result-content">
+                          <div className="survey-image-container">
+                            <img
+                              src={imageUrl}
+                              alt="Survey Result"
+                              className="survey-image"
+                              style={{ transform: `scale(${scale})` }} // 使用 scale 属性控制缩放
+                            />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="error-message">
+                        沒有架構圖回傳，圖片解析失敗
+                      </p>
+                    )}
+                  </>
+                )
               ) : (
                 <>
-                  <h1> {username}，這裡是您的架構圖！</h1>
-                  <h2>此架構圖是基於您提供的技術要求。</h2>
-                  {diagramXml ? (
-                    <>
-                      <div className="button-container">
-                        <button onClick={handleModifyPromptClick}>
-                          修改Prompt
-                        </button>
-                        <div className="platform-button-container">
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "aws"}
-                          >
-                            AWS
-                          </button>
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "gcp"}
-                          >
-                            GCP
-                          </button>
-                        </div>
-                      </div>
-                      <iframe
-                        ref={iframeRef}
-                        id="drawio-frame"
-                        src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
-                        allowFullScreen
-                        sandbox="allow-scripts allow-downloads allow-same-origin"
-                        style={{ width: "100%" }}
-                      ></iframe>
-                    </>
-                  ) : imageUrl ? (
-                    <>
-                      <div className="button-container">
-                        <button onClick={handleSaveFile}>儲存圖片</button>
-                        <button onClick={handleSaveCode}>儲存程式碼</button>
-                        <button onClick={handleModifyPromptClick}>
-                          修改 Prompt
-                        </button>
-                        <button onClick={handleZoomOut}>🔍 -</button>
-                        <button onClick={handleZoomIn}>🔍 +</button>
-                        <div className="platform-button-container">
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "aws"}
-                          >
-                            AWS
-                          </button>
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "gcp"}
-                          >
-                            GCP
-                          </button>
-                        </div>
-                      </div>
-                      <div className=".survey-result-content">
-                        <div className="survey-image-container">
-                          <img
-                            src={imageUrl}
-                            alt="Survey Result"
-                            className="survey-image"
-                            style={{ transform: `scale(${scale})` }} // 使用 scale 属性控制缩放
-                          />
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <p className="error-message">
-                      沒有架構圖回傳，圖片解析失敗
-                    </p>
-                  )}
-                </>
-              )
-            ) : (
-              <>
-                <h1>Thank you！ {username}!</h1>
-                <h2>
-                  我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
-                </h2>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "55%", // 控制進度條的位置向下移
-                    left: "50%",
-                    transform: "translate(-50%, -50%)", // 確保進度條居中
-                    width: "50%", // 控制進度條的寬度
-                  }}
-                >
-                  <ProgressBar
-                    completed={progress}
-                    bgColor="#10b981"
-                    height="30px"
-                    width="100%"
-                    labelSize="16px"
-                    maxCompleted={280}
-                    customLabel={progress_text[Math.floor(progress / 40)]}
-                    labelColor={progress > 50 ? "#ffffff" : "#10b981"} // 進度過半時變白色
-                    customLabelStyles={{
-                      position: "absolute",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      fontWeight: "bold",
-                    }}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </CSSTransition>
-        {showSaveDialog && (
-          <div className="save-dialog">
-            <div className="save-dialog-content">
-              <h3>儲存圖片</h3>
-              <input
-                type="text"
-                onChange={(e) => setFileName(e.target.value)}
-                placeholder="Enter image name"
-              />
-              <div className="save-dialog-buttons">
-                <button onClick={saveFile}>存擋</button>
-                <button onClick={() => setShowSaveDialog(false)}>取消</button>
-              </div>
-            </div>
-          </div>
-        )}
-        {showDialog && (
-          <div className="dialog-container">
-            <div className="dialog-topic">
-              <div className="topic">
-                <span>Smart Archie</span>
-              </div>
-              <button
-                className="dialog-close"
-                onClick={() => setShowDialog(false)}
-              >
-                <img
-                  src={close}
-                  style={{ width: "24px", height: "24px" }}
-                  alt="Close"
-                />
-              </button>
-            </div>
-
-            <div className="dialog-content">
-              <div className="dialog-messages">
-                {messages.map((msg, index) => (
+                  <h1>Thank you！ {username}!</h1>
+                  <h2>
+                    我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
+                  </h2>
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
                   <div
-                    key={index}
-                    className={`dialog-message ${
-                      msg.sender === "System" ? "system" : "user"
-                    }`}
+                    style={{
+                      position: "absolute",
+                      top: "55%", // 控制進度條的位置向下移
+                      left: "50%",
+                      transform: "translate(-50%, -50%)", // 確保進度條居中
+                      width: "50%", // 控制進度條的寬度
+                    }}
                   >
-                    <div className="avatar-container">
-                      <img
-                        src={msg.sender === "System" ? systemImg : userImg}
-                        alt={`${
-                          msg.sender === "System" ? "System" : "User"
-                        }Img`}
-                        className="avatar"
-                      />
-                    </div>
-                    <div className="message-content">
-                      <span className="message-content-text">{msg.text}</span>
-                    </div>
+                    <ProgressBar
+                      completed={progress}
+                      bgColor="#10b981"
+                      height="30px"
+                      width="100%"
+                      labelSize="16px"
+                      maxCompleted={280}
+                      customLabel={progress_text[Math.floor(progress / 40)]}
+                      customLabelStyles={{
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        fontWeight: "bold",
+                      }}
+                    />
                   </div>
-                ))}
-                {loading && (
-                  <div className="dialog-message system">
-                    <div className="avatar-container">
-                      <img
-                        src={systemImg}
-                        alt={`SystemImg`}
-                        className="avatar"
-                      />
-                    </div>
-                    <div className="message-content">
-                      <p></p>
-                      <div className="thinking-container">
-                        <div className="thinking-dots">
-                          <div className="thinking-dot"></div>
-                          <div className="thinking-dot"></div>
-                          <div className="thinking-dot"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-              <div className="chat-input">
-                <textarea
-                  value={inputText}
-                  onChange={(e) => {
-                    setInputText(e.target.value);
-                    handleInput(e); // 動態調整高度
-                  }}
-                  onKeyDown={handleKeyPress} //監聽按鍵事件
-                  placeholder="Enter your new prompt here..."
-                  rows="1"
+                </>
+              )}
+            </div>
+          </CSSTransition>
+          {showSaveDialog && (
+            <div className="save-dialog">
+              <div className="save-dialog-content">
+                <h3>儲存圖片</h3>
+                <input
+                  type="text"
+                  onChange={(e) => setFileName(e.target.value)}
+                  placeholder="Enter image name"
                 />
-                <button onClick={handleSend}>
-                  <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path
-                      fill="currentColor"
-                      d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                    ></path>
-                  </svg>
+                <div className="save-dialog-buttons">
+                  <button onClick={saveFile}>存擋</button>
+                  <button onClick={() => setShowSaveDialog(false)}>取消</button>
+                </div>
+              </div>
+            </div>
+          )}
+          {showDialog && (
+            <div className="dialog-container">
+              <div className="dialog-topic">
+                <div className="topic">
+                  <span>Smart Archie</span>
+                </div>
+                <button
+                  className="dialog-close"
+                  onClick={() => setShowDialog(false)}
+                >
+                  <img
+                    src={close}
+                    style={{ width: "24px", height: "24px" }}
+                    alt="Close"
+                  />
                 </button>
               </div>
-              <p className="warning">
-                AI可能會犯錯。請多次嘗試並仔細查看結果。
-              </p>
+
+              <div className="dialog-content">
+                <div className="dialog-messages">
+                  {messages.map((msg, index) => (
+                    <div
+                      key={index}
+                      className={`dialog-message ${
+                        msg.sender === "System" ? "system" : "user"
+                      }`}
+                    >
+                      <div className="avatar-container">
+                        <img
+                          src={msg.sender === "System" ? systemImg : userImg}
+                          alt={`${
+                            msg.sender === "System" ? "System" : "User"
+                          }Img`}
+                          className="avatar"
+                        />
+                      </div>
+                      <div className="message-content">
+                        <span className="message-content-text">{msg.text}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {loading && (
+                    <div className="dialog-message system">
+                      <div className="avatar-container">
+                        <img
+                          src={systemImg}
+                          alt={`SystemImg`}
+                          className="avatar"
+                        />
+                      </div>
+                      <div className="message-content">
+                        <p></p>
+                        <div className="thinking-container">
+                          <div className="thinking-dots">
+                            <div className="thinking-dot"></div>
+                            <div className="thinking-dot"></div>
+                            <div className="thinking-dot"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+                <div className="chat-input">
+                  <textarea
+                    value={inputText}
+                    onChange={(e) => {
+                      setInputText(e.target.value);
+                      handleInput(e); // 動態調整高度
+                    }}
+                    onKeyDown={handleKeyPress} //監聽按鍵事件
+                    placeholder="Enter your new prompt here..."
+                    rows="1"
+                  />
+                  <button onClick={handleSend}>
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                      <path
+                        fill="currentColor"
+                        d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+                <p className="warning">
+                  AI可能會犯錯。請多次嘗試並仔細查看結果。
+                </p>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    );
+            
+          )}
+          
+        </div>
+        
+      );
+
   }
+
 
   const currentCategory = survey[currentCategoryIndex];
   //算進度條進度
@@ -1457,7 +1461,7 @@ function SurveyDisplay({
   );
   return (
     <div className="survey-container" ref={surveyContainerRef}>
-      <h1>Hi {username}! 歡迎使用 Smart Archie!</h1>
+      <h1>Hi {username}! 歡迎使用一般模式!</h1>
       <h2>
         以下問卷內容將分為 6
         個部分，雲端平台、網路、運算、資料庫、儲存、繪圖工具。
