@@ -477,6 +477,11 @@ const TemplateMode = ({
           if (evt.data && typeof evt.data != Object) {
             const data = JSON.parse(evt.data);
             console.log("Received:", data);
+            // 忽略 "Endpoint request timed out"
+            if (data.message === "Endpoint request timed out") {
+              console.warn("忽略 timeout 錯誤:", data);
+              return; // 直接 return，不繼續執行後續邏輯
+            }
             if (data.body) {
               setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name);
             }
