@@ -208,6 +208,16 @@ const TemplateMode = ({
         "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png",
       backendAPI: "chatbot",
     },
+    {
+      id: 7,
+      caption: "多媒體串流服務",
+      subtitle: "平台：GCP",
+      subtitle2: "作者：Kite",
+      content: "",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/media_streaming_service/media_streaming_service.png",
+      backendAPI: "media_streaming_service",
+    },
   ];
 
   const handleStationClick = (station) => {
