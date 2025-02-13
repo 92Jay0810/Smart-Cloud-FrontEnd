@@ -331,40 +331,6 @@ const TemplateMode = ({
               "https://embed.diagrams.net"
             );
           }
-          // 第一次的xml 收到要歡迎語
-          if (!apiResponseReceived) {
-            clearInterval(progressRef);
-            setShowDialog(true);
-            setMessages([
-              {
-                sender: "System",
-                text:
-                  "Hi " +
-                  username +
-                  ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
-              },
-            ]);
-            setApiResponseReceived(true);
-          } else {
-            //此為對話
-            const now = new Date();
-            const timestamp =
-              now.getFullYear().toString() + // 年份
-              (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-              now.getDate().toString().padStart(2, "0") + // 日期
-              now.getHours().toString().padStart(2, "0") + // 小时
-              now.getMinutes().toString().padStart(2, "0") + // 分钟
-              now.getSeconds().toString().padStart(2, "0") + // 秒
-              now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-            setMessages([
-              ...messages,
-              {
-                sender: "System",
-                text: `AI無反應但回傳圖片\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false); //若為對話，AI要停止思考
-          }
         } else {
           console.error("HTTP 錯誤：", response.status);
         }
@@ -501,6 +467,27 @@ const TemplateMode = ({
             console.log("Received:", data);
             if (data.body) {
               setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name);
+            }
+            //此為對話
+            if (data.body.ai_message) {
+              setLoading(false); //若為對話，AI要停止思考
+              setMessages([
+                ...messages,
+                {
+                  sender: "System",
+                  text: data.body.ai_message,
+                },
+              ]);
+              return;
+            } else {
+              setMessages([
+                ...messages,
+                {
+                  sender: "System",
+                  text: `AI已經更動圖片`,
+                },
+              ]);
+              setLoading(false); //若為對話，AI要停止思考
             }
           }
         };
