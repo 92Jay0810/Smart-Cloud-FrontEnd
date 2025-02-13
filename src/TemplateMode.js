@@ -273,6 +273,18 @@ const TemplateMode = ({
       }
       if (responseData.body) {
         setXmlUrl(baseurl + "/diagram/" + responseData.body.s3_object_name);
+        setShowDialog(true);
+        setMessages([
+          {
+            sender: "System",
+            text:
+              "嗨 " +
+              username +
+              ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
+          },
+        ]);
+        setApiResponseReceived(true);
+        clearInterval(progressRef);
         return; // 退出函式，避免進一步處理
       }
     } catch (error) {
