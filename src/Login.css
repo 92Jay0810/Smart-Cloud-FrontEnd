@@ -3,32 +3,42 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 60vh;
-  background: #f4f7f6; 
+  height: 100%;
+
 }
 
 .login-container form {
   display: flex;
   flex-direction: column;
-  width: 30%;
+  width: 60%;
   padding: 30px;
   background: #ffffff; 
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
+  border: 1px solid #ffffff;
   backdrop-filter: blur(8px);
 }
 
+.login-container h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-size: 30px; 
+  color: #44b787; 
+} 
+
 .login-container h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   font-size: 28px; 
   color: #333; 
 }
 
 .login-container p {
   color: #777;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   text-align: center; 
 }
 
@@ -53,7 +63,7 @@
 .login-container button {
   padding: 12px;
   background-color: #44b787;
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -62,7 +72,7 @@
 }
 
 .login-container button:hover {
-  background-color: #2F9C95;
+  background-color: #80d6b2;
   transform: scale(1.02); 
 }
 
@@ -82,11 +92,17 @@
   transition: background-color 0.2s ease;
 }
 
+.login-container .button-group button:hover {
+  
+  background-color: #f3f1f1;
+}
+
 .login-container .button-group button.active {
   background-color: #44b787;
   color: white;
 }
 
-.login-container .button-group button:hover {
-  background-color: #ccc;
+.login-container .button-group button.active:hover {
+  background-color: #80d6b2;
+  border-color: #80d6b2;
 }
