@@ -1234,6 +1234,14 @@ function SurveyDisplay({
           classNames="fade"
           unmountOnExit
         >
+          {apiResponseReceived ? (
+            <>
+              <h1>{username}! 這是您的架構圖:</h1>
+              <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
+            </>
+          ) : (
+            <br></br>
+          )}
           <div className="survey-result-container">
             {apiResponseReceived ? (
               errorMessage ? (
@@ -1242,8 +1250,6 @@ function SurveyDisplay({
                 </>
               ) : (
                 <>
-                  <h1> {username}，這裡是您的架構圖！</h1>
-                  <h2>此架構圖是基於您提供的技術要求。</h2>
                   {diagramXml ? (
                     <>
                       <div className="button-container">
