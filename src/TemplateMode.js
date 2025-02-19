@@ -699,92 +699,97 @@ const TemplateMode = ({
           classNames="fade"
           unmountOnExit
         >
-          {apiResponseReceived ? (
-            <>
-              <h1>{username}! 這是您的架構圖:</h1>
-              <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
-            </>
-          ) : (
-            <br></br>
-          )}
-          <div className="survey-result-container">
+          <div>
+            {/* 這個 div 確保 CSSTransition 內部只有一個根元素 */}
             {apiResponseReceived ? (
               <>
-                {diagramXml ? (
-                  <>
-                    <div className="button-container">
-                      <button onClick={handleModifyPromptClick}>
-                        修改prompt
-                      </button>
-                      <div className="platform-button-container">
-                        <button
-                          onClick={() => handleTransform()}
-                          disabled={platform === "aws"}
-                        >
-                          AWS
-                        </button>
-                        <button
-                          onClick={() => handleTransform()}
-                          disabled={platform === "gcp"}
-                        >
-                          GCP
-                        </button>
-                      </div>
-                    </div>
-                    <iframe
-                      ref={iframeRef}
-                      id="drawio-frame"
-                      src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
-                      allowFullScreen
-                      sandbox="allow-scripts allow-downloads allow-same-origin"
-                      style={{ width: "100%" }}
-                    ></iframe>
-                  </>
-                ) : (
-                  <p className="error-message">沒有架構圖回傳，圖片解析失敗</p>
-                )}
+                <h1>{username}! 這是您的架構圖:</h1>
+                <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
               </>
             ) : (
-              <>
-                <h1>Thank you, {username}!</h1>
-                <h2>
-                  我們正在設計您的架構圖，請稍等片刻，我們將在這裡為您提供即時的架構圖生成進度。
-                </h2>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "55%", // 控制進度條的位置向下移
-                    left: "50%",
-                    transform: "translate(-50%, -50%)", // 確保進度條居中
-                    width: "50%", // 控制進度條的寬度
-                  }}
-                >
-                  <ProgressBar
-                    completed={progress}
-                    bgColor="#10b981"
-                    labelColor="#ffffff"
-                    height="30px"
-                    width="100%" // 确保进度条使用容器的宽度
-                    labelSize="16px"
-                    maxCompleted={7}
-                    customLabel={progress_text[progress]}
-                    labelAlignment="center" // 使文字居中对齐
-                    customLabelStyles={{
-                      position: "absolute",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      fontWeight: "bold",
-                    }}
-                  />
-                </div>
-              </>
+              <br></br>
             )}
+            <div className="survey-result-container">
+              {apiResponseReceived ? (
+                <>
+                  {diagramXml ? (
+                    <>
+                      <div className="button-container">
+                        <button onClick={handleModifyPromptClick}>
+                          修改prompt
+                        </button>
+                        <div className="platform-button-container">
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "aws"}
+                          >
+                            AWS
+                          </button>
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "gcp"}
+                          >
+                            GCP
+                          </button>
+                        </div>
+                      </div>
+                      <iframe
+                        ref={iframeRef}
+                        id="drawio-frame"
+                        src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
+                        allowFullScreen
+                        sandbox="allow-scripts allow-downloads allow-same-origin"
+                        style={{ width: "100%" }}
+                      ></iframe>
+                    </>
+                  ) : (
+                    <p className="error-message">
+                      沒有架構圖回傳，圖片解析失敗
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h1>Thank you, {username}!</h1>
+                  <h2>
+                    我們正在設計您的架構圖，請稍等片刻，我們將在這裡為您提供即時的架構圖生成進度。
+                  </h2>
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "55%", // 控制進度條的位置向下移
+                      left: "50%",
+                      transform: "translate(-50%, -50%)", // 確保進度條居中
+                      width: "50%", // 控制進度條的寬度
+                    }}
+                  >
+                    <ProgressBar
+                      completed={progress}
+                      bgColor="#10b981"
+                      labelColor="#ffffff"
+                      height="30px"
+                      width="100%" // 确保进度条使用容器的宽度
+                      labelSize="16px"
+                      maxCompleted={7}
+                      customLabel={progress_text[progress]}
+                      labelAlignment="center" // 使文字居中对齐
+                      customLabelStyles={{
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        fontWeight: "bold",
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </CSSTransition>
         {showDialog && (

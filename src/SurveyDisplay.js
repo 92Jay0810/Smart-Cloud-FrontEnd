@@ -1234,134 +1234,137 @@ function SurveyDisplay({
           classNames="fade"
           unmountOnExit
         >
-          {apiResponseReceived ? (
-            <>
-              <h1>{username}! 這是您的架構圖:</h1>
-              <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
-            </>
-          ) : (
-            <br></br>
-          )}
-          <div className="survey-result-container">
+          <div>
+            {/* 這個 div 確保 CSSTransition 內部只有一個根元素 */}
             {apiResponseReceived ? (
-              errorMessage ? (
-                <>
-                  <p className="error-message">{errorMessage}</p>
-                </>
+              <>
+                <h1>{username}! 這是您的架構圖:</h1>
+                <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
+              </>
+            ) : (
+              <br></br>
+            )}
+            <div className="survey-result-container">
+              {apiResponseReceived ? (
+                errorMessage ? (
+                  <>
+                    <p className="error-message">{errorMessage}</p>
+                  </>
+                ) : (
+                  <>
+                    {diagramXml ? (
+                      <>
+                        <div className="button-container">
+                          <button onClick={handleModifyPromptClick}>
+                            修改Prompt
+                          </button>
+                          <div className="platform-button-container">
+                            <button
+                              onClick={() => handleTransform()}
+                              disabled={platform === "aws"}
+                            >
+                              AWS
+                            </button>
+                            <button
+                              onClick={() => handleTransform()}
+                              disabled={platform === "gcp"}
+                            >
+                              GCP
+                            </button>
+                          </div>
+                        </div>
+                        <iframe
+                          ref={iframeRef}
+                          id="drawio-frame"
+                          src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
+                          allowFullScreen
+                          sandbox="allow-scripts allow-downloads allow-same-origin"
+                          style={{ width: "100%" }}
+                        ></iframe>
+                      </>
+                    ) : imageUrl ? (
+                      <>
+                        <div className="button-container">
+                          <button onClick={handleSaveFile}>儲存圖片</button>
+                          <button onClick={handleSaveCode}>儲存程式碼</button>
+                          <button onClick={handleModifyPromptClick}>
+                            修改 Prompt
+                          </button>
+                          <button onClick={handleZoomOut}>🔍 -</button>
+                          <button onClick={handleZoomIn}>🔍 +</button>
+                          <div className="platform-button-container">
+                            <button
+                              onClick={() => handleTransform()}
+                              disabled={platform === "aws"}
+                            >
+                              AWS
+                            </button>
+                            <button
+                              onClick={() => handleTransform()}
+                              disabled={platform === "gcp"}
+                            >
+                              GCP
+                            </button>
+                          </div>
+                        </div>
+                        <div className=".survey-result-content">
+                          <div className="survey-image-container">
+                            <img
+                              src={imageUrl}
+                              alt="Survey Result"
+                              className="survey-image"
+                              style={{ transform: `scale(${scale})` }} // 使用 scale 属性控制缩放
+                            />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="error-message">
+                        沒有架構圖回傳，圖片解析失敗
+                      </p>
+                    )}
+                  </>
+                )
               ) : (
                 <>
-                  {diagramXml ? (
-                    <>
-                      <div className="button-container">
-                        <button onClick={handleModifyPromptClick}>
-                          修改Prompt
-                        </button>
-                        <div className="platform-button-container">
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "aws"}
-                          >
-                            AWS
-                          </button>
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "gcp"}
-                          >
-                            GCP
-                          </button>
-                        </div>
-                      </div>
-                      <iframe
-                        ref={iframeRef}
-                        id="drawio-frame"
-                        src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
-                        allowFullScreen
-                        sandbox="allow-scripts allow-downloads allow-same-origin"
-                        style={{ width: "100%" }}
-                      ></iframe>
-                    </>
-                  ) : imageUrl ? (
-                    <>
-                      <div className="button-container">
-                        <button onClick={handleSaveFile}>儲存圖片</button>
-                        <button onClick={handleSaveCode}>儲存程式碼</button>
-                        <button onClick={handleModifyPromptClick}>
-                          修改 Prompt
-                        </button>
-                        <button onClick={handleZoomOut}>🔍 -</button>
-                        <button onClick={handleZoomIn}>🔍 +</button>
-                        <div className="platform-button-container">
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "aws"}
-                          >
-                            AWS
-                          </button>
-                          <button
-                            onClick={() => handleTransform()}
-                            disabled={platform === "gcp"}
-                          >
-                            GCP
-                          </button>
-                        </div>
-                      </div>
-                      <div className=".survey-result-content">
-                        <div className="survey-image-container">
-                          <img
-                            src={imageUrl}
-                            alt="Survey Result"
-                            className="survey-image"
-                            style={{ transform: `scale(${scale})` }} // 使用 scale 属性控制缩放
-                          />
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <p className="error-message">
-                      沒有架構圖回傳，圖片解析失敗
-                    </p>
-                  )}
-                </>
-              )
-            ) : (
-              <>
-                <h1>Thank you！ {username}!</h1>
-                <h2>
-                  我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
-                </h2>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "55%", // 控制進度條的位置向下移
-                    left: "50%",
-                    transform: "translate(-50%, -50%)", // 確保進度條居中
-                    width: "50%", // 控制進度條的寬度
-                  }}
-                >
-                  <ProgressBar
-                    completed={progress}
-                    bgColor="#10b981"
-                    height="30px"
-                    width="100%"
-                    labelSize="16px"
-                    maxCompleted={280}
-                    customLabel={progress_text[Math.floor(progress / 40)]}
-                    customLabelStyles={{
+                  <h1>Thank you！ {username}!</h1>
+                  <h2>
+                    我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
+                  </h2>
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <div
+                    style={{
                       position: "absolute",
+                      top: "55%", // 控制進度條的位置向下移
                       left: "50%",
-                      transform: "translateX(-50%)",
-                      fontWeight: "bold",
+                      transform: "translate(-50%, -50%)", // 確保進度條居中
+                      width: "50%", // 控制進度條的寬度
                     }}
-                  />
-                </div>
-              </>
-            )}
+                  >
+                    <ProgressBar
+                      completed={progress}
+                      bgColor="#10b981"
+                      height="30px"
+                      width="100%"
+                      labelSize="16px"
+                      maxCompleted={280}
+                      customLabel={progress_text[Math.floor(progress / 40)]}
+                      customLabelStyles={{
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        fontWeight: "bold",
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </CSSTransition>
         {showSaveDialog && (
