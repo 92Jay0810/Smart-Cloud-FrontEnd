@@ -208,6 +208,16 @@ const TemplateMode = ({
         "https://d2s0u5536e7dee.cloudfront.net/template/chatbot/chatbot.png",
       backendAPI: "chatbot",
     },
+    {
+      id: 7,
+      caption: "多媒體串流服務",
+      subtitle: "平台：GCP",
+      subtitle2: "作者：Kite",
+      content: "",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/media_streaming_service/media_streaming_service.png",
+      backendAPI: "media_streaming_service",
+    },
   ];
 
   const handleStationClick = (station) => {
@@ -263,6 +273,18 @@ const TemplateMode = ({
       }
       if (responseData.body) {
         setXmlUrl(baseurl + "/diagram/" + responseData.body.s3_object_name);
+        setShowDialog(true);
+        setMessages([
+          {
+            sender: "System",
+            text:
+              "嗨 " +
+              username +
+              ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
+          },
+        ]);
+        setApiResponseReceived(true);
+        clearInterval(progressRef);
         return; // 退出函式，避免進一步處理
       }
     } catch (error) {
@@ -320,40 +342,6 @@ const TemplateMode = ({
               }),
               "https://embed.diagrams.net"
             );
-          }
-          // 第一次的xml 收到要歡迎語
-          if (!apiResponseReceived) {
-            clearInterval(progressRef);
-            setShowDialog(true);
-            setMessages([
-              {
-                sender: "System",
-                text:
-                  "Hi " +
-                  username +
-                  ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
-              },
-            ]);
-            setApiResponseReceived(true);
-          } else {
-            //此為對話
-            const now = new Date();
-            const timestamp =
-              now.getFullYear().toString() + // 年份
-              (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-              now.getDate().toString().padStart(2, "0") + // 日期
-              now.getHours().toString().padStart(2, "0") + // 小时
-              now.getMinutes().toString().padStart(2, "0") + // 分钟
-              now.getSeconds().toString().padStart(2, "0") + // 秒
-              now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-            setMessages([
-              ...messages,
-              {
-                sender: "System",
-                text: `AI無反應但回傳圖片\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false); //若為對話，AI要停止思考
           }
         } else {
           console.error("HTTP 錯誤：", response.status);
@@ -489,8 +477,34 @@ const TemplateMode = ({
           if (evt.data && typeof evt.data != Object) {
             const data = JSON.parse(evt.data);
             console.log("Received:", data);
+            // 忽略 "Endpoint request timed out"
+            if (data.message === "Endpoint request timed out") {
+              console.warn("忽略 timeout 錯誤:", data);
+              return; // 直接 return，不繼續執行後續邏輯
+            }
             if (data.body) {
               setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name);
+            }
+            //此為對話
+            if (data.body.ai_message) {
+              setLoading(false); //若為對話，AI要停止思考
+              setMessages([
+                ...messages,
+                {
+                  sender: "System",
+                  text: data.body.ai_message,
+                },
+              ]);
+              return;
+            } else {
+              setMessages([
+                ...messages,
+                {
+                  sender: "System",
+                  text: `AI已經更動圖片`,
+                },
+              ]);
+              setLoading(false); //若為對話，AI要停止思考
             }
           }
         };
@@ -685,86 +699,97 @@ const TemplateMode = ({
           classNames="fade"
           unmountOnExit
         >
-          <div className="survey-result-container">
+          <div>
+            {/* 這個 div 確保 CSSTransition 內部只有一個根元素 */}
             {apiResponseReceived ? (
               <>
                 <h1>{username}! 這是您的架構圖:</h1>
-                <h2>此架構圖是根據模板選擇產生的。</h2>
-                {diagramXml ? (
-                  <>
-                    <div className="button-container">
-                      <button onClick={handleModifyPromptClick}>
-                        修改prompt
-                      </button>
-                      <div className="platform-button-container">
-                        <button
-                          onClick={() => handleTransform()}
-                          disabled={platform === "aws"}
-                        >
-                          AWS
-                        </button>
-                        <button
-                          onClick={() => handleTransform()}
-                          disabled={platform === "gcp"}
-                        >
-                          GCP
-                        </button>
-                      </div>
-                    </div>
-                    <iframe
-                      ref={iframeRef}
-                      id="drawio-frame"
-                      src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
-                      allowFullScreen
-                      sandbox="allow-scripts allow-downloads allow-same-origin"
-                      style={{ width: "100%" }}
-                    ></iframe>
-                  </>
-                ) : (
-                  <p className="error-message">沒有架構圖回傳，圖片解析失敗</p>
-                )}
+                <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
               </>
             ) : (
-              <>
-                <h1>Thank you, {username}!</h1>
-                <h2>
-                  我們正在設計您的架構圖，請稍等片刻，我們將在這裡為您提供即時的架構圖生成進度。
-                </h2>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "55%", // 控制進度條的位置向下移
-                    left: "50%",
-                    transform: "translate(-50%, -50%)", // 確保進度條居中
-                    width: "50%", // 控制進度條的寬度
-                  }}
-                >
-                  <ProgressBar
-                    completed={progress}
-                    bgColor="#10b981"
-                    labelColor="#ffffff"
-                    height="30px"
-                    width="100%" // 确保进度条使用容器的宽度
-                    labelSize="16px"
-                    maxCompleted={7}
-                    customLabel={progress_text[progress]}
-                    labelAlignment="center" // 使文字居中对齐
-                    customLabelStyles={{
-                      position: "absolute",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      fontWeight: "bold",
-                    }}
-                  />
-                </div>
-              </>
+              <br></br>
             )}
+            <div className="survey-result-container">
+              {apiResponseReceived ? (
+                <>
+                  {diagramXml ? (
+                    <>
+                      <div className="button-container">
+                        <button onClick={handleModifyPromptClick}>
+                          修改prompt
+                        </button>
+                        <div className="platform-button-container">
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "aws"}
+                          >
+                            AWS
+                          </button>
+                          <button
+                            onClick={() => handleTransform()}
+                            disabled={platform === "gcp"}
+                          >
+                            GCP
+                          </button>
+                        </div>
+                      </div>
+                      <iframe
+                        ref={iframeRef}
+                        id="drawio-frame"
+                        src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
+                        allowFullScreen
+                        sandbox="allow-scripts allow-downloads allow-same-origin"
+                        style={{ width: "100%" }}
+                      ></iframe>
+                    </>
+                  ) : (
+                    <p className="error-message">
+                      沒有架構圖回傳，圖片解析失敗
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h1>Thank you, {username}!</h1>
+                  <h2>
+                    我們正在設計您的架構圖，請稍等片刻，我們將在這裡為您提供即時的架構圖生成進度。
+                  </h2>
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "55%", // 控制進度條的位置向下移
+                      left: "50%",
+                      transform: "translate(-50%, -50%)", // 確保進度條居中
+                      width: "50%", // 控制進度條的寬度
+                    }}
+                  >
+                    <ProgressBar
+                      completed={progress}
+                      bgColor="#10b981"
+                      labelColor="#ffffff"
+                      height="30px"
+                      width="100%" // 确保进度条使用容器的宽度
+                      labelSize="16px"
+                      maxCompleted={7}
+                      customLabel={progress_text[progress]}
+                      labelAlignment="center" // 使文字居中对齐
+                      customLabelStyles={{
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        fontWeight: "bold",
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </CSSTransition>
         {showDialog && (

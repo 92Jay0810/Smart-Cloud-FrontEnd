@@ -344,8 +344,67 @@ function SurveyDisplay({
           if (evt.data && typeof evt.data != Object) {
             const data = JSON.parse(evt.data);
             console.log("Received:", data);
+            // 忽略 "Endpoint request timed out"
+            if (data.message === "Endpoint request timed out") {
+              console.warn("忽略 timeout 錯誤:", data);
+              return; // 直接 return，不繼續執行後續邏輯
+            }
             if (data.body) {
               setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name);
+              // 第一次的xml 收到要歡迎語
+              if (!apiResponseReceived) {
+                setShowDialog(true);
+                setMessages([
+                  {
+                    sender: "System",
+                    text:
+                      "嗨 " +
+                      username +
+                      ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
+                  },
+                ]);
+                setApiResponseReceived(true);
+                clearInterval(progressRef);
+              } else {
+                //此為對話
+                if (data.body.ai_message) {
+                  setLoading(false); //若為對話，AI要停止思考
+                  setMessages([
+                    ...messages,
+                    {
+                      sender: "System",
+                      text: data.body.ai_message,
+                    },
+                  ]);
+                  return;
+                } else {
+                  setMessages([
+                    ...messages,
+                    {
+                      sender: "System",
+                      text: `AI已經更動圖片`,
+                    },
+                  ]);
+                  setLoading(false); //若為對話，AI要停止思考
+                }
+              }
+            } else {
+              //沒有databody，有錯誤
+              if (!apiResponseReceived) {
+                setShowDialog(true);
+                setApiResponseReceived(true);
+                seterrorMessage(`Not found response data body`);
+                clearInterval(progressRef);
+              } else {
+                setLoading(false); //若為對話，AI要停止思考
+                setMessages([
+                  ...messages,
+                  {
+                    sender: "System",
+                    text: "Not found response data body",
+                  },
+                ]);
+              }
             }
           }
         };
@@ -617,40 +676,6 @@ function SurveyDisplay({
             );
           }
           console.log("fetch XmlUrl success");
-          // 第一次的xml 收到要歡迎語
-          if (!apiResponseReceived) {
-            setShowDialog(true);
-            setMessages([
-              {
-                sender: "System",
-                text:
-                  "嗨 " +
-                  username +
-                  ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
-              },
-            ]);
-            setApiResponseReceived(true);
-            clearInterval(progressRef);
-          } else {
-            //此為對話
-            const now = new Date();
-            const timestamp =
-              now.getFullYear().toString() + // 年份
-              (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-              now.getDate().toString().padStart(2, "0") + // 日期
-              now.getHours().toString().padStart(2, "0") + // 小时
-              now.getMinutes().toString().padStart(2, "0") + // 分钟
-              now.getSeconds().toString().padStart(2, "0") + // 秒
-              now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-            setMessages([
-              ...messages,
-              {
-                sender: "System",
-                text: `AI 無反應但回傳圖片\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false); //若為對話，AI要停止思考
-          }
         } else {
           console.error("HTTP 錯誤:", response.status);
         }
@@ -1209,6 +1234,16 @@ function SurveyDisplay({
           classNames="fade"
           unmountOnExit
         >
+          <div>
+            {/* 這個 div 確保 CSSTransition 內部只有一個根元素 */}
+            {apiResponseReceived ? (
+              <>
+                <h1>{username}! 這是您的架構圖:</h1>
+                <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
+              </>
+            ) : (
+              <br></br>
+            )}
             <div className="survey-result-container">
               {apiResponseReceived ? (
                 errorMessage ? (
@@ -1217,8 +1252,6 @@ function SurveyDisplay({
                   </>
                 ) : (
                   <>
-                    <h1> {username}，這裡是您的架構圖！</h1>
-                    <h2>此架構圖是基於您提供的技術要求。</h2>
                     {diagramXml ? (
                       <>
                         <div className="button-container">
@@ -1332,121 +1365,117 @@ function SurveyDisplay({
                 </>
               )}
             </div>
-          </CSSTransition>
-          {showSaveDialog && (
-            <div className="save-dialog">
-              <div className="save-dialog-content">
-                <h3>儲存圖片</h3>
-                <input
-                  type="text"
-                  onChange={(e) => setFileName(e.target.value)}
-                  placeholder="Enter image name"
-                />
-                <div className="save-dialog-buttons">
-                  <button onClick={saveFile}>存擋</button>
-                  <button onClick={() => setShowSaveDialog(false)}>取消</button>
-                </div>
+          </div>
+        </CSSTransition>
+        {showSaveDialog && (
+          <div className="save-dialog">
+            <div className="save-dialog-content">
+              <h3>儲存圖片</h3>
+              <input
+                type="text"
+                onChange={(e) => setFileName(e.target.value)}
+                placeholder="Enter image name"
+              />
+              <div className="save-dialog-buttons">
+                <button onClick={saveFile}>存擋</button>
+                <button onClick={() => setShowSaveDialog(false)}>取消</button>
               </div>
             </div>
-          )}
-          {showDialog && (
-            <div className="dialog-container">
-              <div className="dialog-topic">
-                <div className="topic">
-                  <span>Smart Archie</span>
-                </div>
-                <button
-                  className="dialog-close"
-                  onClick={() => setShowDialog(false)}
-                >
-                  <img
-                    src={close}
-                    style={{ width: "24px", height: "24px" }}
-                    alt="Close"
-                  />
-                </button>
+          </div>
+        )}
+        {showDialog && (
+          <div className="dialog-container">
+            <div className="dialog-topic">
+              <div className="topic">
+                <span>Smart Archie</span>
               </div>
+              <button
+                className="dialog-close"
+                onClick={() => setShowDialog(false)}
+              >
+                <img
+                  src={close}
+                  style={{ width: "24px", height: "24px" }}
+                  alt="Close"
+                />
+              </button>
+            </div>
 
-              <div className="dialog-content">
-                <div className="dialog-messages">
-                  {messages.map((msg, index) => (
-                    <div
-                      key={index}
-                      className={`dialog-message ${
-                        msg.sender === "System" ? "system" : "user"
-                      }`}
-                    >
-                      <div className="avatar-container">
-                        <img
-                          src={msg.sender === "System" ? systemImg : userImg}
-                          alt={`${
-                            msg.sender === "System" ? "System" : "User"
-                          }Img`}
-                          className="avatar"
-                        />
-                      </div>
-                      <div className="message-content">
-                        <span className="message-content-text">{msg.text}</span>
-                      </div>
+            <div className="dialog-content">
+              <div className="dialog-messages">
+                {messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`dialog-message ${
+                      msg.sender === "System" ? "system" : "user"
+                    }`}
+                  >
+                    <div className="avatar-container">
+                      <img
+                        src={msg.sender === "System" ? systemImg : userImg}
+                        alt={`${
+                          msg.sender === "System" ? "System" : "User"
+                        }Img`}
+                        className="avatar"
+                      />
                     </div>
-                  ))}
-                  {loading && (
-                    <div className="dialog-message system">
-                      <div className="avatar-container">
-                        <img
-                          src={systemImg}
-                          alt={`SystemImg`}
-                          className="avatar"
-                        />
-                      </div>
-                      <div className="message-content">
-                        <p></p>
-                        <div className="thinking-container">
-                          <div className="thinking-dots">
-                            <div className="thinking-dot"></div>
-                            <div className="thinking-dot"></div>
-                            <div className="thinking-dot"></div>
-                          </div>
+                    <div className="message-content">
+                      <span className="message-content-text">{msg.text}</span>
+                    </div>
+                  </div>
+                ))}
+                {loading && (
+                  <div className="dialog-message system">
+                    <div className="avatar-container">
+                      <img
+                        src={systemImg}
+                        alt={`SystemImg`}
+                        className="avatar"
+                      />
+                    </div>
+                    <div className="message-content">
+                      <p></p>
+                      <div className="thinking-container">
+                        <div className="thinking-dots">
+                          <div className="thinking-dot"></div>
+                          <div className="thinking-dot"></div>
+                          <div className="thinking-dot"></div>
                         </div>
                       </div>
                     </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-                <div className="chat-input">
-                  <textarea
-                    value={inputText}
-                    onChange={(e) => {
-                      setInputText(e.target.value);
-                      handleInput(e); // 動態調整高度
-                    }}
-                    onKeyDown={handleKeyPress} //監聽按鍵事件
-                    placeholder="Enter your new prompt here..."
-                    rows="1"
-                  />
-                  <button onClick={handleSend}>
-                    <svg viewBox="0 0 24 24" width="24" height="24">
-                      <path
-                        fill="currentColor"
-                        d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
-                <p className="warning">
-                  AI可能會犯錯。請多次嘗試並仔細查看結果。
-                </p>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
+              <div className="chat-input">
+                <textarea
+                  value={inputText}
+                  onChange={(e) => {
+                    setInputText(e.target.value);
+                    handleInput(e); // 動態調整高度
+                  }}
+                  onKeyDown={handleKeyPress} //監聽按鍵事件
+                  placeholder="Enter your new prompt here..."
+                  rows="1"
+                />
+                <button onClick={handleSend}>
+                  <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path
+                      fill="currentColor"
+                      d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+              <p className="warning">
+                AI可能會犯錯。請多次嘗試並仔細查看結果。
+              </p>
             </div>
-            
-          )}
-          
-        </div>
-        
-      );
-
+          </div>
+        )}
+      </div>
+    );
   }
-
 
   const currentCategory = survey[currentCategoryIndex];
   //算進度條進度
