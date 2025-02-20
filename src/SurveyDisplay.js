@@ -1483,7 +1483,7 @@ function SurveyDisplay({
       </div>
       <div className="header-container">
         <button onClick={handleBack} className="back-button">
-          返回
+          
         </button>
         <button onClick={handleLogoutButton} className="next-button">
           登出

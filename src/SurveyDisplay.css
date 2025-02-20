@@ -266,14 +266,15 @@ h3 {
 
 .survey-result-container {
   scroll-behavior: smooth;
-  width: 80%;
-  height:  110vh;
+  width: 65%;
+  position: relative;
+  right: 220px;
+  height:  100vh;
   max-height: 130vh;
   margin: 30px auto;
   padding: 30px;
-  background-color: white;
+  background-color: #f4f4f4;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -464,14 +465,14 @@ h3 {
 .dialog-container {
   overflow: hidden; /* 隱藏滾動條直到需要 */
   position: fixed;
-  top: 5%;
+  top: 0%;
   right: 0;
-  width: 30%;
+  width: 28%;
+  height: 100%;
   background-color: #ffffff;
-  border: 1px solid #ddd;
+  border: 1px solid #ffffff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .dialog-content {
@@ -482,13 +483,14 @@ h3 {
 .dialog-messages {
   flex: 1;
   margin-bottom: 10px;
-  padding: 10px;
+  margin-top: 15px;
+  padding: 8px;
   overflow-y: auto;
   scrollbar-color: #BEC5AD;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
-  min-height: 58vh;
-  max-height: 60vh;
+  min-height: 65vh;
+  max-height: 65vh;
 }
 /* scrollbar style */
 .dialog-messages::-webkit-scrollbar {
@@ -761,8 +763,8 @@ input:checked + .toggle-slider:before {
 }
 
 .dialog-topic {
-  margin-top: 0;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 17px;
   color: #44b787;
   font-size: 24px;
   display: flex;
