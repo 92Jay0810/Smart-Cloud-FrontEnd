@@ -69,7 +69,6 @@ const Display = forwardRef(
       // 重置其他相關狀態
       setInputText("");
       setLoading(false);
-      setShowDialog(false);
       setFileName("");
       setXmlUrl("");
       setProgress(0);
@@ -195,7 +194,6 @@ const Display = forwardRef(
                 setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name);
                 // 第一次的xml 收到要歡迎語
                 if (!apiResponseReceived) {
-                  setShowDialog(true);
                   setMessages([
                     {
                       sender: "System",
@@ -233,7 +231,6 @@ const Display = forwardRef(
               } else {
                 //沒有databody，有錯誤
                 if (!apiResponseReceived) {
-                  setShowDialog(true);
                   setApiResponseReceived(true);
                   seterrorMessage(`Not found response data body`);
                   clearInterval(progressRef);
@@ -269,7 +266,6 @@ const Display = forwardRef(
     }
 
     //ConversationDialog
-    const [showDialog, setShowDialog] = useState(false);
     const [inputText, setInputText] = useState("");
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
@@ -371,7 +367,6 @@ const Display = forwardRef(
         if (tool === "drawio" && data?.drawio_xml) {
           setDiagramXml(data.drawio_xml);
           console.log("drawio_xml received:", data.drawio_xml);
-          setShowDialog(true);
           setMessages([
             {
               sender: "System",
@@ -385,7 +380,6 @@ const Display = forwardRef(
           console.log("s3_object_name found:", data.s3_object_name);
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
           setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-          setShowDialog(true);
           setMessages([
             {
               sender: "System",
@@ -617,7 +611,7 @@ const Display = forwardRef(
     }, [messages]);
 
     // HandleConversationSand
-    const handleSend = async () => {
+    const handleSend = async (isTransform = false) => {
       const accessToken = localStorage.getItem("accessToken");
       const decodedToken = jwtDecode(accessToken);
       const currentTime = Date.now() / 1000; // 當前時間 (秒)
@@ -627,152 +621,156 @@ const Display = forwardRef(
         handleRefreshTokenCheck();
         return;
       }
-      if (inputText.trim() !== "") {
-        const newMessages = [
+      let promptText = "";
+      const newMessages = messages;
+      if (isTransform) {
+        const newPlatform = platform === "aws" ? "gcp" : "aws";
+        promptText = generatePrompt(newPlatform);
+        newMessages = [
           ...messages,
-          { sender: username, text: inputText },
+          { sender: username, text: `transforming to ${newPlatform}...` },
         ];
         setMessages(newMessages);
-        setInputText("");
-        setLoading(true);
-
-        //更新xml
-        if (tool === "drawio") {
-          requestExport();
+      } else {
+        if (inputText.trim() !== "") return;
+        newMessages = [...messages, { sender: username, text: inputText }];
+        setMessages(newMessages);
+      }
+      setInputText("");
+      setLoading(true);
+      //更新xml
+      if (tool === "drawio") {
+        requestExport();
+      }
+      const conversationRequest = {
+        prompt: isTransform ? promptText : inputText,
+        session_id: session_id,
+        user_id: user_id,
+        tool: tool,
+        xml: diagramXml,
+      };
+      console.log("傳送格式:\n", conversationRequest);
+      let response = "";
+      try {
+        if (conversationRequest.tool === "drawio") {
+          await setupWebSocket();
+          web_socket.send(
+            JSON.stringify({ action: "message", ...conversationRequest })
+          );
+          return;
+        } else {
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorizationToken: `Bearer ${idToken}`,
+            },
+            body: JSON.stringify(conversationRequest),
+          });
         }
-        const conversationRequest = {
-          prompt: inputText,
-          session_id: session_id,
-          user_id: user_id,
-          tool: tool,
-          xml: diagramXml,
-        };
-        console.log("傳送格式:\n", conversationRequest);
-        let response = "";
-        try {
-          if (conversationRequest.tool === "drawio") {
-            await setupWebSocket();
-            web_socket.send(
-              JSON.stringify({ action: "message", ...conversationRequest })
-            );
-            return;
-          } else {
-            response = await fetch(url, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorizationToken: `Bearer ${idToken}`,
-              },
-              body: JSON.stringify(conversationRequest),
-            });
-          }
-          const responseData = await response.json();
-          const now = new Date();
-          const timestamp =
-            now.getFullYear().toString() + // 年份
-            (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-            now.getDate().toString().padStart(2, "0") + // 日期
-            now.getHours().toString().padStart(2, "0") + // 小时
-            now.getMinutes().toString().padStart(2, "0") + // 分钟
-            now.getSeconds().toString().padStart(2, "0") + // 秒
-            now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-          console.log("responseData :", responseData);
-          //  api gateway的錯誤
-          if (response.status === 504) {
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `向 API Gateway 請求逾時。請稍後重試.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-            return; // 退出函式，避免進一步處理
-          }
-          let data =
-            typeof responseData.body === "string"
-              ? JSON.parse(responseData.body)
-              : responseData.body;
-          console.log("responseData 的body：", data);
-          if (typeof data === "undefined") {
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `回覆格式不正確\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-          } else if (data.error_message) {
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `Error occur: ${data.error_message}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-          } else if (data?.ai_message) {
-            if (data?.s3_object_name && data?.s3_python_code) {
-              setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
-              setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-            }
-
-            setMessages([
-              ...newMessages,
-              { sender: "System", text: data.ai_message },
-            ]);
-            setLoading(false);
-          } //如果只有圖片
-          else if (data?.s3_object_name && data?.s3_python_code) {
-            setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
-            setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `AI無反應但回傳影像\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-          } else {
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `內部伺服器的回應格式錯誤\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-          }
-        } catch (error) {
-          const now = new Date();
-          const timestamp =
-            now.getFullYear().toString() + // 年份
-            (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-            now.getDate().toString().padStart(2, "0") + // 日期
-            now.getHours().toString().padStart(2, "0") + // 小时
-            now.getMinutes().toString().padStart(2, "0") + // 分钟
-            now.getSeconds().toString().padStart(2, "0") + // 秒
-            now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+        const responseData = await response.json();
+        const now = new Date();
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+        console.log("responseData :", responseData);
+        //  api gateway的錯誤
+        if (response.status === 504) {
           setMessages([
             ...newMessages,
             {
               sender: "System",
-              text: `錯誤：無法取得回應。\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+              text: `向 API Gateway 請求逾時。請稍後重試.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
             },
           ]);
-          console.log(error);
+          setLoading(false);
+          return; // 退出函式，避免進一步處理
+        }
+        let data =
+          typeof responseData.body === "string"
+            ? JSON.parse(responseData.body)
+            : responseData.body;
+        console.log("responseData 的body：", data);
+        if (typeof data === "undefined") {
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `回覆格式不正確\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
+          setLoading(false);
+        } else if (data.error_message) {
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `Error occur: ${data.error_message}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
+          setLoading(false);
+        } else if (data?.ai_message) {
+          if (data?.s3_object_name && data?.s3_python_code) {
+            setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
+            setsavecode(baseurl + "/diagram/" + data.s3_python_code);
+          }
+
+          setMessages([
+            ...newMessages,
+            { sender: "System", text: data.ai_message },
+          ]);
+          setLoading(false);
+        } //如果只有圖片
+        else if (data?.s3_object_name && data?.s3_python_code) {
+          setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
+          setsavecode(baseurl + "/diagram/" + data.s3_python_code);
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `AI無反應但回傳影像\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
+          setLoading(false);
+        } else {
+          setMessages([
+            ...newMessages,
+            {
+              sender: "System",
+              text: `內部伺服器的回應格式錯誤\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+            },
+          ]);
           setLoading(false);
         }
+      } catch (error) {
+        const now = new Date();
+        const timestamp =
+          now.getFullYear().toString() + // 年份
+          (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
+          now.getDate().toString().padStart(2, "0") + // 日期
+          now.getHours().toString().padStart(2, "0") + // 小时
+          now.getMinutes().toString().padStart(2, "0") + // 分钟
+          now.getSeconds().toString().padStart(2, "0") + // 秒
+          now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
+        setMessages([
+          ...newMessages,
+          {
+            sender: "System",
+            text: `錯誤：無法取得回應。\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+          },
+        ]);
+        console.log(error);
+        setLoading(false);
       }
     };
 
-    // 動態調整 textarea 高度的函數
     const handleInput = (e) => {
       const textarea = e.target;
-      //textarea.style.height = "auto"; // 先重設高度
-      //textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`; // 根據內容調整高度，最多4行（大約100px）
     };
 
     // Enter 送出訊息，Shift + Enter 換行
@@ -783,167 +781,14 @@ const Display = forwardRef(
           return;
         }
         e.preventDefault(); // 禁止預設的換行
-        handleSend(); // 執行送出訊息的函數
+        handleSend(false); // 執行送出訊息的函數
         setInputText("");
       }
     };
     const CustomPromptTemplate = `transform to {platform}, make sure to follow the transformation and service mapping rules, and ensure all security and operational components present.`;
-
     // 定义一个函数来替换 {platform} 占位符
     const generatePrompt = (platform) => {
       return CustomPromptTemplate.replace("{platform}", platform);
-    };
-    const handleTransform = async () => {
-      const accessToken = localStorage.getItem("accessToken");
-      const decodedToken = jwtDecode(accessToken);
-      const currentTime = Date.now() / 1000; // 當前時間 (秒)
-      // 檢查 token 是否過期
-      if (decodedToken.exp < currentTime) {
-        //超過4小時，就trigger AWSLogin去登出並跳警告
-        handleRefreshTokenCheck();
-        return;
-      }
-      const newPlatform = platform === "aws" ? "gcp" : "aws";
-
-      const promptText = generatePrompt(newPlatform);
-      if (promptText.trim() !== "") {
-        console.log(promptText);
-        const newMessages = [
-          ...messages,
-          { sender: username, text: `transforming to ${newPlatform}...` },
-        ];
-        setMessages(newMessages);
-        setInputText("");
-        setLoading(true);
-        //更新xml
-        if (tool === "drawio") {
-          requestExport();
-        }
-        const transformationRequest = {
-          prompt: promptText,
-          session_id: session_id,
-          user_id: user_id,
-          tool: tool,
-          xml: diagramXml,
-        };
-        let response = "";
-        console.log("傳送格式:\n", transformationRequest);
-        try {
-          if (transformationRequest.tool === "drawio") {
-            await setupWebSocket();
-            web_socket.send(
-              JSON.stringify({ action: "message", ...transformationRequest })
-            );
-            return;
-          } else {
-            response = await fetch(url, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorizationToken: `Bearer ${idToken}`,
-              },
-              body: JSON.stringify(transformationRequest),
-            });
-          }
-          const responseData = await response.json();
-          const now = new Date();
-          const timestamp =
-            now.getFullYear().toString() + // 年份
-            (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-            now.getDate().toString().padStart(2, "0") + // 日期
-            now.getHours().toString().padStart(2, "0") + // 小时
-            now.getMinutes().toString().padStart(2, "0") + // 分钟
-            now.getSeconds().toString().padStart(2, "0") + // 秒
-            now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-          console.log("responseData :", responseData);
-          //確保body裡面是json讀取，後端可能誤傳string
-          if (response.status === 504) {
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `向 API Gateway 請求逾時。請稍後重試.\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-            return; // 退出函式，避免進一步處理
-          }
-          let data =
-            typeof responseData.body === "string"
-              ? JSON.parse(responseData.body)
-              : responseData.body;
-          console.log("responseData 的body：", data);
-          if (typeof data === "undefined") {
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `回覆格式不正確\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-          } else if (data.error_message) {
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `出現錯誤： ${data.error_message}\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-          } else if (data?.ai_message) {
-            if (data?.s3_object_name && data?.s3_python_code) {
-              setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
-              setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-            }
-            setMessages([
-              ...newMessages,
-              { sender: "System", text: data.ai_message },
-            ]);
-            setLoading(false);
-          } //如果只有圖片
-          else if (data?.s3_object_name && data?.s3_python_code) {
-            setImageUrl(baseurl + "/diagram/" + data.s3_object_name);
-            setsavecode(baseurl + "/diagram/" + data.s3_python_code);
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `AI無反應但回傳圖片\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-            setLoading(false);
-          } else {
-            setMessages([
-              ...newMessages,
-              {
-                sender: "System",
-                text: `內部伺服器的回應格式錯誤\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-              },
-            ]);
-          }
-          setLoading(false);
-        } catch (error) {
-          const now = new Date();
-          const timestamp =
-            now.getFullYear().toString() + // 年份
-            (now.getMonth() + 1).toString().padStart(2, "0") + // 月份
-            now.getDate().toString().padStart(2, "0") + // 日期
-            now.getHours().toString().padStart(2, "0") + // 小时
-            now.getMinutes().toString().padStart(2, "0") + // 分钟
-            now.getSeconds().toString().padStart(2, "0") + // 秒
-            now.getMilliseconds().toString().padStart(3, "0"); // 毫秒
-          setMessages([
-            ...newMessages,
-            {
-              sender: "System",
-              text: `錯誤：無法取得回應 \nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
-            },
-          ]);
-          setLoading(false);
-          console.log(error);
-        }
-      }
     };
     return (
       <div className="App">
@@ -992,13 +837,13 @@ const Display = forwardRef(
                         <button onClick={handleZoomIn}>🔍 +</button>
                         <div className="platform-button-container">
                           <button
-                            onClick={() => handleTransform()}
+                            onClick={handleSend(true)}
                             disabled={platform === "aws"}
                           >
                             AWS
                           </button>
                           <button
-                            onClick={() => handleTransform()}
+                            onClick={handleSend(true)}
                             disabled={platform === "gcp"}
                           >
                             GCP
@@ -1080,22 +925,12 @@ const Display = forwardRef(
             </div>
           </div>
         )}
-        {showDialog && (
+        {
           <div className="dialog-container">
             <div className="dialog-topic">
               <div className="topic">
                 <span>Smart Archie</span>
               </div>
-              <button
-                className="dialog-close"
-                onClick={() => setShowDialog(false)}
-              >
-                <img
-                  src={close}
-                  style={{ width: "24px", height: "24px" }}
-                  alt="Close"
-                />
-              </button>
             </div>
 
             <div className="dialog-content">
@@ -1155,7 +990,7 @@ const Display = forwardRef(
                   placeholder="Enter your new prompt here..."
                   rows="1"
                 />
-                <button onClick={handleSend}>
+                <button onClick={handleSend(true)}>
                   <svg viewBox="0 0 24 24" width="24" height="24">
                     <path
                       fill="currentColor"
@@ -1169,7 +1004,7 @@ const Display = forwardRef(
               </p>
             </div>
           </div>
-        )}
+        }
       </div>
     );
   }
