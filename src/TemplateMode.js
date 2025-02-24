@@ -911,6 +911,7 @@ const TemplateMode = ({
                   src={station.image}
                   alt={`Workflow ${station.id}`}
                   className="station-image"
+                  loading="lazy"
                 />
               </div>
               <p className="station-caption">{station.caption}</p>
