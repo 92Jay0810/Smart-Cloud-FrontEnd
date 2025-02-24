@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import PortalPage from "./PortalPage";
 import TemplateMode from "./TemplateMode";
 import SurveyDisplay from "./SurveyDisplay";
+import General from "./General";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";
 import "./App.css";
@@ -38,23 +39,6 @@ function App() {
     const selectedService = getCookie("selectedService");
     return selectedService ? selectedService : null;
   });
-  //檢查token，時效內就自動登陸，token過期就remove token
-  useEffect(() => {
-    const token = localStorage.getItem("IdToken");
-    if (token) {
-      try {
-        const accessToken = localStorage.getItem("accessToken");
-        const decodedToken = jwtDecode(accessToken);
-        setusername(decodedToken.username || decodedToken.email || "User");
-        setuser_id(decodedToken.sub);
-        setidToken(token);
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error("Failed to decode token", error);
-        handleLogout();
-      }
-    }
-  }, []);
   // 讀取 cookie 的函數
   const handleLogin = useCallback(() => {
     console.log("handleLogin called");
@@ -86,6 +70,23 @@ function App() {
     setSelectedService(null);
     setCookie("selectedService", "", -1);
   };
+  //檢查token，時效內就自動登陸，token過期就remove token
+  useEffect(() => {
+    const token = localStorage.getItem("IdToken");
+    if (token) {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        const decodedToken = jwtDecode(accessToken);
+        setusername(decodedToken.username || decodedToken.email || "User");
+        setuser_id(decodedToken.sub);
+        setidToken(token);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("Failed to decode token", error);
+        handleLogout();
+      }
+    }
+  }, []);
   const handleRefreshTokenCheck = useCallback(() => {
     setrefreshTokenTrigger((prev) => {
       const newValue = prev + 1;
@@ -93,6 +94,7 @@ function App() {
       return newValue;
     });
   }, []);
+
   const closeModal = () => {
     setShowModal(false);
   };
@@ -152,7 +154,6 @@ function App() {
       refreshTokenTrigger
     );
   }, [refreshTokenTrigger]);
-
   return (
     <div className="app">
       <div className="mainContent">
@@ -164,14 +165,22 @@ function App() {
               handleLogout={handleLogout}
             />
           ) : selectedService === "一般模式" ? (
-            <SurveyDisplay
+            /*<SurveyDisplay
               idToken={idToken}
               user_id={user_id}
               username={username}
               handleBackPrortalPage={handleBackPrortalPage}
               onRefreshTokenCheck={handleRefreshTokenCheck}
               handleLogout={handleLogout}
-            />
+            />*/
+            <General
+              idToken={idToken}
+              user_id={user_id}
+              username={username}
+              handleBackPrortalPage={handleBackPrortalPage}
+              onRefreshTokenCheck={handleRefreshTokenCheck}
+              handleLogout={handleLogout}
+            ></General>
           ) : selectedService === "快速模式" ? (
             <TemplateMode
               idToken={idToken}
