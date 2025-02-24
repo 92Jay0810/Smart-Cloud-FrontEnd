@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Survey from "./Survey";
+import Display from "./Display";
 import { v4 as uuidv4 } from "uuid";
 import "./SurveyDisplay.css";
 function General({
@@ -136,16 +137,17 @@ function General({
           handleBackPrortalPage={handleBackPrortalPage}
         />
       ) : (
-        /*<Display ref={displayRef} surveyData={surveyData} />*/
-        <>
-          <h1>surveyData:{surveyData}</h1>
-          <br></br>
-          <h1>tool:{tool}</h1>
-          <br></br>
-          <h1>platform:{platform}</h1>
-          <br></br>
-          <h1>session_id:{session_id}</h1>
-        </>
+        <Display
+          idToken={idToken}
+          username={username}
+          user_id={user_id}
+          surveyData={surveyData}
+          tool={tool}
+          platform={platform}
+          session_id={session_id}
+          onRefreshTokenCheck={handleRefreshTokenCheck}
+          ref={displayRef}
+        />
       )}
     </div>
   );
