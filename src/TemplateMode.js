@@ -307,7 +307,6 @@ const TemplateMode = ({
   const [progress, setProgress] = useState(0);
   const progressRef = useRef(null);
   const progress_text = [
-    "",
     "請稍候",
     "正在確認您選擇的服務",
     "圖片生成架構中",
@@ -703,8 +702,8 @@ const TemplateMode = ({
             {/* 這個 div 確保 CSSTransition 內部只有一個根元素 */}
             {apiResponseReceived ? (
               <>
-                <h1>{username}! 這是您的架構圖:</h1>
-                <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
+                {/* <h1>{username}! 這是您的架構圖:</h1>
+                <h2>此架構圖是根據模板選擇產生的。</h2>{" "} */}
               </>
             ) : (
               <br></br>
@@ -714,7 +713,7 @@ const TemplateMode = ({
                 <>
                   {diagramXml ? (
                     <>
-                      <div className="button-container">
+                      {/* <div className="button-container">
                         <button onClick={handleModifyPromptClick}>
                           修改prompt
                         </button>
@@ -732,7 +731,7 @@ const TemplateMode = ({
                             GCP
                           </button>
                         </div>
-                      </div>
+                      </div> */}
                       <iframe
                         ref={iframeRef}
                         id="drawio-frame"

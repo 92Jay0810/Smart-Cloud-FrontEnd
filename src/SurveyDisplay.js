@@ -581,7 +581,7 @@ function SurveyDisplay({
               text:
                 "Hi " +
                 username +
-                ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
+                ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
             },
           ]);
         } else if (data?.s3_object_name && data?.s3_python_code) {
@@ -595,7 +595,7 @@ function SurveyDisplay({
               text:
                 "Hi " +
                 username +
-                ", I'm Archie. Feel free to modify your prompts,and I'll adjust the architecture diagram for you in real time.",
+                ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
             },
           ]);
         } else {
@@ -1238,8 +1238,8 @@ function SurveyDisplay({
             {/* 這個 div 確保 CSSTransition 內部只有一個根元素 */}
             {apiResponseReceived ? (
               <>
-                <h1>{username}! 這是您的架構圖:</h1>
-                <h2>此架構圖是根據模板選擇產生的。</h2>{" "}
+                {/* <h1>{username}! 這是您的架構圖</h1> */}
+                {/* <h2>此架構圖是根據模板選擇產生的</h2>{" "} */}
               </>
             ) : (
               <br></br>
@@ -1254,11 +1254,11 @@ function SurveyDisplay({
                   <>
                     {diagramXml ? (
                       <>
-                        <div className="button-container">
-                          <button onClick={handleModifyPromptClick}>
+                        {/* <div className="button-container"> */}
+                          {/* <button onClick={handleModifyPromptClick}>
                             修改Prompt
-                          </button>
-                          <div className="platform-button-container">
+                          </button> */}
+                          {/* <div className="platform-button-container">
                             <button
                               onClick={() => handleTransform()}
                               disabled={platform === "aws"}
@@ -1271,8 +1271,8 @@ function SurveyDisplay({
                             >
                               GCP
                             </button>
-                          </div>
-                        </div>
+                          </div> */}
+                        {/* </div> */}
                         <iframe
                           ref={iframeRef}
                           id="drawio-frame"
@@ -1287,9 +1287,9 @@ function SurveyDisplay({
                         <div className="button-container">
                           <button onClick={handleSaveFile}>儲存圖片</button>
                           <button onClick={handleSaveCode}>儲存程式碼</button>
-                          <button onClick={handleModifyPromptClick}>
+                          {/* <button onClick={handleModifyPromptClick}>
                             修改 Prompt
-                          </button>
+                          </button> */}
                           <button onClick={handleZoomOut}>🔍 -</button>
                           <button onClick={handleZoomIn}>🔍 +</button>
                           <div className="platform-button-container">
@@ -1512,7 +1512,7 @@ function SurveyDisplay({
       </div>
       <div className="header-container">
         <button onClick={handleBack} className="back-button">
-          
+        返回
         </button>
         <button onClick={handleLogoutButton} className="next-button">
           登出
