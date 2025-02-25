@@ -290,7 +290,7 @@ const TemplateMode = ({
             text:
               "嗨 " +
               username +
-              ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
+              ",我是 Archie.歡迎修改您的Prompt，我會即時為您調整架構圖。",
           },
         ]);
         setApiResponseReceived(true);

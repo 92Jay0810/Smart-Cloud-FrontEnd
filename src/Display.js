@@ -931,16 +931,6 @@ const Display = forwardRef(
               <div className="topic">
                 <span>Smart Archie</span>
               </div>
-              <button
-                className="dialog-close"
-                onClick={() => setShowDialog(false)}
-              >
-                <img
-                  src={close}
-                  style={{ width: "24px", height: "24px" }}
-                  alt="Close"
-                />
-              </button>
             </div>
             
 
