@@ -213,10 +213,20 @@ const TemplateMode = ({
       caption: "多媒體串流服務",
       subtitle: "平台：GCP",
       subtitle2: "作者：Kite",
-      content: "",
+      content: "簡介：這個架構圖的特點在於強調高效內容分發與低延遲體驗。它結合了 Cloud CDN、Cloud Armor 及 Global Load Balancer，確保來自不同區域的用戶都能獲得穩定的串流服務。相比一般 Web 應用架構，它強調即時性與高併發處理，並利用 Cloud Storage 作為媒體來源，透過 Cloud Pub/Sub 及監控工具 來確保播放品質。適用於大型影音平台、直播服務及點播系統，確保流量高峰時的穩定性與安全性。",
       image:
         "https://d2s0u5536e7dee.cloudfront.net/template/media_streaming_service/media_streaming_service.png",
       backendAPI: "media_streaming_service",
+    },
+    {
+      id: 8,
+      caption: "跨雲傳輸",
+      subtitle: "平台：GCP",
+      subtitle2: "作者：Mike",
+      content: "簡介：這個架構圖的特點在於跨雲整合，透過 GCP 與 AWS 之間的 IPSec VPN 隧道建立安全連線，並進一步串接 AWS Transit Gateway 以優化內部流量管理。與一般單點 VPN 連線不同，本架構利用高可用 VPN（HA VPN Gateway）與雙線路（線路 A/B）提升連線可靠性，確保異常時仍可維持業務運行。此外，透過多機房 HA Firewall 部署，進一步強化內部安全性，使其特別適用於對網路韌性要求極高的企業雲網路整合方案。",
+      image:
+        "https://d2s0u5536e7dee.cloudfront.net/template/Cross_Cloud_Transfer/Cross_Cloud_transfer.png",
+      backendAPI: "Cross_Cloud_Transfer",
     },
   ];
 

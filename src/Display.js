@@ -200,7 +200,7 @@ const Display = forwardRef(
                       text:
                         "嗨 " +
                         username +
-                        ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
+                        ",我是 Archie.歡迎修改您的Prompt，我會即時為您調整架構圖。",
                     },
                   ]);
                   setApiResponseReceived(true);
@@ -373,7 +373,7 @@ const Display = forwardRef(
               text:
                 "Hi " +
                 username +
-                ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
+                ",我是 Archie.歡迎修改您的Prompt，我會即時為您調整架構圖。",
             },
           ]);
         } else if (data?.s3_object_name && data?.s3_python_code) {
@@ -386,7 +386,7 @@ const Display = forwardRef(
               text:
                 "Hi " +
                 username +
-                ",我是 Archie.歡迎修改您的Prompts，我會即時為您調整架構圖。",
+                ",我是 Archie.歡迎修改您的Prompt，我會即時為您調整架構圖。",
             },
           ]);
         } else {
@@ -931,7 +931,18 @@ const Display = forwardRef(
               <div className="topic">
                 <span>Smart Archie</span>
               </div>
+              <button
+                className="dialog-close"
+                onClick={() => setShowDialog(false)}
+              >
+                <img
+                  src={close}
+                  style={{ width: "24px", height: "24px" }}
+                  alt="Close"
+                />
+              </button>
             </div>
+            
 
             <div className="dialog-content">
               <div className="dialog-messages">
