@@ -14,7 +14,7 @@ import systemImg from "./assets/system.jpeg";
 import userImg from "./assets/user.jpg";
 import "./SurveyDisplay.css";
 
-const Display = forwardRef(
+const ArchitectResult = forwardRef(
   (
     {
       idToken,
@@ -1025,4 +1025,4 @@ const Display = forwardRef(
     );
   }
 );
-export default Display;
+export default ArchitectResult;

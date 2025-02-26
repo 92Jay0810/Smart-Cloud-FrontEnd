@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PortalPage from "./PortalPage";
 import TemplateMode from "./TemplateMode";
-import SurveyDisplay from "./SurveyDisplay";
 import General from "./General";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";

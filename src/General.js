@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Survey from "./Survey";
-import Display from "./Display";
+import ArchitectResult from "./ArchitectResult";
 import { v4 as uuidv4 } from "uuid";
 import "./SurveyDisplay.css";
 function General({
@@ -137,7 +137,7 @@ function General({
           handleBackPrortalPage={handleBackPrortalPage}
         />
       ) : (
-        <Display
+        <ArchitectResult
           idToken={idToken}
           username={username}
           user_id={user_id}
