@@ -70,6 +70,7 @@ const Display = forwardRef(
       setInputText("");
       setLoading(false);
       setFileName("");
+      setShowDialog(false);
       setXmlUrl("");
       setProgress(0);
       clearInterval(progressRef);
@@ -194,6 +195,7 @@ const Display = forwardRef(
                 setXmlUrl(baseurl + "/diagram/" + data.body.s3_object_name);
                 // 第一次的xml 收到要歡迎語
                 if (!apiResponseReceived) {
+                  setShowDialog(true);
                   setMessages([
                     {
                       sender: "System",
@@ -232,6 +234,7 @@ const Display = forwardRef(
                 //沒有databody，有錯誤
                 if (!apiResponseReceived) {
                   setApiResponseReceived(true);
+                  setShowDialog(true);
                   seterrorMessage(`Not found response data body`);
                   clearInterval(progressRef);
                 } else {
@@ -266,6 +269,7 @@ const Display = forwardRef(
     }
 
     //ConversationDialog
+    const [showDialog, setShowDialog] = useState(false);
     const [inputText, setInputText] = useState("");
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
@@ -367,6 +371,7 @@ const Display = forwardRef(
         if (tool === "drawio" && data?.drawio_xml) {
           setDiagramXml(data.drawio_xml);
           console.log("drawio_xml received:", data.drawio_xml);
+          setShowDialog(true);
           setMessages([
             {
               sender: "System",
@@ -380,6 +385,7 @@ const Display = forwardRef(
           console.log("s3_object_name found:", data.s3_object_name);
           setImageUrl(baseurl + "/diagram/" + data.s3_object_name); //新的路徑為diagram
           setsavecode(baseurl + "/diagram/" + data.s3_python_code);
+          setShowDialog(true);
           setMessages([
             {
               sender: "System",
@@ -925,14 +931,23 @@ const Display = forwardRef(
             </div>
           </div>
         )}
-        {
+        {showDialog && (
           <div className="dialog-container">
             <div className="dialog-topic">
               <div className="topic">
                 <span>Smart Archie</span>
               </div>
+              <button
+                className="dialog-close"
+                onClick={() => setShowDialog(false)}
+              >
+                <img
+                  src={close}
+                  style={{ width: "24px", height: "24px" }}
+                  alt="Close"
+                />
+              </button>
             </div>
-            
 
             <div className="dialog-content">
               <div className="dialog-messages">
@@ -1005,7 +1020,7 @@ const Display = forwardRef(
               </p>
             </div>
           </div>
-        }
+        )}
       </div>
     );
   }
