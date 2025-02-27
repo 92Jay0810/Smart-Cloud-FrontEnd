@@ -6,8 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import close from "./assets/grey close.png";
 import systemImg from "./assets/system.jpeg";
 import userImg from "./assets/user.jpg";
-import "./SurveyDisplay.css";
-
+import "./App.css";
 const survey = [
   {
     category: "Cloud Platform 雲端平台",

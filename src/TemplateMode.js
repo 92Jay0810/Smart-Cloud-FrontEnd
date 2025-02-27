@@ -2,7 +2,7 @@
 import ProgressBar from "@ramonak/react-progress-bar";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
-import "./TemplateMode.css";
+import "./App.css";
 import { jwtDecode } from "jwt-decode";
 import userImg from "./assets/user.jpg";
 import systemImg from "./assets/system.jpeg";

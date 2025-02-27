@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Survey from "./Survey";
 import ArchitectResult from "./ArchitectResult";
 import { v4 as uuidv4 } from "uuid";
-import "./SurveyDisplay.css";
+import "./App.css";
 function General({
   idToken,
   user_id,

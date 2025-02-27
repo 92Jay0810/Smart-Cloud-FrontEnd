@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import "./PortalPage.css";
-
+import "./App.css";
 const modes = {
   一般模式: {
     title: "General mode",

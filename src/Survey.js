@@ -1,7 +1,7 @@
 import ProgressBar from "@ramonak/react-progress-bar";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import "./SurveyDisplay.css";
+import "./App.css";
 import { v4 as uuidv4 } from "uuid";
 
 const survey = [

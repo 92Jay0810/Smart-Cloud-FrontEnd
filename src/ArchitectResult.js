@@ -12,7 +12,7 @@ import { CSSTransition } from "react-transition-group";
 import close from "./assets/grey close.png";
 import systemImg from "./assets/system.jpeg";
 import userImg from "./assets/user.jpg";
-import "./SurveyDisplay.css";
+import "./App.css";
 
 const ArchitectResult = forwardRef(
   (
