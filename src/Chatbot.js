@@ -42,6 +42,7 @@ const Chatbot = forwardRef(
       if (inputText.trim()) {
         setInputText("");
         setLoading(true);
+        //不管dac、drawio，API都在ArchitectResult處理
         handle_message(inputText); // Send the message to ArchitectResult
         setLoading(false);
       }

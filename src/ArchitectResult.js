@@ -8,6 +8,7 @@ import React, {
   forwardRef,
 } from "react";
 import Dac from "./Dac";
+import Drawio from "./Drawio";
 import Chatbot from "./Chatbot";
 import { CSSTransition } from "react-transition-group";
 import "./App.css";
@@ -49,7 +50,7 @@ const ArchitectResult = forwardRef(
       }
       document.cookie = name + "=" + (value || "") + expires + "; path=/";
     };
-    // 重置函數
+    // 重置函數   //現在有重製問題，ref似乎沒效果!!!!!!!!!
     const resetSurvey = useCallback(() => {
       setApiResponseReceived(false);
       seterror_message("");
@@ -66,10 +67,13 @@ const ArchitectResult = forwardRef(
       setCookie("messages", "", -1);
       // 重置其他相關狀態
       setXmlUrl("");
+      // 如果子元件存在，呼叫它們的 reset 方法
+      if (drawioRef.current) drawioRef.current.reset();
     }, []);
     // 讓父元件能夠呼叫此 reset 方法重置對話記錄與輸入
     useImperativeHandle(resetref, () => ({
       reset() {
+        console.log("ArchitectResult reset() called");
         resetSurvey();
       },
     }));
@@ -244,12 +248,16 @@ const ArchitectResult = forwardRef(
         });
     }
 
-    //一進來就執行
+    //一進來就執行，根據工具選擇不同處理函式
     useEffect(() => {
-      first_generate_dac();
+      if (tool === "drawio") {
+        first_generate_drawio();
+      } else {
+        first_generate_dac();
+      }
     }, []);
 
-    //注意url，可能在local測試或是s3測試，s3要放在cloudFront才能執行
+    //第一次生成dac
     const first_generate_dac = async () => {
       const accessToken = localStorage.getItem("accessToken");
       const decodedToken = jwtDecode(accessToken);
@@ -261,11 +269,6 @@ const ArchitectResult = forwardRef(
         return;
       }
       try {
-        if (tool === "drawio") {
-          await setupWebSocket();
-          web_socket.send(JSON.stringify({ action: "message", ...surveyData }));
-          return;
-        }
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -361,7 +364,52 @@ const ArchitectResult = forwardRef(
       }
     };
 
-    const handle_message = async (user_message /*isTransform = false*/) => {
+    //第一次生成drawio
+    const first_generate_drawio = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      const decodedToken = jwtDecode(accessToken);
+      const currentTime = Date.now() / 1000; // 當前時間 (秒)
+      // 檢查 token 是否過期
+      if (decodedToken.exp <= currentTime) {
+        //超過4小時，就trigger AWSLogin去登出並跳警告
+        handleRefreshTokenCheck();
+        return;
+      }
+      try {
+        await setupWebSocket();
+        web_socket.send(JSON.stringify({ action: "message", ...surveyData }));
+        return;
+      } catch (error) {
+        console.error("Error submitting survey:", error);
+        setApiResponseReceived(true);
+        const timestamp = new Date()
+          .toISOString()
+          .replace(/[-:T.]/g, "")
+          .slice(0, 17);
+        if (error.message.includes("504")) {
+          seterror_message(`
+          The request to the API Gateway timed out. Please try again later.
+          Session: ${session_id}
+          Response Time: ${timestamp}`);
+        } else if (
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError")
+        ) {
+          seterror_message(`
+          CORS policy error: The server is not allowing cross-origin requests.
+          Session: ${session_id}
+          Response Time: ${timestamp}
+          又忘記這是Localhost了嗎?`);
+        } else {
+          seterror_message(`提交失敗，請稍後再試。
+          Session: ${session_id}
+          Response Time: ${timestamp}`);
+        }
+      }
+    };
+
+    // 根據 tool 的值選擇相應的處理函數
+    const handle_message = (message) => {
       const accessToken = localStorage.getItem("accessToken");
       const decodedToken = jwtDecode(accessToken);
       const currentTime = Date.now() / 1000; // 當前時間 (秒)
@@ -371,6 +419,13 @@ const ArchitectResult = forwardRef(
         handleRefreshTokenCheck();
         return;
       }
+      if (tool === "diagrams") {
+        handle_drawio_message(message);
+      } else {
+        handle_dac_message(message);
+      }
+    };
+    const handle_dac_message = async (user_message /*isTransform = false*/) => {
       /*
       let promptText = "";
       if (isTransform) {
@@ -385,28 +440,16 @@ const ArchitectResult = forwardRef(
       let newMessages = [...messages];
       newMessages = [...messages, { sender: username, text: user_message }];
       setMessages(newMessages);
-      //更新xml
-      /*if (tool === "drawio") {
-        requestExport();
-      }*/
       //prompt: isTransform ? promptText : user_message
       const conversationRequest = {
         prompt: user_message,
         session_id: session_id,
         user_id: user_id,
         tool: tool,
-        //xml: diagramXml,
       };
       console.log("傳送格式:\n", conversationRequest);
       let response = "";
       try {
-        if (conversationRequest.tool === "drawio") {
-          await setupWebSocket();
-          web_socket.send(
-            JSON.stringify({ action: "message", ...conversationRequest })
-          );
-          return;
-        }
         response = await fetch(url, {
           method: "POST",
           headers: {
@@ -503,6 +546,69 @@ const ArchitectResult = forwardRef(
       }
     };
 
+    const drawioRef = useRef(null);
+    //未改完差去drawio拿xml那一步
+    const handle_drawio_message = async (
+      user_message /*isTransform = false*/
+    ) => {
+      /*
+      let promptText = "";
+      if (isTransform) {
+        const newPlatform = platform === "aws" ? "gcp" : "aws";
+        promptText = generatePrompt(newPlatform);
+        newMessages = [
+          ...messages,
+          { sender: username, text: `transforming to ${newPlatform}...` },
+        ];
+        setMessages(newMessages);
+      }*/
+
+      let newMessages = [...messages];
+      newMessages = [...messages, { sender: username, text: user_message }];
+      setMessages(newMessages);
+
+      //更新xml
+      if (drawioRef.current) {
+        drawioRef.current.requestExport();
+        // 给一点时间让 XML 更新
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+      // 获取最新的 XML
+      const currentXml = drawioRef.current
+        ? drawioRef.current.getCurrentXml()
+        : null;
+
+      //prompt: isTransform ? promptText : user_message
+      const conversationRequest = {
+        prompt: user_message,
+        session_id: session_id,
+        user_id: user_id,
+        tool: tool,
+        xml: currentXml,
+      };
+      console.log("傳送格式:\n", conversationRequest);
+      try {
+        await setupWebSocket();
+        web_socket.send(
+          JSON.stringify({ action: "message", ...conversationRequest })
+        );
+        return;
+      } catch (error) {
+        const timestamp = new Date()
+          .toISOString()
+          .replace(/[-:T.]/g, "")
+          .slice(0, 17);
+        setMessages([
+          ...newMessages,
+          {
+            sender: "System",
+            text: `錯誤：無法取得回應。\nSession ID: ${session_id}\nTimestamp: ${timestamp}`,
+          },
+        ]);
+        console.log(error);
+      }
+    };
+
     const CustomPromptTemplate = `transform to {platform}, make sure to follow the transformation and service mapping rules, and ensure all security and operational components present.`;
     // 定义一个函数来替换 {platform} 占位符
     const generatePrompt = (platform) => {
@@ -525,9 +631,19 @@ const ArchitectResult = forwardRef(
                   ref={resetref}
                 />
               ) : (
-                <div className="survey-result-container">
-                  <h1>test</h1>
-                </div>
+                <Drawio
+                  username={username}
+                  apiResponseReceived={apiResponseReceived}
+                  xmlUrl={xmlUrl}
+                  error_message={error_message}
+                  ref={(el) => {
+                    // 同时保留原有的 resetref 功能和新增的 drawioRef
+                    if (el) {
+                      resetref.current = el;
+                      drawioRef.current = el;
+                    }
+                  }}
+                />
               )}
             </div>
             <Chatbot

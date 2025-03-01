@@ -33,8 +33,10 @@ function General({
     }
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
   };
+  //現在有重製問題，ref似乎沒效果!!!!!!!!!
   // 重置函數
   const resetSurvey = useCallback(() => {
+    console.log("开始重置 General");
     setSubmitted(false);
     setSurveyData(null);
     setPlatform("");
@@ -45,7 +47,11 @@ function General({
     setCookie("platform", "", -1);
     setCookie("tool", "", -1);
     // 如果子元件存在，呼叫它們的 reset 方法
-    if (displayRef.current) displayRef.current.reset();
+    console.log("displayRef.current:", displayRef.current);
+    if (displayRef.current) {
+      console.log("Calling reset on ArchitectResult");
+      displayRef.current.reset();
+    }
   }, []);
 
   //token過期呼叫
@@ -82,7 +88,7 @@ function General({
   });
 
   // 建立 ref 用於呼叫子元件內部的 reset 方法
-  const displayRef = useRef();
+  const displayRef = useRef(null);
 
   // 更新 cookie 的函數
   const updateCookies = () => {
