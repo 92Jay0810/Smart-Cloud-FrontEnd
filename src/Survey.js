@@ -110,7 +110,13 @@ const survey = [
   },
 ];
 
-function Survey({ username, user_id, onSubmit }) {
+function Survey({
+  username,
+  user_id,
+  onSubmit,
+  handleBack,
+  handleLogoutButton,
+}) {
   // 讀取 cookie 的函數
   const getCookie = (name) => {
     const nameEQ = name + "=";
@@ -304,6 +310,14 @@ function Survey({ username, user_id, onSubmit }) {
   );
   return (
     <div className="survey-container" ref={surveyContainerRef}>
+      <div className="header-container">
+        <button onClick={handleBack} className="back-button">
+          返回
+        </button>
+        <button onClick={handleLogoutButton} className="next-button">
+          登出
+        </button>
+      </div>
       <h1>Hi {username}! 歡迎使用一般模式!</h1>
       <h2>
         以下問卷內容將分為 6

@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Survey from "./Survey";
 import ArchitectResult from "./ArchitectResult";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
+import { AppProvider } from "./AppContext";
 function General({
   idToken,
   user_id,
@@ -46,12 +47,6 @@ function General({
     setCookie("surveyData", "", -1);
     setCookie("platform", "", -1);
     setCookie("tool", "", -1);
-    // 如果子元件存在，呼叫它們的 reset 方法
-    console.log("displayRef.current:", displayRef.current);
-    if (displayRef.current) {
-      console.log("Calling reset on ArchitectResult");
-      displayRef.current.reset();
-    }
   }, []);
 
   //token過期呼叫
@@ -87,9 +82,6 @@ function General({
     }
   });
 
-  // 建立 ref 用於呼叫子元件內部的 reset 方法
-  const displayRef = useRef(null);
-
   // 更新 cookie 的函數
   const updateCookies = () => {
     setCookie("submitted", submitted);
@@ -112,8 +104,7 @@ function General({
 
   //登出按鈕
   const handleLogoutButton = () => {
-    // 先執行當前組件的重置
-    resetSurvey();
+    resetSurvey(); // 先執行當前組件的重置
     handleLogout();
   };
   //傳surveyData,tool,plafrom,session_id交給display
@@ -126,34 +117,30 @@ function General({
   };
   return (
     <div className="survey-display">
-      <div className="header-container">
-        <button onClick={handleBack} className="back-button">
-          返回
-        </button>
-        <button onClick={handleLogoutButton} className="next-button">
-          登出
-        </button>
-      </div>
       {/* 根據 submitted 狀態顯示不同元件，同時傳入 ref */}
       {!submitted ? (
         <Survey
           onSubmit={handleSurveySubmit}
           username={username}
           user_id={user_id}
-          handleBackPrortalPage={handleBackPrortalPage}
+          handleBack={handleBack}
+          handleLogoutButton={handleLogoutButton}
         />
       ) : (
-        <ArchitectResult
-          idToken={idToken}
-          username={username}
-          user_id={user_id}
-          surveyData={surveyData}
-          tool={tool}
-          platform={platform}
-          session_id={session_id}
-          onRefreshTokenCheck={handleRefreshTokenCheck}
-          ref={displayRef}
-        />
+        <AppProvider>
+          <ArchitectResult
+            idToken={idToken}
+            username={username}
+            user_id={user_id}
+            surveyData={surveyData}
+            tool={tool}
+            platform={platform}
+            session_id={session_id}
+            onRefreshTokenCheck={handleRefreshTokenCheck}
+            handleBack={handleBack}
+            handleLogoutButton={handleLogoutButton}
+          />
+        </AppProvider>
       )}
     </div>
   );
