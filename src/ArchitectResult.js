@@ -111,21 +111,15 @@ function ArchitectResult({
               } else {
                 //此為對話
                 if (data.body.ai_message) {
-                  setMessages([
-                    ...messages,
-                    {
-                      sender: "System",
-                      text: data.body.ai_message,
-                    },
+                  setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { sender: "System", text: data.body.ai_message },
                   ]);
                   return;
                 } else {
-                  setMessages([
-                    ...messages,
-                    {
-                      sender: "System",
-                      text: `AI已經更動圖片`,
-                    },
+                  setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { sender: "System", text: "AI已經更動圖片" },
                   ]);
                 }
               }
@@ -139,13 +133,25 @@ function ArchitectResult({
                   seterror_message(`Not found response data body`);
                 }
               } else {
-                setMessages([
-                  ...messages,
-                  {
-                    sender: "System",
-                    text: "Not found response data body",
-                  },
-                ]);
+                if (data.message && data.message === "Internal server error") {
+                  setMessages((prevMessages) => [
+                    ...prevMessages,
+                    {
+                      sender: "System",
+                      text: data.message.includes("Internal server error")
+                        ? "Internal server error"
+                        : "Not found response data body",
+                    },
+                  ]);
+                } else {
+                  setMessages((prevMessages) => [
+                    ...prevMessages,
+                    {
+                      sender: "System",
+                      text: "Not found response data body",
+                    },
+                  ]);
+                }
               }
             }
           }
@@ -355,9 +361,10 @@ function ArchitectResult({
         ];
         setMessages(newMessages);
       }*/
-    let newMessages = [...messages];
-    newMessages = [...messages, { sender: username, text: user_message }];
-    setMessages(newMessages);
+    const newMessages = [{ sender: username, text: user_message }];
+    // Update messages with the user message
+    setMessages((prevMessages) => [...prevMessages, ...newMessages]);
+
     //prompt: isTransform ? promptText : user_message
     const conversationRequest = {
       prompt: user_message,
@@ -465,7 +472,7 @@ function ArchitectResult({
   };
 
   const drawioRef = useRef(null);
-  //未改完差去drawio拿xml那一步
+
   const handle_drawio_message = async (
     user_message /*isTransform = false*/
   ) => {
@@ -481,9 +488,10 @@ function ArchitectResult({
         setMessages(newMessages);
       }*/
 
-    let newMessages = [...messages];
-    newMessages = [...messages, { sender: username, text: user_message }];
-    setMessages(newMessages);
+    const newMessages = [{ sender: username, text: user_message }];
+
+    // Update messages with the user message
+    setMessages((prevMessages) => [...prevMessages, ...newMessages]);
 
     //更新xml
     if (drawioRef.current) {

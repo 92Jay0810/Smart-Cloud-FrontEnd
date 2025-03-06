@@ -11,7 +11,6 @@ import React, {
 import { CSSTransition } from "react-transition-group";
 import "./App.css";
 import { AppContext } from "./AppContext";
-import pako from "pako";
 const Drawio = forwardRef(({ username }, ref) => {
   const {
     apiResponseReceived,
@@ -155,67 +154,7 @@ const Drawio = forwardRef(({ username }, ref) => {
             case "save":
               console.log("已更新XML");
               if (msg.xml && msg.xml !== diagramXml) {
-                try {
-                  // 步骤 1: 直接解析 XML
-                  try {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(msg.xml, "text/xml");
-
-                    // 使用选择器查找 mxGraphModel
-                    const graphModel =
-                      xmlDoc.querySelector("mxGraphModel") ||
-                      xmlDoc.querySelector("diagram > mxGraphModel") ||
-                      xmlDoc.querySelector("mxfile > diagram > mxGraphModel") ||
-                      xmlDoc.querySelector("root > mxGraphModel");
-
-                    if (graphModel) {
-                      console.log("找到mxGraphModel");
-                      setDiagramXml(graphModel.outerHTML);
-                      break;
-                    } else {
-                      console.log("未找到mxGraphModel");
-                    }
-                  } catch (directError) {
-                    console.log("直接解析失败");
-                  }
-
-                  // Step 2: If the XML is Base64 encoded or compressed, attempt decoding and decompression
-                  try {
-                    // Base64 decode the XML content
-                    const decodedData = Uint8Array.from(atob(msg.xml), (c) =>
-                      c.charCodeAt(0)
-                    );
-
-                    // If the content is compressed (e.g., using pako), attempt decompression
-                    const inflatedData = pako.inflate(decodedData, {
-                      to: "string",
-                    });
-
-                    console.log("Decompressed Data:", inflatedData);
-
-                    // Parse the decompressed XML
-                    const parser = new DOMParser();
-                    const inflatedDoc = parser.parseFromString(
-                      inflatedData,
-                      "text/xml"
-                    );
-                    const graphModel =
-                      inflatedDoc.querySelector("mxGraphModel");
-
-                    if (graphModel) {
-                      console.log("解压后找到mxGraphModel");
-                      setDiagramXml(graphModel.outerHTML);
-                      break;
-                    }
-                  } catch (inflateError) {
-                    console.log("解压失败");
-                  }
-
-                  console.log("所有方法失败，儲存原始xml");
-                  setDiagramXml(msg.xml);
-                } catch (error) {
-                  console.error("解析XML错误:", error);
-                }
+                setDiagramXml(msg.xml);
               }
               break;
             default:
