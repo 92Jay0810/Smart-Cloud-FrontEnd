@@ -133,7 +133,11 @@ function ArchitectResult({
               //沒有databody，有錯誤
               if (!apiResponseReceived) {
                 setApiResponseReceived(true);
-                seterror_message(`Not found response data body`);
+                if (data.message.includes("Internal server error")) {
+                  seterror_message(`Internal server error`);
+                } else {
+                  seterror_message(`Not found response data body`);
+                }
               } else {
                 setMessages([
                   ...messages,

@@ -11,7 +11,13 @@ import { AppContext } from "./AppContext";
 function Dac({ username, platform }) {
   const { apiResponseReceived, error_message, imageUrl, savecode } =
     useContext(AppContext);
-  // 重置函數
+  // 重置函數,一進來就reset
+  useEffect(() => {
+    // 重置其他相關狀態
+    setFileName("");
+    setProgress(0);
+    clearInterval(progressRef.current);
+  }, []);
   const resetSurvey = useCallback(() => {
     // 重置其他相關狀態
     setFileName("");

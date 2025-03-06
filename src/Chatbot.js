@@ -12,6 +12,13 @@ import "./App.css";
 import { AppContext } from "./AppContext";
 function Chatbot({ handle_message }) {
   const { apiResponseReceived, messages } = useContext(AppContext);
+  // 重置函數,一進來就reset
+  useEffect(() => {
+    // 重置其他相關狀態
+    setInputText("");
+    setLoading(false);
+    setShowDialog(false);
+  }, []);
   // 重置函數
   const resetSurvey = useCallback(() => {
     // 重置其他相關狀態
@@ -21,7 +28,7 @@ function Chatbot({ handle_message }) {
   }, []);
 
   //ConversationDialog
-  const [showDialog, setShowDialog] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -40,6 +47,10 @@ function Chatbot({ handle_message }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setShowDialog(true);
+  }, [apiResponseReceived]);
 
   const handleInput = (e) => {
     const textarea = e.target;
