@@ -110,7 +110,7 @@ function General({
   //傳surveyData,tool,plafrom,session_id交給display
   const handleSurveySubmit = (surveyData, tool, platform, session_id) => {
     setSubmitted(true);
-    setSurveyData(JSON.stringify(surveyData)); // 確保不會傳入物件
+    setSurveyData(surveyData); // 確保不會傳入物件
     setTool(tool);
     setPlatform(platform);
     setSession_id(session_id);

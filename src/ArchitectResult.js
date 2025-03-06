@@ -25,9 +25,7 @@ function ArchitectResult({
     seterror_message,
     messages,
     setMessages,
-    imageUrl,
     setImageUrl,
-    savecode,
     setsavecode,
     xmlUrl,
     setXmlUrl,
@@ -193,7 +191,7 @@ function ArchitectResult({
           authorizationToken: `Bearer ${idToken}`,
           "Content-Type": "application/json",
         },
-        body: surveyData,
+        body: JSON.stringify(surveyData),
       });
 
       const responseData = await response.json();
@@ -336,9 +334,9 @@ function ArchitectResult({
       return;
     }
     if (tool === "diagrams") {
-      handle_drawio_message(message);
-    } else {
       handle_dac_message(message);
+    } else {
+      handle_drawio_message(message);
     }
   };
   const handle_dac_message = async (user_message /*isTransform = false*/) => {
