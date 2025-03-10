@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import PortalPage from "./PortalPage";
 import TemplateMode from "./TemplateMode";
 import General from "./General";
+import Quick from "./Quick";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";
 import "./App.css";
@@ -164,14 +165,6 @@ function App() {
               handleLogout={handleLogout}
             />
           ) : selectedService === "一般模式" ? (
-            /*<SurveyDisplay
-              idToken={idToken}
-              user_id={user_id}
-              username={username}
-              handleBackPrortalPage={handleBackPrortalPage}
-              onRefreshTokenCheck={handleRefreshTokenCheck}
-              handleLogout={handleLogout}
-            />*/
             <General
               idToken={idToken}
               user_id={user_id}
@@ -181,14 +174,22 @@ function App() {
               handleLogout={handleLogout}
             ></General>
           ) : selectedService === "快速模式" ? (
-            <TemplateMode
+            /*<TemplateMode
               idToken={idToken}
               user_id={user_id}
               username={username}
               handleBackPrortalPage={handleBackPrortalPage}
               onRefreshTokenCheck={handleRefreshTokenCheck}
               handleLogout={handleLogout}
-            />
+            />*/
+            <Quick
+              idToken={idToken}
+              user_id={user_id}
+              username={username}
+              handleBackPrortalPage={handleBackPrortalPage}
+              onRefreshTokenCheck={handleRefreshTokenCheck}
+              handleLogout={handleLogout}
+            ></Quick>
           ) : (
             <div>選擇服務： {selectedService}</div> // 其他服務之後再加入
           )
