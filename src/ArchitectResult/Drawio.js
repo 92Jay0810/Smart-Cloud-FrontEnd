@@ -9,8 +9,8 @@ import React, {
   useContext,
 } from "react";
 import { CSSTransition } from "react-transition-group";
-import "./App.css";
-import { AppContext } from "./AppContext";
+import "../App.css";
+import { AppContext } from "../AppContext";
 const Drawio = forwardRef(({ username }, ref) => {
   const {
     apiResponseReceived,

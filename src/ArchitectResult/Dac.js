@@ -6,8 +6,8 @@ import React, {
   useState,
   useContext,
 } from "react";
-import "./App.css";
-import { AppContext } from "./AppContext";
+import "../App.css";
+import { AppContext } from "../AppContext";
 function Dac({ username, platform }) {
   const { apiResponseReceived, error_message, imageUrl, savecode } =
     useContext(AppContext);

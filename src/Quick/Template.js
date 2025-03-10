@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
-import "./App.css";
-import close from "./assets/grey close.png";
+import "../App.css";
+import close from "../assets/grey close.png";
 import { v4 as uuidv4 } from "uuid";
 function Template({ onSubmit, user_id, handleBack, handleLogoutButton }) {
   const [selectedStation, setSelectedStation] = useState(null);

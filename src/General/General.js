@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Survey from "./Survey";
-import ArchitectResult from "./ArchitectResult";
+import ArchitectResult from "../ArchitectResult/ArchitectResult";
 import { v4 as uuidv4 } from "uuid";
-import "./App.css";
-import { AppProvider } from "./AppContext";
+import "../App.css";
+import { AppProvider } from "../AppContext";
 function General({
   idToken,
   user_id,
