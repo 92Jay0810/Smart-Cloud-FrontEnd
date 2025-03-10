@@ -154,6 +154,14 @@ function Chatbot({ handle_message }) {
           </div>
         </div>
       )}
+      {!showDialog && (
+        <button
+          className="chatbot-open-button"
+          onClick={() => setShowDialog(true)}
+        >
+          <img src={systemImg} alt="Chat" />
+        </button>
+      )}
     </div>
   );
 }

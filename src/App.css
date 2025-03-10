@@ -1157,6 +1157,26 @@ input:checked + .toggle-slider:before {
   height: 24px;
 }
 
+.chatbot-open-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-open-button:hover {
+  background-color: #f0f0f0;
+}
+
 /* Hover effect */
 .dialog-topic button:hover img {
   opacity: 0.8; /* Reduce opacity on hover for a subtle effect */
