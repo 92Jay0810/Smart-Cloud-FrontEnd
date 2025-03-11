@@ -139,6 +139,7 @@ function General({
             onRefreshTokenCheck={handleRefreshTokenCheck}
             handleBack={handleBack}
             handleLogoutButton={handleLogoutButton}
+            mode={"General"}
           />
         </AppProvider>
       )}

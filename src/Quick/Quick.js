@@ -130,6 +130,7 @@ function Quick({
             onRefreshTokenCheck={handleRefreshTokenCheck}
             handleBack={handleBack}
             handleLogoutButton={handleLogoutButton}
+            mode={"Quick"}
           />
         </AppProvider>
       )}

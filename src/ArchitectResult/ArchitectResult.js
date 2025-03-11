@@ -17,6 +17,7 @@ function ArchitectResult({
   onRefreshTokenCheck,
   handleBack,
   handleLogoutButton,
+  mode,
 }) {
   const {
     apiResponseReceived,
@@ -176,13 +177,118 @@ function ArchitectResult({
 
   //一進來就執行，根據工具選擇不同處理函式
   useEffect(() => {
-    if (tool === "drawio") {
+    if (mode == "Quick") {
+      first_generate_template();
+    } else if (tool === "drawio") {
       first_generate_drawio();
     } else {
+      //dac 以及模板
       first_generate_dac();
     }
   }, []);
+  //第一次生成dac
+  const first_generate_template = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const decodedToken = jwtDecode(accessToken);
+    const currentTime = Date.now() / 1000; // 當前時間 (秒)
+    // 檢查 token 是否過期
+    if (decodedToken.exp <= currentTime) {
+      //超過4小時，就trigger AWSLogin去登出並跳警告
+      handleRefreshTokenCheck();
+      return;
+    }
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          authorizationToken: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(surveyData),
+      });
 
+      const responseData = await response.json();
+      console.log("responseData :", responseData);
+
+      // Create timestamp inline where needed
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[-:T.]/g, "")
+        .slice(0, 17);
+      // End progress and mark as received
+      setApiResponseReceived(true);
+      if (response.status === 504) {
+        seterror_message(
+          `The request to the API Gateway timed out. Please try again later.\nSession: ${session_id}\nResponse Time: ${timestamp}`
+        );
+        return; // 退出函式，避免進一步處理
+      }
+      // Parse response body if needed
+      const data =
+        typeof responseData.body === "string"
+          ? JSON.parse(responseData.body)
+          : responseData.body;
+      console.log("responseData 的body：", data);
+
+      // Handle undefined data
+      if (!data) {
+        seterror_message(
+          `The response format is incorrect: Cannot find the body, data type is undefined.\nSession: ${session_id}\nResponse Time: ${timestamp}`
+        );
+        return;
+      }
+
+      if (data?.error_message) {
+        seterror_message(
+          `
+        Error: ${data.error_message}
+        Session: ${session_id}
+        Response Time: ${timestamp}
+        `
+        );
+      }
+      if (data?.s3_object_name) {
+        setXmlUrl(baseurl + "/diagram/" + data.s3_object_name);
+        setMessages([
+          {
+            sender: "System",
+            text:
+              "嗨 " +
+              username +
+              ",我是 Archie.歡迎修改您的Prompt，我會即時為您調整架構圖。",
+          },
+        ]);
+        return; // 退出函式，避免進一步處理
+      }
+      console.log("drawio_xml and s3_object_name not found");
+    } catch (error) {
+      console.error("Error submitting survey:", error);
+      setApiResponseReceived(true);
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[-:T.]/g, "")
+        .slice(0, 17);
+      if (error.message.includes("504")) {
+        seterror_message(`
+        The request to the API Gateway timed out. Please try again later.
+        Session: ${session_id}
+        Response Time: ${timestamp}`);
+      } else if (
+        error.message.includes("Failed to fetch") ||
+        error.message.includes("NetworkError")
+      ) {
+        seterror_message(`
+        CORS policy error: The server is not allowing cross-origin requests.
+        Session: ${session_id}
+        Response Time: ${timestamp}
+        又忘記這是Localhost了嗎?`);
+      } else {
+        seterror_message(`提交失敗，請稍後再試。
+        Session: ${session_id}
+        Response Time: ${timestamp}`);
+      }
+    }
+  };
   //第一次生成dac
   const first_generate_dac = async () => {
     const accessToken = localStorage.getItem("accessToken");
