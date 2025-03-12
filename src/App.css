@@ -1159,8 +1159,8 @@ input:checked + .toggle-slider:before {
 
 .chatbot-open-button {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 10px;
+  right: 10px;
   background-color: white;
   border: none;
   border-radius: 50%;
