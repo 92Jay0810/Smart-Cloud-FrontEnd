@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PortalPage from "./PortalPage";
-import TemplateMode from "./TemplateMode";
 import General from "./General/General";
 import Quick from "./Quick/Quick";
 import { jwtDecode } from "jwt-decode";
@@ -174,14 +173,6 @@ function App() {
               handleLogout={handleLogout}
             ></General>
           ) : selectedService === "快速模式" ? (
-            /*<TemplateMode
-              idToken={idToken}
-              user_id={user_id}
-              username={username}
-              handleBackPrortalPage={handleBackPrortalPage}
-              onRefreshTokenCheck={handleRefreshTokenCheck}
-              handleLogout={handleLogout}
-            />*/
             <Quick
               idToken={idToken}
               user_id={user_id}

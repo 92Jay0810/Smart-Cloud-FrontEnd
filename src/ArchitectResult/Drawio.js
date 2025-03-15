@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { CSSTransition } from "react-transition-group";
 import "../App.css";
-import { AppContext } from "../AppContext";
+import { AppContext } from "../Context/AppContext";
 const Drawio = forwardRef(({ username }, ref) => {
   const {
     apiResponseReceived,

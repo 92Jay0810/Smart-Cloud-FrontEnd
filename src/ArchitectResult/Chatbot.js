@@ -9,7 +9,7 @@ import close from "../assets/grey close.png";
 import systemImg from "../assets/system.jpeg";
 import userImg from "../assets/user.jpg";
 import "../App.css";
-import { AppContext } from "../AppContext";
+import { AppContext } from "../Context/AppContext";
 function Chatbot({ handle_message }) {
   const { apiResponseReceived, messages } = useContext(AppContext);
   // 重置函數,一進來就reset
