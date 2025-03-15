@@ -58,6 +58,13 @@ export const AppProvider = ({ children }) => {
     return savedDiagram || false;
   });
 
+  //不用寫進cookie的變數
+  const [showDialog, setShowDialog] = useState(false);
+  //有收到api 就打開對話框
+  useEffect(() => {
+    setShowDialog(true);
+  }, [apiResponseReceived]);
+
   // 更新 cookie 的函數
   const updateCookies = () => {
     setCookie("apiResponseReceived", apiResponseReceived);
@@ -101,6 +108,9 @@ export const AppProvider = ({ children }) => {
     setCookie("xmlUrl", "", -1);
     setCookie("messages", "", -1);
     localStorage.removeItem("diagramXml");
+
+    //其他狀態
+    setShowDialog(false);
   }, []);
 
   return (
@@ -121,6 +131,8 @@ export const AppProvider = ({ children }) => {
         diagramXml,
         setDiagramXml,
         resetArchitectResult,
+        showDialog,
+        setShowDialog,
       }}
     >
       {children}

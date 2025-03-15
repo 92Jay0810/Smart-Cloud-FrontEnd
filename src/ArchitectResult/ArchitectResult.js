@@ -24,13 +24,13 @@ function ArchitectResult({
     setApiResponseReceived,
     error_message,
     seterror_message,
-    messages,
     setMessages,
     setImageUrl,
     setsavecode,
     xmlUrl,
     setXmlUrl,
     resetArchitectResult,
+    showDialog,
   } = useContext(AppContext);
   //token過期呼叫
   const handleRefreshTokenCheck = () => {
@@ -659,7 +659,12 @@ function ArchitectResult({
       </div>
       <CSSTransition in={true} timeout={300} classNames="fade" unmountOnExit>
         <div>
-          <div className="survey-result-container">
+          <div
+            className="survey-result-container"
+            style={{
+              width: showDialog ? "50%" : "95%", // 如果對話框開啟，讓 iframe 全寬
+            }}
+          >
             {tool === "diagrams" ? (
               <Dac username={username} platform={platform} />
             ) : (
