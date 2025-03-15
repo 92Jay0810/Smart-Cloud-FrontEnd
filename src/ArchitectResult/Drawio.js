@@ -8,7 +8,6 @@ import React, {
   forwardRef,
   useContext,
 } from "react";
-import { CSSTransition } from "react-transition-group";
 import "../App.css";
 import { AppContext } from "../Context/AppContext";
 const Drawio = forwardRef(({ username }, ref) => {
@@ -172,71 +171,67 @@ const Drawio = forwardRef(({ username }, ref) => {
   }, [diagramXml]);
 
   return (
-    <div className="App">
-      <CSSTransition in={true} timeout={300} classNames="fade" unmountOnExit>
-        <div className="survey-result-container">
-          {apiResponseReceived ? (
-            error_message ? (
-              <>
-                <p className="error-message">{error_message}</p>
-              </>
+    <div>
+      {apiResponseReceived ? (
+        error_message ? (
+          <>
+            <p className="error-message">{error_message}</p>
+          </>
+        ) : (
+          <>
+            {diagramXml ? (
+              <iframe
+                ref={iframeRef}
+                id="drawio-frame"
+                src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
+                allowFullScreen
+                sandbox="allow-scripts allow-downloads allow-same-origin"
+                style={{ width: "100%" }}
+              ></iframe>
             ) : (
-              <>
-                {diagramXml ? (
-                  <iframe
-                    ref={iframeRef}
-                    id="drawio-frame"
-                    src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
-                    allowFullScreen
-                    sandbox="allow-scripts allow-downloads allow-same-origin"
-                    style={{ width: "100%" }}
-                  ></iframe>
-                ) : (
-                  <p className="error-message">沒有架構圖回傳，圖片解析失敗</p>
-                )}
-              </>
-            )
-          ) : (
-            <>
-              <h1>Thank you！ {username}!</h1>
-              <h2>
-                我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
-              </h2>
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <div
-                style={{
-                  position: "absolute",
-                  top: "55%", // 控制進度條的位置向下移
-                  left: "50%",
-                  transform: "translate(-50%, -50%)", // 確保進度條居中
-                  width: "50%", // 控制進度條的寬度
-                }}
-              >
-                <ProgressBar
-                  completed={progress}
-                  bgColor="#10b981"
-                  height="30px"
-                  width="100%"
-                  labelSize="16px"
-                  maxCompleted={280}
-                  customLabel={progress_text[Math.floor(progress / 40)]}
-                  customLabelStyles={{
-                    position: "absolute",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    fontWeight: "bold",
-                  }}
-                />
-              </div>
-            </>
-          )}
-        </div>
-      </CSSTransition>
+              <p className="error-message">沒有架構圖回傳，圖片解析失敗</p>
+            )}
+          </>
+        )
+      ) : (
+        <>
+          <h1>Thank you！ {username}!</h1>
+          <h2>
+            我們正在設計您的架構圖，請稍等，我們將在這裡為您提供即時的架構圖生成進度。
+          </h2>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <div
+            style={{
+              position: "absolute",
+              top: "55%", // 控制進度條的位置向下移
+              left: "50%",
+              transform: "translate(-50%, -50%)", // 確保進度條居中
+              width: "50%", // 控制進度條的寬度
+            }}
+          >
+            <ProgressBar
+              completed={progress}
+              bgColor="#10b981"
+              height="30px"
+              width="100%"
+              labelSize="16px"
+              maxCompleted={280}
+              customLabel={progress_text[Math.floor(progress / 40)]}
+              customLabelStyles={{
+                position: "absolute",
+                left: "50%",
+                transform: "translateX(-50%)",
+                fontWeight: "bold",
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 });

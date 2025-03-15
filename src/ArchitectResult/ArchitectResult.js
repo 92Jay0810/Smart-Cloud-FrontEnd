@@ -648,7 +648,7 @@ function ArchitectResult({
   };
 
   return (
-    <div className="App">
+    <div>
       <div className="header-container">
         <button onClick={handleArchitectBack} className="back-button">
           返回
