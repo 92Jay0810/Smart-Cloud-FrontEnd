@@ -1,0 +1,26 @@
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: azure-ci-template
+      ref: master
+
+variables:
+- group: smrt-common
+- name: POOL
+  value: aws-smrt-cld
+- name: SCAN_POOL
+  value: 'gcp-scanner-shared'
+
+stages:
+- template: frontend/scan_sonarqube.yaml@templates
+  parameters:
+    scan_pool: '$(SCAN_POOL)'
+# npm build and publish artifacts
+- template: frontend/npm_build.yaml@templates
+  parameters:
+    pool: '$(POOL)'
+- template: frontend/scan_frontend.yaml@templates
+  parameters:
+    pool: '$(POOL)'
+    scan_pool: '$(SCAN_POOL)'
