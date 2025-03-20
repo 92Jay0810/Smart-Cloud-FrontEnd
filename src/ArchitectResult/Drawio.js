@@ -44,7 +44,7 @@ const Drawio = forwardRef(({ username }, ref) => {
         };
         iframeRef.current.contentWindow.postMessage(
           JSON.stringify(message),
-          "https://embed.diagrams.net"
+          process.env.REACT_APP_DRAWIO_URL
         );
         console.log("requestExport sent from external call");
       }
@@ -97,7 +97,7 @@ const Drawio = forwardRef(({ username }, ref) => {
                 action: "load",
                 xml: xmlContent,
               }),
-              "https://embed.diagrams.net"
+              process.env.REACT_APP_DRAWIO_URL
             );
           }
           console.log("fetch XmlUrl success");
@@ -125,7 +125,7 @@ const Drawio = forwardRef(({ username }, ref) => {
       };
       iframeRef.current.contentWindow.postMessage(
         JSON.stringify(message),
-        "https://embed.diagrams.net"
+        process.env.REACT_APP_DRAWIO_URL
       );
     };
 
@@ -134,7 +134,7 @@ const Drawio = forwardRef(({ username }, ref) => {
         //驗證來源
         if (
           event.data.length > 0 &&
-          event.origin === "https://embed.diagrams.net"
+          event.origin === process.env.REACT_APP_DRAWIO_URL
         ) {
           const msg = JSON.parse(event.data);
           console.log("Received message:", msg);
@@ -183,7 +183,7 @@ const Drawio = forwardRef(({ username }, ref) => {
               <iframe
                 ref={iframeRef}
                 id="drawio-frame"
-                src="https://embed.diagrams.net/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"
+                src={process.env.REACT_APP_DRAWIO_URL+"/?embed=1&ui=min&spin=1&proto=json&saveAndExit=1"}
                 allowFullScreen
                 sandbox="allow-scripts allow-downloads allow-same-origin"
                 style={{ width: "100%" }}

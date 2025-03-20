@@ -5,12 +5,13 @@ import {
   CognitoUser,
   AuthenticationDetails,
 } from "amazon-cognito-identity-js";
- 
+
+//require('dotenv').config()
 // csd-ca-lab
 
 const poolData = {
-  UserPoolId: "ap-northeast-1_oplJt9drv",
-  ClientId: "22cin8r8mik6i94mln9385iegs",
+  UserPoolId: process.env.REACT_APP_USERPOOLID,
+  ClientId: process.env.REACT_APP_CLIENTID,
 };
 
 const userPool = new CognitoUserPool(poolData);

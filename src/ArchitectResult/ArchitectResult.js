@@ -52,11 +52,11 @@ function ArchitectResult({
   };
 
   //csd-ca-lab
-  const baseurl = "https://d2s0u5536e7dee.cloudfront.net";
+  const baseurl = process.env.REACT_APP_CLOUDFRONT_URL;
   //const baseurl = "http://localhost:3001";
-  const url = baseurl + "/api/diagram-as-code";
+  const url = process.env.REACT_APP_DIAGRAMS_AS_CODE_API;
   //const url = "http://localhost:3001";
-  const WEBSOCKET_API = "wss://d2s0u5536e7dee.cloudfront.net/production/";
+  const WEBSOCKET_API = process.env.REACT_APP_DRAWIO_BACKEND_API;
   let web_socket;
 
   //websocket
