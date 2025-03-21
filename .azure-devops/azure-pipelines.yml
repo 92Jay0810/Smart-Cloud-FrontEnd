@@ -5,6 +5,8 @@ resources:
       name: azure-ci-template
       ref: master
 
+name: $(Build.SourceBranchName)-$(Date:yyyyMMdd).$(Rev:r)
+
 variables:
 - group: smrt-common
 - name: POOL
@@ -13,6 +15,7 @@ variables:
   value: 'gcp-scanner-shared'
 
 stages:
+# sonarqube
 - template: frontend/scan_sonarqube.yaml@templates
   parameters:
     scan_pool: '$(SCAN_POOL)'
@@ -20,6 +23,7 @@ stages:
 - template: frontend/npm_build.yaml@templates
   parameters:
     pool: '$(POOL)'
+# cx, mend
 - template: frontend/scan_frontend.yaml@templates
   parameters:
     pool: '$(POOL)'
