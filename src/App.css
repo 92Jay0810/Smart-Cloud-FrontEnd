@@ -637,6 +637,8 @@ h3 {
 }
 
 .survey-result-container {
+  position: absolute;
+  left: 5%;
   scroll-behavior: smooth;
   height:  110vh;
   max-height: 130vh;

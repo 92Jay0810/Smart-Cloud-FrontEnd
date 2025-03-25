@@ -662,7 +662,7 @@ function ArchitectResult({
           <div
             className="survey-result-container"
             style={{
-              width: showDialog ? "50%" : "95%", // 如果對話框開啟，讓 iframe 全寬
+              width: showDialog ? "65%" : "90%", // 如果對話框開啟，讓 iframe 全寬
             }}
           >
             {tool === "diagrams" ? (
