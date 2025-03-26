@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PortalPage from "./PortalPage";
-import General from "./General/General";
-import Quick from "./Quick/Quick";
+import General from "./general/General";
+import Quick from "./quick/Quick";
 import { jwtDecode } from "jwt-decode";
 import AWSLogin from "./AWSLogin";
 import "./App.css";

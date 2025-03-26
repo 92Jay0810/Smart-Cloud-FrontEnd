@@ -7,7 +7,7 @@ import React, {
   useContext,
 } from "react";
 import "../App.css";
-import { AppContext } from "../Context/AppContext";
+import { AppContext } from "../context/AppContext";
 function Dac({ username, platform }) {
   const { apiResponseReceived, error_message, imageUrl, savecode } =
     useContext(AppContext);

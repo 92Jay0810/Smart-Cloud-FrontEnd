@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Survey from "./Survey";
-import ArchitectResult from "../ArchitectResult/ArchitectResult";
+import Template from "./Template";
+import ArchitectResult from "../architectresult/ArchitectResult";
 import { v4 as uuidv4 } from "uuid";
 import "../App.css";
-import { AppProvider } from "../Context/AppContext";
-function General({
+import { AppProvider } from "../context/AppContext";
+function Quick({
   idToken,
   user_id,
   username,
@@ -41,12 +41,10 @@ function General({
     setSubmitted(false);
     setSurveyData(null);
     setPlatform("");
-    setTool("");
     // 清除相關的 cookie
     setCookie("submitted", "", -1);
     setCookie("surveyData", "", -1);
     setCookie("platform", "", -1);
-    setCookie("tool", "", -1);
   }, []);
 
   //token過期呼叫
@@ -67,10 +65,6 @@ function General({
   const [platform, setPlatform] = useState(() => {
     return getCookie("platform") || "";
   });
-  const [tool, setTool] = useState(() => {
-    return getCookie("tool") || "";
-  });
-
   const [session_id, setSession_id] = useState(() => {
     const saved = getCookie("session_id");
     if (saved) {
@@ -87,14 +81,13 @@ function General({
     setCookie("submitted", submitted);
     setCookie("surveyData", JSON.stringify(surveyData));
     setCookie("platform", platform);
-    setCookie("tool", tool);
     setCookie("session_id", session_id);
   };
 
   // 在狀態更新時更新 cookie
   useEffect(() => {
     updateCookies();
-  }, [submitted, platform, tool, surveyData, session_id]);
+  }, [submitted, platform, surveyData, session_id]);
 
   //返回按鈕
   const handleBack = useCallback(() => {
@@ -108,10 +101,9 @@ function General({
     handleLogout();
   };
   //傳surveyData,tool,plafrom,session_id交給display
-  const handleSurveySubmit = (surveyData, tool, platform, session_id) => {
+  const handleTemplateSubmit = (surveyData, platform, session_id) => {
     setSubmitted(true);
     setSurveyData(surveyData); // 確保不會傳入物件
-    setTool(tool);
     setPlatform(platform);
     setSession_id(session_id);
   };
@@ -119,9 +111,8 @@ function General({
     <div className="survey-display">
       {/* 根據 submitted 狀態顯示不同元件，同時傳入 ref */}
       {!submitted ? (
-        <Survey
-          onSubmit={handleSurveySubmit}
-          username={username}
+        <Template
+          onSubmit={handleTemplateSubmit}
           user_id={user_id}
           handleBack={handleBack}
           handleLogoutButton={handleLogoutButton}
@@ -133,13 +124,13 @@ function General({
             username={username}
             user_id={user_id}
             surveyData={surveyData}
-            tool={tool}
+            tool={"drawio"}
             platform={platform}
             session_id={session_id}
             onRefreshTokenCheck={handleRefreshTokenCheck}
             handleBack={handleBack}
             handleLogoutButton={handleLogoutButton}
-            mode={"General"}
+            mode={"Quick"}
           />
         </AppProvider>
       )}
@@ -147,4 +138,4 @@ function General({
   );
 }
 
-export default General;
+export default Quick;

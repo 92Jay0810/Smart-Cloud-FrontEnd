@@ -9,7 +9,7 @@ import close from "../assets/grey close.png";
 import systemImg from "../assets/system.jpeg";
 import userImg from "../assets/user.jpg";
 import "../App.css";
-import { AppContext } from "../Context/AppContext";
+import { AppContext } from "../context/AppContext";
 function Chatbot({ handle_message }) {
   const { apiResponseReceived, messages, showDialog, setShowDialog } =
     useContext(AppContext);

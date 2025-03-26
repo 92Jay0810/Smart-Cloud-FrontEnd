@@ -9,7 +9,7 @@ import React, {
   useContext,
 } from "react";
 import "../App.css";
-import { AppContext } from "../Context/AppContext";
+import { AppContext } from "../context/AppContext";
 const Drawio = forwardRef(({ username }, ref) => {
   const {
     apiResponseReceived,

@@ -5,7 +5,7 @@ import Drawio from "./Drawio";
 import Chatbot from "./Chatbot";
 import { CSSTransition } from "react-transition-group";
 import "../App.css";
-import { AppContext } from "../Context/AppContext";
+import { AppContext } from "../context/AppContext";
 function ArchitectResult({
   idToken,
   user_id,
